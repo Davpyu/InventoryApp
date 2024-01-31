@@ -4,6 +4,7 @@ using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Shareds;
 using DotNetService.Infrastructure.Subscribtions;
 using NATS.Client.Core;
+using NATS.Client;
 
 namespace DotNetService.Infrastructure.Integrations.NATs 
 {
@@ -17,7 +18,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         private readonly NatsConnection _natsConnection = natsConnection;
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
 
-         public void Subs<T>(string subject) {
+        public void Subs<T>(string subject) {
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<T>(subject))
@@ -28,7 +29,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-         public void Subs<T>(string subject, ISubscribtionActionAsync<T> subAction) {
+        public void Subs<T>(string subject, ISubscribtionActionAsync<T> subAction) {
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
@@ -40,20 +41,37 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-         public void Subs<T, R>(string subject, IReplyAsyncAction<T, R> subAction) {
+        public void SubsAndReply<T, R>(string subject, IReplyAsyncAction<T, R> subAction) {
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
                     {
                         var data = msg.Data;
                         var reply = await subAction.ReplyAsync(Utils.JsonDeserialize<T>(data));
-                        await msg.ReplyAsync(reply);
+
+                        var jsonReply = Utils.JsonSerialize(reply);
+                        await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
                     }
                 }
             );
         }
 
-         public void Subs<T>(string subject, ISubscribtionAction<T> subAction) {
+        public void SubsAndReply<T, R>(string subject, IReplyAction<T, R> subAction) {
+            var task = Task.Run(
+                async () => {
+                    await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
+                    {
+                        var data = msg.Data;
+                        var reply = subAction.Reply(Utils.JsonDeserialize<T>(data));
+
+                        var jsonReply = Utils.JsonSerialize(reply);
+                        await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
+                    }
+                }
+            );
+        }
+
+        public void Subs<T>(string subject, ISubscribtionAction<T> subAction) {
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
@@ -65,23 +83,6 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-         public void SubsAndReply<T, R>(string subject, IReplyAction<T, R> subAction) {
-            var task = Task.Run(
-                async () => {
-                    await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
-                    {
-                        var data = msg.Data;
-                        var jsonRequest = Utils.JsonDeserialize<T>(data);
-
-                        var reply = subAction.Reply(jsonRequest);
-                        var jsonReply = Utils.JsonSerialize(reply);
-                        
-                        await msg.ReplyAsync(jsonReply);
-                        await this.Publish(subject, msg.ReplyTo);
-                    }
-                }
-            );
-        }
 
         public async Task UnSub<T>(INatsSub<T> sub) {
             await sub.UnsubscribeAsync();
@@ -94,10 +95,10 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         public async Task<R> PublishAndGetReply<T, R>(string subject, T data) {
             try
             {
-                var msg = await _natsConnection.RequestAsync<T, R>(subject, data);
-                Console.WriteLine("Response received: " + Utils.JsonSerialize(msg.Data));
+                var msg = await _natsConnection.RequestAsync<T, string>(subject, data);
+                var repliedData = msg.Data;
 
-                return msg.Data;
+                return Utils.JsonDeserialize<R>(repliedData);
             }
             catch (NatsException e)
             {

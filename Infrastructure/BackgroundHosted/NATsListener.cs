@@ -26,7 +26,7 @@ namespace DotNetService.Infrastructure.BackgroundHosted
 
         public async Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("NATs Subscription Hosted Service running.");
+            _logger.LogInformation("NATs Subscription Hosted Service running listen.");
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
                 var loggingNatsListener = scope.ServiceProvider.GetRequiredService<LoggingNATsListener>();
@@ -51,9 +51,10 @@ namespace DotNetService.Infrastructure.BackgroundHosted
                 var listenersAndReply = new Dictionary<string, IReplyAction<IDictionary<string, object>, IDictionary<string, object>>>
                 {
                     // Define all listenersAndReply here
-                    { NATsEventConstant.SUBS_AND_REPLY_PREFIX_SUBJECT + ".>", scope.ServiceProvider.GetRequiredService<LoggingNATsListenAdnReply>() }
+                    { NATsEventConstant.SUBS_AND_REPLY_PREFIX_SUBJECT + ".>", scope.ServiceProvider.GetRequiredService<LoggingNATsListenAndReply>() }
                 };
                 
+                _logger.LogInformation("NATs Subscription Hosted Service running reply.");
                 foreach (var listener in listenersAndReply) {
                     _natsIntegration.SubsAndReply(listener.Key, listener.Value); 
                 }

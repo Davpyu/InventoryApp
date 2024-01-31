@@ -6,7 +6,7 @@ using Sentry;
 
 namespace DotNetService.Domain.Logging.Listeners
 {
-    public class LoggingNATsListenAdnReply(
+    public class LoggingNATsListenAndReply(
         ILoggerFactory loggerFactory,
         LoggingService loggingService
     ) : IReplyAction<IDictionary<string, object>, IDictionary<string, object>>
@@ -17,12 +17,10 @@ namespace DotNetService.Domain.Logging.Listeners
 
         public IDictionary<string, object> Reply(IDictionary<string, object> data)
         {
-            _logger.LogInformation("Request Data : " + Utils.JsonSerialize(data));
             var reply = new Dictionary<string, object> {
                 { "status", "OK" },
             };
 
-            _logger.LogInformation("Reply Data : " + Utils.JsonSerialize(reply));
             return reply;
         }
     }

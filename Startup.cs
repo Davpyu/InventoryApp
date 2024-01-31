@@ -14,12 +14,9 @@ using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Middlewares;
 using DotNetService.Infrastructure.Filters;
 using Microsoft.AspNetCore.Mvc;
-using NATS.Client;
 using NATS.Client.Hosting;
 using NATS.Client.Core;
-using System.Security.Policy;
 using DotNetService.Infrastructure.Events;
-using DotNetService.Infrastructure;
 using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.BackgroundHosted;
 
@@ -96,6 +93,21 @@ namespace DotNetService
             //         .WithCredentials(Configuration["Minio:ClientId"], Configuration["Minio:ClientSecret"]));
             // }
 
+
+            services.AddNats(1000, options => {
+
+                    var opts = new NatsOpts {
+                        Url = Configuration["Nats:Url"],
+                        AuthOpts = new NatsAuthOpts{
+                            Username = Configuration["Nats:Username"],
+                            Password = Configuration["Nats:Password"],
+                        },
+                        Name = Configuration["Nats:Server"]
+                    };
+
+                    return opts;
+            });
+            
             Services(services);
             
             Repositories(services);
@@ -118,20 +130,6 @@ namespace DotNetService
             services.AddHostedService<NATsListener>();
 
             services.AddHealthChecks();
-
-            services.AddNats(1000, options => {
-
-                    var opts = new NatsOpts {
-                        Url = Configuration["Nats:Url"],
-                        AuthOpts = new NatsAuthOpts{
-                            Username = Configuration["Nats:Username"],
-                            Password = Configuration["Nats:Password"],
-                        },
-                        Name = Configuration["Nats:Server"]
-                    };
-
-                    return opts;
-            });
 
             services.AddCors(options =>
             {
