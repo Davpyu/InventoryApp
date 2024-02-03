@@ -19,6 +19,9 @@ using NATS.Client.Core;
 using DotNetService.Infrastructure.Events;
 using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.BackgroundHosted;
+using System.Net;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace DotNetService
 {
@@ -45,37 +48,57 @@ namespace DotNetService
         [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
-            
+            // Create folder storage if not exist
+            if (!Directory.Exists("storage"))
+            {
+                Directory.CreateDirectory("storage");
+            }
+
+            var hostName = Dns.GetHostName();
+
             services.AddLogging(loggingBuilder => {
-                loggingBuilder.AddFile("Log/" + DateTime.Now.ToString("yyyy-MM-dd") + "-default.log", 
+                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-default.log", 
                     fileLoggerOpts => {
                         fileLoggerOpts.Append = true;
                         fileLoggerOpts.FilterLogEntry = (msg) => {
-                            return msg.LogLevel == LogLevel.Information && !(msg.LogName == LoggerConstant.INTEGRATION || msg.LogName == LoggerConstant.INTEGRATION);
+                            return msg.LogLevel == LogLevel.Information 
+                                && !(
+                                    msg.LogName == LoggerConstant.NATS || 
+                                    msg.LogName == LoggerConstant.INTEGRATION || 
+                                    msg.LogName == LoggerConstant.ACTIVITY
+                                );
                         };   
                     }
                 );
-                loggingBuilder.AddFile("Log/" + DateTime.Now.ToString("yyyy-MM-dd") + "-integration.log", 
+                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-integration.log", 
                     fileLoggerOpts => {
                         fileLoggerOpts.Append = true;
                         fileLoggerOpts.FilterLogEntry = (msg) => {
-                            return msg.LogLevel == LogLevel.Information && msg.LogName == LoggerConstant.INTEGRATION;
+                            return msg.LogName == LoggerConstant.INTEGRATION;
                         };   
                     }
                 );
-                loggingBuilder.AddFile("Log/" + DateTime.Now.ToString("yyyy-MM-dd") + "-error.log", 
+                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-nats.log", 
+                    fileLoggerOpts => {
+                        fileLoggerOpts.Append = true;
+                        fileLoggerOpts.FilterLogEntry = (msg) => {
+                            return msg.LogName == LoggerConstant.NATS;
+                        };   
+                    }
+                );
+                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-activity.log", 
+                    fileLoggerOpts => {
+                        fileLoggerOpts.Append = true;
+                        fileLoggerOpts.FilterLogEntry = (msg) => {
+                            return msg.LogName == LoggerConstant.ACTIVITY;
+                        };   
+                    }
+                );
+                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-error.log", 
                     fileLoggerOpts => {
                         fileLoggerOpts.Append = true;
                         fileLoggerOpts.FilterLogEntry = (msg) => {
                             return msg.LogLevel == LogLevel.Error;
-                        };   
-                    }
-                );
-                loggingBuilder.AddFile("Log/" + DateTime.Now.ToString("yyyy-MM-dd") + "-activity.log", 
-                    fileLoggerOpts => {
-                        fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) => {
-                            return msg.LogLevel == LogLevel.Information && msg.LogName == LoggerConstant.ACTIVITY;
                         };   
                     }
                 );
@@ -153,7 +176,7 @@ namespace DotNetService
             {
                 opt.SuppressModelStateInvalidFilter = true;
             });
-            
+
             services.AddControllers(
                 options => {
                     options.Filters.Add<ValidatorAttribute>();
@@ -189,11 +212,10 @@ namespace DotNetService
                     EndPoints = { Configuration["Redis:Host"] + ':' + Configuration["Redis:Port"] },
                     Ssl = false
                 });
-            } else {
+            } 
+            else {
                 services.AddDistributedMemoryCache();
             }
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -213,18 +235,18 @@ namespace DotNetService
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();
-
             app.UseCors();
 
-            app.UseAuthorization();
+            app.UseRouting();
+            
+            app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseResponseCaching();
 
             app.UseEndpoints(x =>
             {
-                x.MapHealthChecks("/health").AllowAnonymous();
                 x.MapControllers();
+                x.MapHealthChecks("/health").AllowAnonymous();
             });
         }
     }

@@ -6,8 +6,7 @@ using DotNetService.Domain.RolePermission.Repositories;
 using DotNetService.Domain.UserRole.Repositories;
 using DotNetService.Exceptions;
 using BC = BCrypt.Net.BCrypt;
-using Microsoft.AspNetCore.Mvc;
-using DotNetService.Infrastructure.Events;
+using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -35,11 +34,12 @@ namespace DotNetService.Domain.Auth.Services
                 throw new DataNotFoundException();
             }
             
-            var expiredAt = DateTime.UtcNow.AddYears(1);
+            var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
+            var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
             return new ()
             {
                 ExpiredAt = expiredAt,
-                Token = AuthUtility.GenerateJwtToken(_config["App:DataProtectionKey"], userRepo.Id)
+                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userRepo.Id, expiredAt)
             };
         }
 

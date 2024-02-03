@@ -5,8 +5,6 @@ using DotNetService.Constants.Logger;
 using System.Net;
 using DotNetService.Http.API.Version1.Responses;
 using System.Net.Mime;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace DotNetService.Exceptions
 {
@@ -29,11 +27,13 @@ namespace DotNetService.Exceptions
             }
             catch (Exception error)
             {
-
-                var message = bool.Parse(_config["App:Debug"]) ? error.Message + " | " + error.StackTrace : error.Message;
-                
-                var statusCode = HttpStatusCode.InternalServerError;
+                var devModeMessage = error.Message + " | " + error.StackTrace;
+                var message = bool.Parse(_config["App:Debug"]) ? devModeMessage : error.Message;
                 var validationError = ErrorValidation.ErrorModel(null);
+
+                _logger.LogError(message);
+
+                HttpStatusCode statusCode;
                 switch (error)
                 {
                     // case when request validation failure

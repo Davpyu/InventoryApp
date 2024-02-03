@@ -4,7 +4,7 @@ using DotNetService.Http.API.Version1.Requests.User;
 using DotNetService.Http.API.Version1.Responses;
 using DotNetService.Http.API.Version1.Responses.User;
 using System.Net;
-using System;
+using DotNetService.Infrastructure.Shareds;
 using DotNetService.Domain.User.Services;
 
 namespace DotNetService.Http.API.Version1.Controllers.IAM

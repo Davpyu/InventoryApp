@@ -1,6 +1,7 @@
 using System;
 using System.Security.Claims;
-using DotNetService.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Infrastructure.Middlewares {
     public class AuthorizationMiddleware
@@ -19,24 +20,26 @@ namespace DotNetService.Infrastructure.Middlewares {
 
         public async Task Invoke(HttpContext context)
         {
+            var endpoint = context.GetEndpoint();
+            if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() is object)
+            {
+                await _next(context);
+                return;
+            }
+
             var token = string.Empty;
             var headers = context.Request.Headers;
             if (headers.ContainsKey("Authorization") && headers.Authorization.ToString().StartsWith("Bearer "))
             {
-                token = headers.Authorization.ToString().Replace("Bearer ", "");
+                token = headers.Authorization.ToString().Replace("Bearer ", string.Empty);
             }
             
-            var id = AuthUtility.ValidateJwtTokenAndGetId(_config["App:DataProtectionKey"], token);
+            AuthUtility.ValidateJwtToken(_config["JWTSetting:Secret"], token);
 
-            context.User = new ClaimsPrincipal(
-                new ClaimsIdentity(
-                    new Claim[] { 
-                        new (ClaimTypes.PrimarySid, id.ToString()) 
-                    }
-                )
-            );
+            var id = AuthUtility.GetId(token);
 
-            // Panggil middleware selanjutnya dalam pipeline
+            context.User = AuthUtility.ClaimPrincipalWithId(id);
+
             await _next(context);
         }
     }

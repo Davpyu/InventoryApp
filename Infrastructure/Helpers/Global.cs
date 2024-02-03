@@ -5,8 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DotNetService.Exceptions;
 
-namespace DotNetService
+namespace DotNetService.Infrastructure.Shareds
 {
     public class ErrorUtility
     {
@@ -20,65 +21,96 @@ namespace DotNetService
         }
         public static IDictionary<string, string> SetErrorValidation(string key, string field)
         {
-            IDictionary<string, string> validation = new Dictionary<string, string>();
-            validation.Add("key", key);
-            validation.Add("field", field);
+            IDictionary<string, string> validation = new Dictionary<string, string>
+            {
+                { "key", key },
+                { "field", field }
+            };
             return validation;
         }
     }
 
     public class AuthUtility
     {
-        public static string GenerateJwtToken(string secretKey, Guid id)
+        public static string GenerateJwtToken(string secretKey, Guid id, DateTime expires = default)
         {
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            byte[] key = Encoding.ASCII.GetBytes(GenerateSymetricKey(secretKey));
-            SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = GenerateSymetricKey(secretKey);
+            var tokenDescriptor = new SecurityTokenDescriptor() 
             {
                 Subject = new ClaimsIdentity(new[] {
                     new Claim("id", id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddYears(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                Expires = expires,
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
             };
-            SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
         }
 
-        public static string GenerateSymetricKey(string key)
-        {
-            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)).ToString();
+        public static ClaimsPrincipal ClaimPrincipalWithId(Guid id) {
+            // Claim just id
+            var identity = new ClaimsIdentity(
+            [
+                new ("id", id.ToString(), ClaimValueTypes.String)
+            ], "User");
+
+            return new ClaimsPrincipal(identity);
         }
 
-
-        public static Guid ValidateJwtTokenAndGetId(string secretKey, string token)
+        public static SymmetricSecurityKey GenerateSymetricKey(string key)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            byte[] key = Encoding.ASCII.GetBytes(GenerateSymetricKey(secretKey));
-            try
+            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        }
+
+        public static Guid GetId(string token)
+        {
+            try {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenDecoded = tokenHandler.ReadToken(token) as JwtSecurityToken;
+                
+                return new Guid(tokenDecoded.Claims.First(claim => claim.Type == "id")?.Value);
+            } 
+            catch {
+                throw new UnauthenticatedException();
+            }
+        }
+        
+        private static bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken tokenToValidate, TokenValidationParameters @param)
+        {
+            if (expires != null)
             {
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                return expires > DateTime.UtcNow;
+            }
+            return false;
+        }
+
+        public static JwtSecurityToken ValidateJwtToken(string secret, string tokenString)
+        {
+            try {
+                var securityKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(secret));
+                var handler = new JwtSecurityTokenHandler();
+                var validation = new TokenValidationParameters()
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
+                    ValidateLifetime = true,
+                    LifetimeValidator = CustomLifetimeValidator,
+                    RequireExpirationTime = true,
+                    IssuerSigningKey = securityKey,
+                    ValidateIssuerSigningKey = true,
+                };
+                var principal = handler.ValidateToken(tokenString, validation, out SecurityToken token);
 
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                Guid id = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
-
-                return id;
-            }
-            catch
-            {
-                throw new UnauthorizedAccessException();
+                return (JwtSecurityToken)token;
+            } 
+            catch {
+                throw new UnauthenticatedException();
             }
         }
     }
-
+    
     [DataContract]
     public abstract class ApiResponse
     {

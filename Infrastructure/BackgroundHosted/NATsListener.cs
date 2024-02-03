@@ -2,9 +2,7 @@
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;
-using DotNetService.Infrastructure.Shareds;
 using DotNetService.Infrastructure.Subscribtions;
-using OfficeOpenXml;
 
 namespace DotNetService.Infrastructure.BackgroundHosted 
 {
@@ -15,7 +13,7 @@ namespace DotNetService.Infrastructure.BackgroundHosted
     ) : IHostedService, IDisposable
     {
 
-        public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.ACTIVITY);
+        public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.INTEGRATION);
         public readonly NATsIntegration _natsIntegration = natsIntegration;
         public readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
@@ -51,7 +49,7 @@ namespace DotNetService.Infrastructure.BackgroundHosted
                 var listenersAndReply = new Dictionary<string, IReplyAction<IDictionary<string, object>, IDictionary<string, object>>>
                 {
                     // Define all listenersAndReply here
-                    { NATsEventConstant.SUBS_AND_REPLY_PREFIX_SUBJECT + ".>", scope.ServiceProvider.GetRequiredService<LoggingNATsListenAndReply>() }
+                    { NATsEventConstant.SUBS_AND_REPLY_ALL, scope.ServiceProvider.GetRequiredService<LoggingNATsListenAndReply>() }
                 };
                 
                 _logger.LogInformation("NATs Subscription Hosted Service running reply.");
@@ -59,7 +57,6 @@ namespace DotNetService.Infrastructure.BackgroundHosted
                     _natsIntegration.SubsAndReply(listener.Key, listener.Value); 
                 }
             }
-
         }
 
         public async Task StopAsync(CancellationToken stoppingToken)

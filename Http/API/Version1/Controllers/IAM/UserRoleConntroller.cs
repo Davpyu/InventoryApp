@@ -6,6 +6,7 @@ using DotNetService.Http.API.Version1.Responses;
 using DotNetService.Http.API.Version1.Responses.UserRole;
 using DotNetService.Domain.UserRole.Services;
 using System.Net;
+using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Http.API.Version1.Controllers.IAM
 {

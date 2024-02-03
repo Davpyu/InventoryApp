@@ -4,7 +4,8 @@ using DotNetService.Http.API.Version1.Responses.Auth;
 using System.Net;
 using DotNetService.Domain.Auth.Services;
 using DotNetService.Domain.User.Services;
-using DotNetService.Infrastructure.Events;
+using DotNetService.Infrastructure.Shareds;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.Controllers.Auth
 {
@@ -19,6 +20,7 @@ namespace DotNetService.Http.API.Version1.Controllers.Auth
         private readonly UserService _userService = userService;
 
         // GET: api/Book
+        [AllowAnonymous]
         [HttpPost("sign-in")]
         [Consumes("application/json")]
         public ApiResponse SignIn(AuthSignIn authSignIn)
@@ -35,6 +37,7 @@ namespace DotNetService.Http.API.Version1.Controllers.Auth
 
         [HttpPost("register")]
         [Consumes("application/json")]
+        [AllowAnonymous]
         public ApiResponse Register(AuthRegister authRegister)
         {
             _userService.Register(authRegister);
