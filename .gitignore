@@ -17,6 +17,7 @@
 mono_crash.*
 
 appsettings.json
+appsettings.docker-compose.json
 
 # Build results
 [Dd]ebug/

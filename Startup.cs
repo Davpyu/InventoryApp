@@ -48,10 +48,10 @@ namespace DotNetService
         [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
-            // Create folder storage if not exist
-            if (!Directory.Exists("storage"))
+            // Create folder Storage if not exist
+            if (!Directory.Exists("Storage"))
             {
-                Directory.CreateDirectory("storage");
+                Directory.CreateDirectory("Storage");
             }
 
             var hostName = Dns.GetHostName();
