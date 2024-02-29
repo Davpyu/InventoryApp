@@ -2,7 +2,7 @@
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;
-using DotNetService.Infrastructure.Subscribtions;
+using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Infrastructure.BackgroundHosted 
 {
@@ -28,7 +28,7 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
                 var loggingNatsListener = scope.ServiceProvider.GetRequiredService<LoggingNATsListener>();
-                var listeners = new Dictionary<string, ISubscribtionAction<IDictionary<string, object>>>
+                var listeners = new Dictionary<string, ISubscriptionAction<IDictionary<string, object>>>
                 {
                     // Define all listeners here
                     { EndpointCallEventConstant.SUBS_POST_SUBJECT,  loggingNatsListener},

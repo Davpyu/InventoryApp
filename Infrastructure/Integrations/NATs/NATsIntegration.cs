@@ -2,7 +2,7 @@
 using DotNetService.Constants.Logger;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Shareds;
-using DotNetService.Infrastructure.Subscribtions;
+using DotNetService.Infrastructure.Subscriptions;
 using NATS.Client.Core;
 using NATS.Client;
 
@@ -18,8 +18,8 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         private readonly NatsConnection _natsConnection = natsConnection;
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
 
-        public void Subs<T>(string subject, ISubscribtionActionAsync<T> subAction) {
-            _logger.LogInformation("Start Subscribtion Of Subject : " + subject);
+        public void Subs<T>(string subject, ISubscriptionActionAsync<T> subAction) {
+            _logger.LogInformation("Start Subscription Of Subject : " + subject);
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
@@ -31,8 +31,8 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public void Subs<T>(string subject, ISubscribtionAction<T> subAction) {
-            _logger.LogInformation("Start Subscribtion Of Subject : " + subject);
+        public void Subs<T>(string subject, ISubscriptionAction<T> subAction) {
+            _logger.LogInformation("Start Subscription Of Subject : " + subject);
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
@@ -45,7 +45,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         }
 
         public void SubsAndReply<T, R>(string subject, IReplyAsyncAction<T, R> subAction) {
-            _logger.LogInformation("Start Subscribtion With Reply Of Subject : " + subject);
+            _logger.LogInformation("Start Subscription With Reply Of Subject : " + subject);
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
@@ -61,7 +61,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         }
 
         public void SubsAndReply<T, R>(string subject, IReplyAction<T, R> subAction) {
-            _logger.LogInformation("Start Subscribtion With Reply Of Subject : " + subject);
+            _logger.LogInformation("Start Subscription With Reply Of Subject : " + subject);
             var task = Task.Run(
                 async () => {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
@@ -77,7 +77,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         }
 
         public async Task UnSub<T>(INatsSub<T> sub) {
-            _logger.LogInformation("Stop Subscribtion Of Subject : " + sub.Subject);
+            _logger.LogInformation("Stop Subscription Of Subject : " + sub.Subject);
             await sub.UnsubscribeAsync();
         }
 
