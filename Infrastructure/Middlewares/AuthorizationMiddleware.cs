@@ -36,9 +36,11 @@ namespace DotNetService.Infrastructure.Middlewares {
             
             AuthUtility.ValidateJwtToken(_config["JWTSetting:Secret"], token);
 
-            var id = AuthUtility.GetId(token);
+            var user = AuthUtility.GetUserLogged(token);
 
-            context.User = AuthUtility.ClaimPrincipalWithId(id);
+            context.User = AuthUtility.ClaimPrincipalWithJson(user);
+
+            Console.WriteLine("User: " + user);
 
             await _next(context);
         }

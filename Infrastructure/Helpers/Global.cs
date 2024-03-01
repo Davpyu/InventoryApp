@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetService.Exceptions;
+using System.Text.Json;
 
 namespace DotNetService.Infrastructure.Shareds
 {
@@ -32,14 +33,14 @@ namespace DotNetService.Infrastructure.Shareds
 
     public class AuthUtility
     {
-        public static string GenerateJwtToken(string secretKey, Guid id, DateTime expires = default)
+        public static string GenerateJwtToken(string secretKey, string userJson, DateTime expires = default)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = GenerateSymetricKey(secretKey);
-            var tokenDescriptor = new SecurityTokenDescriptor() 
+            var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim("id", id.ToString())
+                    new Claim("user", userJson.ToString())
                 }),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
@@ -49,12 +50,15 @@ namespace DotNetService.Infrastructure.Shareds
             return tokenHandler.WriteToken(token);
         }
 
-        public static ClaimsPrincipal ClaimPrincipalWithId(Guid id) {
-            // Claim just id
-            var identity = new ClaimsIdentity(
-            [
-                new ("id", id.ToString(), ClaimValueTypes.String)
-            ], "User");
+        public static ClaimsPrincipal ClaimPrincipalWithJson(dynamic user)
+        {
+            var userObject = (Dictionary<string, object>)JsonSerializer.Deserialize<Dictionary<string, object>>(user);
+
+            var claims = userObject.Where(kvp => kvp.Key != null && kvp.Value != null)
+                                   .Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()))
+                                   .ToList();
+
+            var identity = new ClaimsIdentity(claims, "User");
 
             return new ClaimsPrincipal(identity);
         }
@@ -66,17 +70,39 @@ namespace DotNetService.Infrastructure.Shareds
 
         public static Guid GetId(string token)
         {
-            try {
+            try
+            {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var tokenDecoded = tokenHandler.ReadToken(token) as JwtSecurityToken;
-                
+
                 return new Guid(tokenDecoded.Claims.First(claim => claim.Type == "id")?.Value);
-            } 
-            catch {
+            }
+            catch
+            {
                 throw new UnauthenticatedException();
             }
         }
-        
+
+        public static dynamic GetUserLogged(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var tokenDecoded = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+                var userClaim = tokenDecoded.Claims.First(claim => claim.Type == "user");
+                var userValue = userClaim.Value;
+
+                var userObject = JsonSerializer.Deserialize<dynamic>(userValue);
+
+                return userObject;
+            }
+            catch
+            {
+                throw new UnauthenticatedException();
+            }
+        }
+
         private static bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken tokenToValidate, TokenValidationParameters @param)
         {
             if (expires != null)
@@ -88,7 +114,8 @@ namespace DotNetService.Infrastructure.Shareds
 
         public static JwtSecurityToken ValidateJwtToken(string secret, string tokenString)
         {
-            try {
+            try
+            {
                 var securityKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(secret));
                 var handler = new JwtSecurityTokenHandler();
                 var validation = new TokenValidationParameters()
@@ -104,13 +131,14 @@ namespace DotNetService.Infrastructure.Shareds
                 var principal = handler.ValidateToken(tokenString, validation, out SecurityToken token);
 
                 return (JwtSecurityToken)token;
-            } 
-            catch {
+            }
+            catch
+            {
                 throw new UnauthenticatedException();
             }
         }
     }
-    
+
     [DataContract]
     public abstract class ApiResponse
     {

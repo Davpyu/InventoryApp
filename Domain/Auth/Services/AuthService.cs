@@ -7,6 +7,7 @@ using DotNetService.Domain.UserRole.Repositories;
 using DotNetService.Exceptions;
 using BC = BCrypt.Net.BCrypt;
 using DotNetService.Infrastructure.Shareds;
+using Newtonsoft.Json;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -28,18 +29,22 @@ namespace DotNetService.Domain.Auth.Services
 
         public AuthInfo SignIn(AuthSignIn authSignIn)
         {
-            var userRepo = _userQueryRepository.FindByEmail(authSignIn.Email);
-            if (userRepo == null || userRepo.Email == null || !BC.Verify(authSignIn.Password, userRepo.Password))
+            var user = _userQueryRepository.FindByEmail(authSignIn.Email);
+            if (user == null || user.Email == null || !BC.Verify(authSignIn.Password, user.Password))
             {
                 throw new DataNotFoundException();
             }
-            
+
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
             var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
-            return new ()
+
+            user.Password = null;
+            var userString = JsonConvert.SerializeObject(user);
+
+            return new()
             {
                 ExpiredAt = expiredAt,
-                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userRepo.Id, expiredAt)
+                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt)
             };
         }
 
