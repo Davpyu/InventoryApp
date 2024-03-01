@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetService.Migrations
 {
     [DbContext(typeof(DBContext1))]
-    [Migration("20240119153432_InitialDatabase")]
-    partial class InitialDatabase
+    [Migration("20240301031453_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -230,7 +230,7 @@ namespace DotNetService.Migrations
                         .HasColumnName("deleted_by_username");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("email");
 
                     b.Property<string>("Name")
@@ -254,6 +254,10 @@ namespace DotNetService.Migrations
                         .HasColumnName("updated_by_username");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[email] IS NOT NULL");
 
                     b.HasIndex("Id");
 

@@ -228,7 +228,7 @@ namespace DotNetService.Migrations
                         .HasColumnName("deleted_by_username");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("email");
 
                     b.Property<string>("Name")
@@ -252,6 +252,10 @@ namespace DotNetService.Migrations
                         .HasColumnName("updated_by_username");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[email] IS NOT NULL");
 
                     b.HasIndex("Id");
 

@@ -14,6 +14,7 @@ namespace DotNetService.Models
         [Column("name")]
         public string Name { get; set; }
 
+        [Index(IsUnique = true)]
         [Column("email")]
         public string Email { get; set; }
 

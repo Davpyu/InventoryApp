@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DotNetService.Migrations
 {
-    public partial class InitialDatabase : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -57,7 +57,7 @@ namespace DotNetService.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    email = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
                     created_by = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -181,6 +181,13 @@ namespace DotNetService.Migrations
                 name: "IX_user_role_userid",
                 table: "user_role",
                 column: "userid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_email",
+                table: "users",
+                column: "email",
+                unique: true,
+                filter: "[email] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_id",
