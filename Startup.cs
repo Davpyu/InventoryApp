@@ -167,7 +167,7 @@ namespace DotNetService
             
             services.AddFluentValidation(fvc => fvc.RegisterValidatorsFromAssemblyContaining<Startup>());
             
-            services.AddDbContext<DBContext1>(options => options
+            services.AddDbContext<MainDBContext>(options => options
                 .UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""));
 
             services.AddHttpContextAccessor();

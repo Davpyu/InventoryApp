@@ -4,10 +4,10 @@ namespace DotNetService.Domain.Role.Repositories
 {
     public class RoleQueryRepository
     {
-        private readonly Models.DBContext1 _context;
+        private readonly Models.MainDBContext _context;
 
         public RoleQueryRepository(
-            Models.DBContext1 context
+            Models.MainDBContext context
         )
         {
             _context = context;

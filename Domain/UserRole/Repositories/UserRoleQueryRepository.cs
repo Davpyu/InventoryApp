@@ -4,7 +4,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 {
     public class UserRoleQueryRepository
     {
-        private readonly Models.DBContext1 _context;
+        private readonly Models.MainDBContext _context;
 
         internal Models.UserRole Find(Guid id = default)
         {

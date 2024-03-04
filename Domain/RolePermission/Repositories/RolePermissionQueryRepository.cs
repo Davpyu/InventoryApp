@@ -9,10 +9,10 @@ namespace DotNetService.Domain.RolePermission.Repositories
 {
     public class RolePermissionQueryRepository
     {
-        private readonly Models.DBContext1 _context;
+        private readonly Models.MainDBContext _context;
 
         public RolePermissionQueryRepository(
-            Models.DBContext1 context
+            Models.MainDBContext context
         )
         {
             _context = context;

@@ -3,19 +3,13 @@ INSERT INTO
 VALUES
     (
         'Super Admin',
-        'admin@pama.dot.co.id',
+        'admin@dot.co.id',
         '$2a$11$dGJAHAdnLSgjDxqg68W4leL2birufffmtgz3oeOtVBgdFKZPl2D.G',
         GETDATE()
     ),
     (
-        'Counter',
-        'counter@pama.dot.co.id',
+        'User',
+        'user@dot.co.id',
         '$2a$11$dGJAHAdnLSgjDxqg68W4leL2birufffmtgz3oeOtVBgdFKZPl2D.G',
         GETDATE()
-    ),
-    (
-        'Head Counter',
-        'head.counter@pama.dot.co.id',
-        '$2a$11$dGJAHAdnLSgjDxqg68W4leL2birufffmtgz3oeOtVBgdFKZPl2D.G',
-        GETDATE()
-    );
+    )
