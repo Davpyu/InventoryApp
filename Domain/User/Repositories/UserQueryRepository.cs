@@ -4,10 +4,10 @@ namespace DotNetService.Domain.User.Repositories
 {
     public class UserQueryRepository
     {
-        private readonly Models.DBContext1 _context;
+        private readonly Models.IamDBContext _context;
 
         public UserQueryRepository(
-            Models.DBContext1 context
+            Models.IamDBContext context
         )
         {
             _context = context;

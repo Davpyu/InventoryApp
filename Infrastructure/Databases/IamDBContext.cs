@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Models
 {
-    public partial class DBContext1 : DbContext
+    public partial class IamDBContext : DbContext
     {
-        public DBContext1()
+        public IamDBContext()
         {
         }
 
-        public DBContext1(DbContextOptions<DBContext1> options)
+        public IamDBContext(DbContextOptions<IamDBContext> options)
             : base(options)
         {
         }
@@ -19,7 +19,7 @@ namespace DotNetService.Models
         public DbSet<User> Users { get; set; }
 
         public DbSet<Permission> Permissions { get; set; }
-        
+
         public DbSet<UserRole> UserRoles { get; set; }
 
         public DbSet<RolePermission> RolePermissions { get; set; }
@@ -37,6 +37,10 @@ namespace DotNetService.Models
             SoftDelete<UserRole>(modelBuilder);
             GenerateUuid<RolePermission>(modelBuilder, "Id");
             SoftDelete<RolePermission>(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
         }
 
         public override int SaveChanges()

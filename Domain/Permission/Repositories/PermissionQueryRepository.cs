@@ -4,10 +4,10 @@ namespace DotNetService.Domain.Permission.Repositories
 {
     public class PermissionQueryRepository
     {
-        private readonly Models.DBContext1 _context;
+        private readonly Models.IamDBContext _context;
 
         public PermissionQueryRepository(
-            Models.DBContext1 context
+            Models.IamDBContext context
         )
         {
             _context = context;

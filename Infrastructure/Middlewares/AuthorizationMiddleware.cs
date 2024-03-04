@@ -3,7 +3,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using DotNetService.Infrastructure.Shareds;
 
-namespace DotNetService.Infrastructure.Middlewares {
+namespace DotNetService.Infrastructure.Middlewares
+{
     public class AuthorizationMiddleware
     {
         private readonly RequestDelegate _next;
@@ -33,12 +34,12 @@ namespace DotNetService.Infrastructure.Middlewares {
             {
                 token = headers.Authorization.ToString().Replace("Bearer ", string.Empty);
             }
-            
+
             AuthUtility.ValidateJwtToken(_config["JWTSetting:Secret"], token);
 
-            var id = AuthUtility.GetId(token);
+            var user = AuthUtility.GetUserLogged(token);
 
-            context.User = AuthUtility.ClaimPrincipalWithId(id);
+            context.User = AuthUtility.ClaimPrincipalWithJson(user);
 
             await _next(context);
         }

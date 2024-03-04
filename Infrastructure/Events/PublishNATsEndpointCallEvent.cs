@@ -17,7 +17,7 @@ namespace DotNetService.Infrastructure.Events {
         {
             var method = context.HttpContext.Request.Method;
             var isAuthenticated = context.HttpContext.User.Identity.IsAuthenticated;
-            var userId = isAuthenticated ? context.HttpContext.User.Claims.First(claim => claim.Type == "id")?.Value.ToString() : Guid.Empty.ToString();
+            var userId = isAuthenticated ? context.HttpContext.User.FindFirst("id")?.Value.ToString() : Guid.Empty.ToString();
             var endpoint = context.HttpContext.Request.Path;
             await next();
 
