@@ -30,7 +30,7 @@ namespace DotNetService.Domain.Auth.Services
         public AuthInfo SignIn(AuthSignIn authSignIn)
         {
             var user = _userQueryRepository.FindByEmail(authSignIn.Email);
-            if (user == null || user.Email == null || !BC.Verify(authSignIn.Password, user.Password))
+            if (user == null || !BC.Verify(authSignIn.Password, user.Password))
             {
                 throw new DataNotFoundException();
             }
