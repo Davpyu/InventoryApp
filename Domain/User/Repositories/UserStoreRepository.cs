@@ -5,11 +5,11 @@ namespace DotNetService.Domain.User.Repositories
 {
     public class UserStoreRepository
     {
-        private readonly Models.MainDBContext _context;
+        private readonly Models.IamDBContext _context;
         private readonly UserQueryRepository _userQueryRepository;
 
         public UserStoreRepository(
-            Models.MainDBContext context,
+            Models.IamDBContext context,
             UserQueryRepository userQueryRepository
         )
         {

@@ -3,7 +3,7 @@ namespace DotNetService.Domain.UserRole.Repositories
     public class UserRoleStoreRepository
     {
         private readonly UserRoleQueryRepository _userRoleQueryRepository;
-        private readonly Models.MainDBContext _context;
+        private readonly Models.IamDBContext _context;
 
         public void Create(Models.UserRole userRole)
         {

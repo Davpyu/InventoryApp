@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Models
 {
-    public partial class MainDBContext : DbContext
+    public partial class IamDBContext : DbContext
     {
-        public MainDBContext()
+        public IamDBContext()
         {
         }
 
-        public MainDBContext(DbContextOptions<MainDBContext> options)
+        public IamDBContext(DbContextOptions<IamDBContext> options)
             : base(options)
         {
         }
