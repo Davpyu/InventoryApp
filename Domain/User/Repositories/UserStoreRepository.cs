@@ -1,5 +1,6 @@
 using Models = DotNetService.Models;
 using System.Linq;
+using DotNetService.Exceptions;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -24,17 +25,19 @@ namespace DotNetService.Domain.User.Repositories
 
         public void Update(Guid id, Models.User user)
         {
-            Models.User oldUser = _userQueryRepository.Find(id);
-            if (oldUser == null)
-            {
-                return;
-            }
+            Models.User oldUser = _userQueryRepository.Find(id) ??
+            throw new DataNotFoundException("User id " + id + " not found");
 
-            this.Save(user, true);
+            oldUser.Name = user.Name;
+
+            this.Save(oldUser, true);
         }
 
         public void Delete(Guid id)
         {
+            Models.User oldUser = _userQueryRepository.Find(id) ??
+            throw new DataNotFoundException("User id " + id + " not found");
+            
             Models.User user = _context.Users.Where(user => user.Id == id).FirstOrDefault();
             _context.Users.Remove(user);
             _context.SaveChanges();

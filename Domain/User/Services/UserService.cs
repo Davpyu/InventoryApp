@@ -11,28 +11,38 @@ namespace DotNetService.Domain.User.Services
         )
     {
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
-        private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
+        private readonly UserStoreRepository _userStoreRepository = userStoreRepository;        
 
         public void Register(AuthRegister authRegister)
         {
-            var userRepository = new Models.User
+            Models.User data = new()
             {
                 Name = authRegister.Name,
                 Email = authRegister.Email,
                 Password = BC.HashPassword(authRegister.Password)
             };
 
-            _userStoreRepository.Create(userRepository);
+            _userStoreRepository.Create(data);
+        }
+
+        public void Create(UserCreate userCreate)
+        {
+            Models.User data = new()
+            {
+                Name = userCreate.Name
+            };
+
+            _userStoreRepository.Create(data);
         }
 
         public void Update(Guid id, UserUpdate userUpdate)
         {
-            Models.User userRepository = new Models.User
+            Models.User user = new()
             {
                 Name = userUpdate.Name
             };
 
-            _userStoreRepository.Update(id, userRepository);
+            _userStoreRepository.Update(id, user);
         }
 
         public void Delete(Guid id)

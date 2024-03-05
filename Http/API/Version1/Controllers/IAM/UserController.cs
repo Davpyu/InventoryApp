@@ -22,21 +22,20 @@ namespace DotNetService.Http.API.Version1.Controllers.IAM
             _userService = userService;
         }
 
-        // GET: api/User
         [HttpGet()]
         public ApiResponse Index([FromQuery] Query query, [FromHeader] Header header)
         {
             if (query.Pagination)
             {
-                var usersRepo = _userService.GetList(query.Search, query.Page, query.PerPage);
+                List<Models.User> data = _userService.GetList(query.Search, query.Page, query.PerPage);
                 int count = _userService.Count(query.Search);
                 decimal pageInCount = ((decimal)count) / query.PerPage;
-                var paginate = new PaginationModel()
+                PaginationModel paginate = new()
                 {
                     TotalPage = (int)Math.Ceiling(pageInCount),
                     Page = query.Page,
                     PerPage = query.PerPage,
-                    Data = UserItem.MapRepo(usersRepo),
+                    Data = UserItem.MapRepo(data),
                     Total = count
                 };
 
@@ -44,20 +43,26 @@ namespace DotNetService.Http.API.Version1.Controllers.IAM
             }
             else
             {
-                var usersRepo = _userService.GetList(query.Search, query.Page, query.PerPage);
-                return new ApiResponseDataList(HttpStatusCode.OK, usersRepo, usersRepo.Count);
+                List<Models.User> data = _userService.GetList(query.Search, query.Page, query.PerPage);
+                return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
             }
         }
 
-        // GET: api/User/5
         [HttpGet("{id}")]
         public ApiResponse Show(Guid id)
         {
-            var user = _userService.DetailById(id);
-            return new ApiResponseData(HttpStatusCode.OK, new UserDetail(user));
+            Models.User data = _userService.DetailById(id);
+            return new ApiResponseData(HttpStatusCode.OK, new UserDetail(data));
         }
 
-        // PUT: api/User/5
+        [HttpPost()]
+        [Consumes("application/json")]
+        public ApiResponse Store(UserCreate userCreate)
+        {
+            _userService.Create(userCreate);
+            return (new ApiResponseData(HttpStatusCode.OK, null));
+        }
+
         [HttpPut("{id}")]
         public ApiResponse Update(Guid id, UserUpdate userUpdate)
         {
@@ -65,7 +70,6 @@ namespace DotNetService.Http.API.Version1.Controllers.IAM
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
-        // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public ApiResponse Delete(Guid id)
         {
