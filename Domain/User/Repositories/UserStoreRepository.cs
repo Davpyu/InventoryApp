@@ -27,7 +27,6 @@ namespace DotNetService.Domain.User.Repositories
         public void Update(Guid id, Models.User newData)
         {
             newData.Id = id;
-            _context.Users.Update(newData);
             this.Save(newData, true);
         }
 
@@ -48,6 +47,7 @@ namespace DotNetService.Domain.User.Repositories
                 _context.Users.Add(data);
             }
 
+            _context.Users.Update(data);
             int affectedRows = _context.SaveChanges();
 
             if (affectedRows == 0)
