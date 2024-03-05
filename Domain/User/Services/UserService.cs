@@ -16,11 +16,11 @@ namespace DotNetService.Domain.User.Services
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
         private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
 
-        public ApiResponse Index(Query query = null)
+        public ApiResponse Index(UserQuery query = null)
         {
             if (query.Pagination)
             {
-                List<Models.User> data = List(query);
+                List<Models.User> data = Pagination(query);
                 int count = Count(query.Search);
                 decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
@@ -36,14 +36,14 @@ namespace DotNetService.Domain.User.Services
             }
             else
             {
-                List<Models.User> data = List(query);
+                List<Models.User> data = Pagination(query);
                 return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
             }
         }
 
-        public List<Models.User> List(Query query = null)
+        public List<Models.User> Pagination(UserQuery query = null)
         {
-            return _userQueryRepository.Get(query);
+            return _userQueryRepository.Pagination(query);
         }
 
         public void Create(UserCreate userCreate)

@@ -23,7 +23,7 @@ namespace DotNetService.Http.API.Version1.Controllers.IAM
         }
 
         [HttpGet()]
-        public ApiResponse Index([FromQuery] Query query, [FromHeader] Header header)
+        public ApiResponse Index([FromQuery] UserQuery query, [FromHeader] Header header)
         {
             return _userService.Index(query);
         }
