@@ -26,12 +26,9 @@ namespace DotNetService.Domain.User.Repositories
 
         public void Update(Guid id, Models.User newData)
         {
-            Models.User oldData = _userQueryRepository.Find(id) ??
-            throw new DataNotFoundException("User id " + id + " not found");
-
-            oldData.Name = newData.Name;
-
-            this.Save(oldData, true);
+            newData.Id = id;
+            _context.Users.Update(newData);
+            _context.SaveChanges();
         }
 
         public void Delete(Guid id)
