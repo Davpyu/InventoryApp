@@ -18,7 +18,7 @@ namespace DotNetService.Domain.User.Repositories
         public List<Models.User> Pagination(UserQuery queryParams)
         {
             int skip = (1 - queryParams.Page) * queryParams.PerPage;
-            var query = _context.Users.AsQueryable().Include(x => x.UserRoles);
+            var query = _context.Users.AsQueryable().Include(user => user.UserRoles);
 
             query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams);
