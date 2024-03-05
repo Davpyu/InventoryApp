@@ -69,7 +69,7 @@ namespace DotNetService.Domain.User.Repositories
                 throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: " + string.Join(", ", sortFunctions.Keys));
             }
 
-            query = queryParams.SortOrder == SortOrderEnum.Asc
+            query = queryParams.Order == SortOrderEnum.Asc
                 ? query.OrderBy(value).AsQueryable()
                 : query.OrderByDescending(value).AsQueryable();
 

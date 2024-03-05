@@ -12,7 +12,7 @@ namespace DotNetService.Http.API.Version1.Requests
     {
         public Query()
         {
-            SortOrder = SortOrderEnum.Desc;
+            Order = SortOrderEnum.Desc;
         }
 
         [FromQuery(Name = "search")]
@@ -30,7 +30,7 @@ namespace DotNetService.Http.API.Version1.Requests
         [FromQuery(Name = "sort_by")]
         public string SortBy { get; set; }
 
-        [FromQuery(Name = "sort_order")]
-        public SortOrderEnum SortOrder { get; set; }
+        [FromQuery(Name = "order")]
+        public SortOrderEnum Order { get; set; }
     }
 }
