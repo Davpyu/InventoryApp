@@ -25,27 +25,7 @@ namespace DotNetService.Http.API.Version1.Controllers.IAM
         [HttpGet()]
         public ApiResponse Index([FromQuery] Query query, [FromHeader] Header header)
         {
-            if (query.Pagination)
-            {
-                List<Models.User> data = _userService.GetList(query.Search, query.Page, query.PerPage);
-                int count = _userService.Count(query.Search);
-                decimal pageInCount = ((decimal)count) / query.PerPage;
-                PaginationModel paginate = new()
-                {
-                    TotalPage = (int)Math.Ceiling(pageInCount),
-                    Page = query.Page,
-                    PerPage = query.PerPage,
-                    Data = UserItem.MapRepo(data),
-                    Total = count
-                };
-
-                return new ApiResponsePagination(HttpStatusCode.OK, paginate);
-            }
-            else
-            {
-                List<Models.User> data = _userService.GetList(query.Search, query.Page, query.PerPage);
-                return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
-            }
+            return _userService.Index(query);
         }
 
         [HttpGet("{id}")]

@@ -40,7 +40,7 @@ namespace DotNetService.Http.API.Version1.Controllers.Auth
         [AllowAnonymous]
         public ApiResponse Register(AuthRegister authRegister)
         {
-            _userService.Register(authRegister);
+            _authService.Register(authRegister);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
     }

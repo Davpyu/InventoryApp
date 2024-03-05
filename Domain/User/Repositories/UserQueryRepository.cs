@@ -1,4 +1,5 @@
 using System.Data.Entity;
+using DotNetService.Http.API.Version1.Requests;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -41,18 +42,18 @@ namespace DotNetService.Domain.User.Repositories
         }
 
 
-        public List<Models.User> Get(string search, int page, int perPage)
+        public List<Models.User> Get(Query query)
         {
-            int skip = (1 - page) * perPage;
+            int skip = (1 - query.Page) * query.PerPage;
             var userQuery = _context.Users.AsQueryable().Include(x => x.UserRoles);
-            if (search != null)
+            if (query.Search != null)
             {
-                userQuery = userQuery.Where(user => user.Name.Contains(search));
+                userQuery = userQuery.Where(user => user.Name.Contains(query.Search));
             }
             var users = userQuery
                 .OrderByDescending(x => x.CreatedAt)
                 .Skip(skip)
-                .Take(perPage)
+                .Take(query.PerPage)
                 .ToList();
 
             return users;
