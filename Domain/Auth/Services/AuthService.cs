@@ -14,6 +14,7 @@ namespace DotNetService.Domain.Auth.Services
     public class AuthService(
         UserRoleQueryRepository userRoleQueryRepository,
         UserQueryRepository userQueryRepository,
+        UserStoreRepository userStoreRepository,
         PermissionQueryRepository permissionQueryRepository,
         RoleQueryRepository roleQueryRepository,
         RolePermissionQueryRepository rolePermissionQueryRepository,
@@ -22,6 +23,7 @@ namespace DotNetService.Domain.Auth.Services
     {
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
+        private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
         private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
@@ -48,6 +50,18 @@ namespace DotNetService.Domain.Auth.Services
                 ExpiredAt = expiredAt,
                 Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt)
             };
+        }
+
+        public void Register(AuthRegister authRegister)
+        {
+            Models.User data = new()
+            {
+                Name = authRegister.Name,
+                Email = authRegister.Email,
+                Password = BC.HashPassword(authRegister.Password)
+            };
+
+            _userStoreRepository.Create(data);
         }
 
         public bool IsUserHaveRole(Guid userId, string role)

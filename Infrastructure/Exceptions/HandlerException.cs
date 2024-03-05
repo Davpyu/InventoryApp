@@ -51,6 +51,9 @@ namespace DotNetService.Exceptions
                     case BadHttpRequestException e:
                         statusCode = HttpStatusCode.BadRequest;
                         break;
+                    case UnprocessableEntityException e:
+                        statusCode = HttpStatusCode.UnprocessableEntity;
+                        break;
                     case DbUpdateException e:
                         statusCode = HttpStatusCode.BadRequest;
                         if (e.InnerException is SqlException sqlException)

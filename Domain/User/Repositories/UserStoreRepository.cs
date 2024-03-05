@@ -1,5 +1,8 @@
 using Models = DotNetService.Models;
 using System.Linq;
+using DotNetService.Exceptions;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -17,37 +20,52 @@ namespace DotNetService.Domain.User.Repositories
             _userQueryRepository = userQueryRepository;
         }
 
-        public void Create(Models.User newUser)
+        public void Create(Models.User data)
         {
-            this.Save(newUser);
+            this.Save(data);
         }
 
-        public void Update(Guid id, Models.User user)
+        public void Update(Guid id, Models.User newData)
         {
-            Models.User oldUser = _userQueryRepository.Find(id);
-            if (oldUser == null)
-            {
-                return;
-            }
-
-            this.Save(user, true);
+            newData.Id = id;
+            this.Save(newData, true);
         }
 
         public void Delete(Guid id)
         {
-            Models.User user = _context.Users.Where(user => user.Id == id).FirstOrDefault();
-            _context.Users.Remove(user);
-            _context.SaveChanges();
+            Models.User data = _context.Users.FirstOrDefault(item => item.Id == id) ?? 
+            throw new DataNotFoundException("User with id " + id + " not found.");
+
+            _context.Users.Remove(data);
+            int affectedRows = _context.SaveChanges();
+
+            if (affectedRows == 0)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
+            }
         }
 
-        private void Save(Models.User User, bool isUpdate = false)
+        private void Save(Models.User data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
-                _context.Users.Add(User);
+                _context.Users.Add(data);
             }
 
-            _context.SaveChanges();
+            try
+            {
+                _context.Users.Update(data);
+                int affectedRows = _context.SaveChanges();
+
+                if (affectedRows == 0)
+                {
+                    throw new UnprocessableEntityException("No data was updated.");
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new DataNotFoundException("User with id " + data.Id + " not found.");
+            }
         }
     }
 }
