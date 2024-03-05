@@ -12,12 +12,10 @@ namespace DotNetService.Http.API.Version1.Controllers.Auth
     [ApiController]
     [Route("api/v1/auth")]
     public class AuthController(
-        AuthService authService,
-        UserService userService
+        AuthService authService
         ) : ControllerBase
     {
         private readonly AuthService _authService = authService;
-        private readonly UserService _userService = userService;
 
         // GET: api/Book
         [AllowAnonymous]
