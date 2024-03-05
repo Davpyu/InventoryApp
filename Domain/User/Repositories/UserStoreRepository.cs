@@ -18,36 +18,36 @@ namespace DotNetService.Domain.User.Repositories
             _userQueryRepository = userQueryRepository;
         }
 
-        public void Create(Models.User newUser)
+        public void Create(Models.User data)
         {
-            this.Save(newUser);
+            this.Save(data);
         }
 
-        public void Update(Guid id, Models.User user)
+        public void Update(Guid id, Models.User newData)
         {
-            Models.User oldUser = _userQueryRepository.Find(id) ??
+            Models.User oldData = _userQueryRepository.Find(id) ??
             throw new DataNotFoundException("User id " + id + " not found");
 
-            oldUser.Name = user.Name;
+            oldData.Name = newData.Name;
 
-            this.Save(oldUser, true);
+            this.Save(oldData, true);
         }
 
         public void Delete(Guid id)
         {
-            Models.User oldUser = _userQueryRepository.Find(id) ??
+            Models.User oldData = _userQueryRepository.Find(id) ??
             throw new DataNotFoundException("User id " + id + " not found");
             
-            Models.User user = _context.Users.Where(user => user.Id == id).FirstOrDefault();
-            _context.Users.Remove(user);
+            Models.User data = _context.Users.Where(item => item.Id == id).FirstOrDefault();
+            _context.Users.Remove(data);
             _context.SaveChanges();
         }
 
-        private void Save(Models.User User, bool isUpdate = false)
+        private void Save(Models.User data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
-                _context.Users.Add(User);
+                _context.Users.Add(data);
             }
 
             _context.SaveChanges();

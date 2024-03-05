@@ -37,12 +37,12 @@ namespace DotNetService.Domain.User.Services
 
         public void Update(Guid id, UserUpdate userUpdate)
         {
-            Models.User user = new()
+            Models.User data = new()
             {
                 Name = userUpdate.Name
             };
 
-            _userStoreRepository.Update(id, user);
+            _userStoreRepository.Update(id, data);
         }
 
         public void Delete(Guid id)
