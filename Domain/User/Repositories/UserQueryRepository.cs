@@ -54,7 +54,7 @@ namespace DotNetService.Domain.User.Repositories
 
         private IQueryable<Models.User> QuerySort(IQueryable<Models.User> query, UserQuery queryParams)
         {
-            queryParams.SortBy ??= "UpdatedAt";
+            queryParams.SortBy ??= "updated_at";
 
             var sortFunctions = new Dictionary<string, Func<Models.User, object>>
             {
@@ -63,8 +63,6 @@ namespace DotNetService.Domain.User.Repositories
                 { "updated_at", user => user.UpdatedAt },
                 { "created_at", user => user.CreatedAt },
             };
-
-            queryParams.SortBy ??= "UpdatedAt";
 
             if (!sortFunctions.TryGetValue(queryParams.SortBy, out Func<Models.User, object> value))
             {
