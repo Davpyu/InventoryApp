@@ -28,7 +28,7 @@ namespace DotNetService.Domain.User.Repositories
         {
             newData.Id = id;
             _context.Users.Update(newData);
-            _context.SaveChanges();
+            this.Save(newData, true);
         }
 
         public void Delete(Guid id)
