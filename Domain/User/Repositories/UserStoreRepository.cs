@@ -1,6 +1,7 @@
 using Models = DotNetService.Models;
 using System.Linq;
 using DotNetService.Exceptions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -37,7 +38,7 @@ namespace DotNetService.Domain.User.Repositories
         {
             Models.User oldData = _userQueryRepository.Find(id) ??
             throw new DataNotFoundException("User id " + id + " not found");
-            
+
             Models.User data = _context.Users.Where(item => item.Id == id).FirstOrDefault();
             _context.Users.Remove(data);
             _context.SaveChanges();
@@ -50,7 +51,12 @@ namespace DotNetService.Domain.User.Repositories
                 _context.Users.Add(data);
             }
 
-            _context.SaveChanges();
+            int affectedRows = _context.SaveChanges();
+
+            if (affectedRows == 0)
+            {
+                throw new UnprocessableEntityException("No affected rows");
+            }
         }
     }
 }
