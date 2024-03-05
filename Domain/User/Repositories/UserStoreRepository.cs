@@ -34,14 +34,14 @@ namespace DotNetService.Domain.User.Repositories
         public void Delete(Guid id)
         {
             Models.User data = _context.Users.FirstOrDefault(item => item.Id == id) ?? 
-            throw new Exception("User with id " + id + " not found.");
-            
+            throw new DataNotFoundException("User with id " + id + " not found.");
+
             _context.Users.Remove(data);
             int affectedRows = _context.SaveChanges();
 
             if (affectedRows == 0)
             {
-                throw new Exception("No data was deleted.");
+                throw new UnprocessableEntityException("No data was deleted.");
             }
         }
 
