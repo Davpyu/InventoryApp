@@ -2,6 +2,7 @@ using Models = DotNetService.Models;
 using System.Linq;
 using DotNetService.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -44,12 +45,19 @@ namespace DotNetService.Domain.User.Repositories
                 _context.Users.Add(data);
             }
 
-            _context.Users.Update(data);
-            int affectedRows = _context.SaveChanges();
-
-            if (affectedRows == 0)
+            try
             {
-                throw new UnprocessableEntityException("No affected rows");
+                _context.Users.Update(data);
+                int affectedRows = _context.SaveChanges();
+
+                if (affectedRows == 0)
+                {
+                    throw new UnprocessableEntityException("No data was updated.");
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new DataNotFoundException("User with id " + data.Id + " not found.");
             }
         }
     }
