@@ -32,9 +32,6 @@ namespace DotNetService.Domain.User.Repositories
 
         public void Delete(Guid id)
         {
-            Models.User oldData = _userQueryRepository.Find(id) ??
-            throw new DataNotFoundException("User id " + id + " not found");
-
             Models.User data = _context.Users.Where(item => item.Id == id).FirstOrDefault();
             _context.Users.Remove(data);
             _context.SaveChanges();
