@@ -56,7 +56,7 @@ namespace DotNetService.Domain.User.Repositories
         {
             queryParams.SortBy ??= "updated_at";
 
-            var sortFunctions = new Dictionary<string, Func<Models.User, object>>
+            Dictionary<string, Func<Models.User, object>> sortFunctions = new()
             {
                 { "name", user => user.Name },
                 { "email", user => user.Email },
