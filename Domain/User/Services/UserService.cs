@@ -1,6 +1,4 @@
 using DotNetService.Http.API.Version1.Requests.User;
-using DotNetService.Http.API.Version1.Requests.Auth;
-using BC = BCrypt.Net.BCrypt;
 using DotNetService.Domain.User.Repositories;
 using DotNetService.Http.API.Version1.Requests;
 using DotNetService.Http.API.Version1.Responses;
