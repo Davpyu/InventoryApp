@@ -1,32 +1,28 @@
 using System.Data.Entity;
+using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.User;
 
 namespace DotNetService.Domain.User.Repositories
 {
-    public partial class UserQueryRepository
-    {
-        private readonly Models.IamDBContext _context;
-
-        public UserQueryRepository(
-            Models.IamDBContext context
+    public partial class UserQueryRepository(
+        Models.IamDBContext context
         )
-        {
-            _context = context;
-        }
+    {
+        private readonly Models.IamDBContext _context = context;
 
         public List<Models.User> Pagination(UserQueryRequest queryParams)
         {
             int skip = (1 - queryParams.Page) * queryParams.PerPage;
             var query = _context.Users.AsQueryable().Include(user => user.UserRoles);
 
-            query = QuerySearch(query, queryParams);
-            query = QueryFilter(query, queryParams);
-            query = QuerySort(query, queryParams);
+            query = this.QuerySearch(query, queryParams);
+            query = this.QueryFilter(query, queryParams);
+            query = this.QuerySort(query, queryParams);
 
-            List<Models.User> users = query.Skip(skip).Take(queryParams.PerPage).ToList();
+            var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
 
-            return users;
+            return data;
         }
 
         private IQueryable<Models.User> QuerySearch(IQueryable<Models.User> query, UserQueryRequest queryParams)
@@ -75,6 +71,16 @@ namespace DotNetService.Domain.User.Repositories
 
             return query;
         }
+
+        public int Count(UserQueryRequest queryParams)
+        {
+            IQueryable<Models.User> query = _context.Users;
+
+            query = this.QuerySearch(query, queryParams);
+            query = this.QueryFilter(query, queryParams);
+
+            return query.Count();
+        }
     }
 
     public partial class UserQueryRepository
@@ -82,39 +88,34 @@ namespace DotNetService.Domain.User.Repositories
 
         internal Models.User Find(Guid id = default)
         {
-            return _context.Users.Where(user => user.Id == id).FirstOrDefault();
+            return _context.Users.Where(data => data.Id == id).FirstOrDefault();
         }
 
         public Models.User FindById(Guid id = default)
         {
-            var user = this.Find(id);
-            if (user == null)
+            var data = this.Find(id);
+            if (data == null)
             {
                 return null;
             }
 
-            return user;
+            return data;
         }
 
-        public Models.User FindByEmail(string email = "")
+        public Models.User FindByEmail(string email, bool isValidateExist = false)
         {
-            var user = _context.Users.Where(user => user.Email == email).FirstOrDefault();
-            if (user == null)
+            var data = _context.Users.Where(data => data.Email == email).FirstOrDefault();
+            if (data == null)
             {
                 return null;
             }
 
-            return user;
-        }
-
-        public int CountAll(string search)
-        {
-            IQueryable<Models.User> userQuery = _context.Users;
-            if (search != null)
+            if (isValidateExist && data != null)
             {
-                userQuery = userQuery.Where(user => user.Name.Contains(search));
+                throw new UnprocessableEntityException("email " + email + " has been used.");
             }
-            return userQuery.Count();
-        }
+
+            return data;
+        }        
     }
 }

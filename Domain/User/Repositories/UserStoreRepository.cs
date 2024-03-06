@@ -6,34 +6,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.User.Repositories
 {
-    public class UserStoreRepository
-    {
-        private readonly Models.IamDBContext _context;
-        private readonly UserQueryRepository _userQueryRepository;
-
-        public UserStoreRepository(
-            Models.IamDBContext context,
-            UserQueryRepository userQueryRepository
+    public class UserStoreRepository(
+        Models.IamDBContext context,
+        UserQueryRepository userQueryRepository
         )
+    {
+        private readonly Models.IamDBContext _context = context;
+        private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
+
+        public Models.User Create(Models.User data)
         {
-            _context = context;
-            _userQueryRepository = userQueryRepository;
+            return this.Save(data);
         }
 
-        public void Create(Models.User data)
-        {
-            this.Save(data);
-        }
-
-        public void Update(Guid id, Models.User newData)
+        public Models.User Update(Guid id, Models.User newData)
         {
             newData.Id = id;
-            this.Save(newData, true);
+            return this.Save(newData, true);
         }
 
-        public void Delete(Guid id)
+        public Models.User Delete(Guid id)
         {
-            Models.User data = _context.Users.FirstOrDefault(item => item.Id == id) ?? 
+            Models.User data = _context.Users.FirstOrDefault(item => item.Id == id) ??
             throw new DataNotFoundException("User with id " + id + " not found.");
 
             _context.Users.Remove(data);
@@ -43,26 +37,33 @@ namespace DotNetService.Domain.User.Repositories
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }
+
+            return data;
         }
 
-        private void Save(Models.User data, bool isUpdate = false)
+        private Models.User Save(Models.User data, bool isUpdate = false)
         {
+
             if (!isUpdate)
             {
-                _context.Users.Add(data);
+                _userQueryRepository.FindByEmail(data.Email, true);                
+
+                var dataCreated = _context.Users.Add(data);
                 _context.SaveChanges();
-                return;
+                return dataCreated.Entity;
             }
 
             try
             {
-                _context.Users.Update(data);
+                var dataUpdated = _context.Users.Update(data);
                 int affectedRows = _context.SaveChanges();
 
                 if (affectedRows == 0)
                 {
                     throw new UnprocessableEntityException("No data was updated.");
                 }
+
+                return dataUpdated.Entity;
             }
             catch (DbUpdateConcurrencyException)
             {

@@ -1,10 +1,9 @@
 using DotNetService.Http.API.Version1.User;
 using DotNetService.Domain.User.Repositories;
 using DotNetService.Http.API.Version1;
-using DotNetService.Http.API.Version1;
-using DotNetService.Http.API.Version1.User;
 using DotNetService.Infrastructure.Shareds;
 using System.Net;
+using BC = BCrypt.Net.BCrypt;
 
 namespace DotNetService.Domain.User.Services
 {
@@ -20,15 +19,15 @@ namespace DotNetService.Domain.User.Services
         {
             if (query.Pagination)
             {
-                List<Models.User> data = Pagination(query);
-                int count = Count(query.Search);
+                var data = this.Pagination(query);
+                int count = _userQueryRepository.Count(query);
                 decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
                 {
                     TotalPage = (int)Math.Ceiling(pageInCount),
                     Page = query.Page,
                     PerPage = query.PerPage,
-                    Data = UserItem.MapRepo(data),
+                    Data = UserResponse.MapRepo(data),
                     Total = count
                 };
 
@@ -36,7 +35,7 @@ namespace DotNetService.Domain.User.Services
             }
             else
             {
-                List<Models.User> data = Pagination(query);
+                var data = Pagination(query);
                 return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
             }
         }
@@ -46,29 +45,17 @@ namespace DotNetService.Domain.User.Services
             return _userQueryRepository.Pagination(query);
         }
 
-        public void Create(UserCreateRequest userCreate)
+        public Models.User Create(UserCreateRequest dataCreate)
         {
             Models.User data = new()
             {
-                Name = userCreate.Name
+                Name = dataCreate.Name,
+                Email = dataCreate.Email,
+                Password = BC.HashPassword(dataCreate.Password)
+
             };
 
-            _userStoreRepository.Create(data);
-        }
-
-        public void Update(Guid id, UserUpdateRequest userUpdate)
-        {
-            Models.User data = new()
-            {
-                Name = userUpdate.Name
-            };
-
-            _userStoreRepository.Update(id, data);
-        }
-
-        public void Delete(Guid id)
-        {
-            _userStoreRepository.Delete(id);
+            return _userStoreRepository.Create(data);
         }
 
         public Models.User DetailById(Guid id)
@@ -76,9 +63,21 @@ namespace DotNetService.Domain.User.Services
             return _userQueryRepository.FindById(id);
         }
 
-        public int Count(string search)
+        public Models.User Update(Guid id, UserUpdateRequest dataUpdate)
         {
-            return _userQueryRepository.CountAll(search);
+            Models.User data = new()
+            {
+                Name = dataUpdate.Name,
+                Email = dataUpdate.Email,
+                Password = BC.HashPassword(dataUpdate.Password)
+            };
+
+            return _userStoreRepository.Update(id, data);
+        }
+
+        public Models.User Delete(Guid id)
+        {
+            return _userStoreRepository.Delete(id);
         }
     }
 }
