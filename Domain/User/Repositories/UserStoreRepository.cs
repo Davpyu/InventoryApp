@@ -50,6 +50,7 @@ namespace DotNetService.Domain.User.Repositories
             if (!isUpdate)
             {
                 _context.Users.Add(data);
+                _context.SaveChanges();
                 return;
             }
 
