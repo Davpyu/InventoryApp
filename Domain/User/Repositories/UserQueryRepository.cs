@@ -42,7 +42,7 @@ namespace DotNetService.Domain.User.Repositories
             // EXAMPLE: filter by email
             if (queryParams.Email != null)
             {
-                query = query.Where(user => user.Email.Equals(queryParams.Email));
+                query = query.Where(user => user.Email == queryParams.Email);
             }
 
             return query;
@@ -70,6 +70,16 @@ namespace DotNetService.Domain.User.Repositories
                 : query.OrderByDescending(value).AsQueryable();
 
             return query;
+        }
+
+        public int Count(UserQueryRequest queryParams)
+        {
+            IQueryable<Models.User> query = _context.Users;
+
+            query = this.QuerySearch(query, queryParams);
+            query = this.QueryFilter(query, queryParams);
+
+            return query.Count();
         }
     }
 
@@ -106,16 +116,6 @@ namespace DotNetService.Domain.User.Repositories
             }
 
             return data;
-        }
-
-        public int CountAll(string search)
-        {
-            IQueryable<Models.User> query = _context.Users;
-            if (search != null)
-            {
-                query = query.Where(data => data.Name.Contains(search));
-            }
-            return query.Count();
-        }
+        }        
     }
 }

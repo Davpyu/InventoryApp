@@ -19,8 +19,8 @@ namespace DotNetService.Domain.User.Services
         {
             if (query.Pagination)
             {
-                var data = Pagination(query);
-                int count = Count(query.Search);
+                var data = this.Pagination(query);
+                int count = _userQueryRepository.Count(query);
                 decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
                 {
@@ -58,6 +58,11 @@ namespace DotNetService.Domain.User.Services
             return _userStoreRepository.Create(data);
         }
 
+        public Models.User DetailById(Guid id)
+        {
+            return _userQueryRepository.FindById(id);
+        }
+
         public Models.User Update(Guid id, UserUpdateRequest dataUpdate)
         {
             Models.User data = new()
@@ -73,16 +78,6 @@ namespace DotNetService.Domain.User.Services
         public Models.User Delete(Guid id)
         {
             return _userStoreRepository.Delete(id);
-        }
-
-        public Models.User DetailById(Guid id)
-        {
-            return _userQueryRepository.FindById(id);
-        }
-
-        public int Count(string search)
-        {
-            return _userQueryRepository.CountAll(search);
         }
     }
 }
