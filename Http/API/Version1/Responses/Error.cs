@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace DotNetService.Http.API.Version1.Responses
+namespace DotNetService.Http.API.Version1
 {
     public class Validation
     {

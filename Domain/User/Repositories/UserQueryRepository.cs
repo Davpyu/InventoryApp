@@ -1,6 +1,6 @@
 using System.Data.Entity;
-using DotNetService.Http.API.Version1.Requests;
-using DotNetService.Http.API.Version1.Requests.User;
+using DotNetService.Http.API.Version1;
+using DotNetService.Http.API.Version1.User;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -15,7 +15,7 @@ namespace DotNetService.Domain.User.Repositories
             _context = context;
         }
 
-        public List<Models.User> Pagination(UserQuery queryParams)
+        public List<Models.User> Pagination(UserQueryRequest queryParams)
         {
             int skip = (1 - queryParams.Page) * queryParams.PerPage;
             var query = _context.Users.AsQueryable().Include(user => user.UserRoles);
@@ -29,7 +29,7 @@ namespace DotNetService.Domain.User.Repositories
             return users;
         }
 
-        private IQueryable<Models.User> QuerySearch(IQueryable<Models.User> query, UserQuery queryParams)
+        private IQueryable<Models.User> QuerySearch(IQueryable<Models.User> query, UserQueryRequest queryParams)
         {
             if (queryParams.Search != null)
             {
@@ -41,7 +41,7 @@ namespace DotNetService.Domain.User.Repositories
             return query;
         }
 
-        private IQueryable<Models.User> QueryFilter(IQueryable<Models.User> query, UserQuery queryParams)
+        private IQueryable<Models.User> QueryFilter(IQueryable<Models.User> query, UserQueryRequest queryParams)
         {
             // EXAMPLE: filter by email
             if (queryParams.Email != null)
@@ -52,7 +52,7 @@ namespace DotNetService.Domain.User.Repositories
             return query;
         }
 
-        private IQueryable<Models.User> QuerySort(IQueryable<Models.User> query, UserQuery queryParams)
+        private IQueryable<Models.User> QuerySort(IQueryable<Models.User> query, UserQueryRequest queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 

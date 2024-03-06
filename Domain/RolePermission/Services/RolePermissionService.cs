@@ -1,4 +1,4 @@
-using DotNetService.Http.API.Version1.Requests.RolePermission;
+using DotNetService.Http.API.Version1.RolePermission;
 using DotNetService.Domain.RolePermission.Repositories;
 
 namespace DotNetService.Applications.RolePermission.Service
@@ -8,7 +8,7 @@ namespace DotNetService.Applications.RolePermission.Service
         private readonly RolePermissionStoreRepository _rolePermissionStoreRepository;
         private readonly RolePermissionQueryRepository _rolePermissionQueryRepository;
 
-        public void Create(RolePermissionCreate rolePermissionCreate)
+        public void Create(RolePermissionCreateRequest rolePermissionCreate)
         {
             var rolePermissionRepository = new Models.RolePermission
             {
@@ -39,7 +39,7 @@ namespace DotNetService.Applications.RolePermission.Service
             return _rolePermissionQueryRepository.CountAll();
         }
 
-        public void Update(Guid id, RolePermissionUpdate rolePermissionUpdate)
+        public void Update(Guid id, RolePermissionUpdateRequest rolePermissionUpdate)
         {
             Models.RolePermission rolePermissionRepository = new Models.RolePermission
             {

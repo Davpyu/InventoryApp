@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using DotNetService.Constants.Logger;
 using System.Net;
-using DotNetService.Http.API.Version1.Responses;
+using DotNetService.Http.API.Version1;
 using System.Net.Mime;
 
 namespace DotNetService.Exceptions

@@ -1,4 +1,4 @@
-using DotNetService.Http.API.Version1.Requests.UserRole;
+using DotNetService.Http.API.Version1.UserRole;
 using DotNetService.Domain.UserRole.Repositories;
 
 namespace DotNetService.Domain.UserRole.Services
@@ -8,7 +8,7 @@ namespace DotNetService.Domain.UserRole.Services
         private readonly UserRoleQueryRepository _userRoleQueryRepository;
         private readonly UserRoleStoreRepository _userRoleStoreRepository;
 
-        public void Update(Guid id, UserRoleUpdate userUpdate)
+        public void Update(Guid id, UserRoleUpdateRequest userUpdate)
         {
             var updateUserRole = new Models.UserRole
             {
@@ -19,7 +19,7 @@ namespace DotNetService.Domain.UserRole.Services
             _userRoleStoreRepository.Update(id, updateUserRole);
         }
 
-        public void Create(UserRoleCreate userUpdate)
+        public void Create(UserRoleCreateRequest userUpdate)
         {
             var newUserRole = new Models.UserRole
             {
