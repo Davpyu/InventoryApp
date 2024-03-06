@@ -1,4 +1,4 @@
-using DotNetService.Http.API.Version1.Requests.Permission;
+using DotNetService.Http.API.Version1.Permission;
 using DotNetService.Domain.Permission.Repositories;
 
 namespace DotNetService.Domain.Permission.Services
@@ -8,7 +8,7 @@ namespace DotNetService.Domain.Permission.Services
         private readonly PermissionStoreRepository _permissionStoreRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository;
         
-        public void Create(PermissionCreate permissionCreate)
+        public void Create(PermissionCreateRequest permissionCreate)
         {
             var permissionRepository = new Models.Permission
             {

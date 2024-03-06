@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace DotNetService.Http.API.Version1.Requests
+namespace DotNetService.Http.API.Version1
 {
     public class Header
     {

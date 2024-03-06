@@ -1,5 +1,5 @@
 using System.Net;
-using DotNetService.Http.API.Version1.Responses;
+using DotNetService.Http.API.Version1;
 using System.Runtime.Serialization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

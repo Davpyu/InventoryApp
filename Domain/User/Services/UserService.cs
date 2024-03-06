@@ -1,8 +1,8 @@
-using DotNetService.Http.API.Version1.Requests.User;
+using DotNetService.Http.API.Version1.User;
 using DotNetService.Domain.User.Repositories;
-using DotNetService.Http.API.Version1.Requests;
-using DotNetService.Http.API.Version1.Responses;
-using DotNetService.Http.API.Version1.Responses.User;
+using DotNetService.Http.API.Version1;
+using DotNetService.Http.API.Version1;
+using DotNetService.Http.API.Version1.User;
 using DotNetService.Infrastructure.Shareds;
 using System.Net;
 
@@ -16,7 +16,7 @@ namespace DotNetService.Domain.User.Services
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
         private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
 
-        public ApiResponse Index(UserQuery query = null)
+        public ApiResponse Index(UserQueryRequest query = null)
         {
             if (query.Pagination)
             {
@@ -41,12 +41,12 @@ namespace DotNetService.Domain.User.Services
             }
         }
 
-        public List<Models.User> Pagination(UserQuery query = null)
+        public List<Models.User> Pagination(UserQueryRequest query = null)
         {
             return _userQueryRepository.Pagination(query);
         }
 
-        public void Create(UserCreate userCreate)
+        public void Create(UserCreateRequest userCreate)
         {
             Models.User data = new()
             {
@@ -56,7 +56,7 @@ namespace DotNetService.Domain.User.Services
             _userStoreRepository.Create(data);
         }
 
-        public void Update(Guid id, UserUpdate userUpdate)
+        public void Update(Guid id, UserUpdateRequest userUpdate)
         {
             Models.User data = new()
             {

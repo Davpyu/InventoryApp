@@ -1,4 +1,4 @@
-namespace DotNetService.Http.API.Version1.Responses
+namespace DotNetService.Http.API.Version1
 {
     public class PaginationModel
     {

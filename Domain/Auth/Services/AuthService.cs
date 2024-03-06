@@ -1,4 +1,4 @@
-using DotNetService.Http.API.Version1.Requests.Auth;
+using DotNetService.Http.API.Version1.Auth;
 using DotNetService.Domain.User.Repositories;
 using DotNetService.Domain.Role.Repositories;
 using DotNetService.Domain.Permission.Repositories;
@@ -29,7 +29,7 @@ namespace DotNetService.Domain.Auth.Services
         private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
         private readonly IConfiguration _config = config;
 
-        public AuthInfo SignIn(AuthSignIn authSignIn)
+        public AuthInfo SignIn(AuthSignInRequest authSignIn)
         {
             var user = _userQueryRepository.FindByEmail(authSignIn.Email);
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
@@ -52,7 +52,7 @@ namespace DotNetService.Domain.Auth.Services
             };
         }
 
-        public void Register(AuthRegister authRegister)
+        public void Register(AuthRegisterRequest authRegister)
         {
             Models.User data = new()
             {

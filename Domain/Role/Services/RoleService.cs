@@ -1,5 +1,5 @@
 using DotNetService.Domain.Role.Repositories;
-using DotNetService.Http.API.Version1.Requests.Role;
+using DotNetService.Http.API.Version1.Role;
 
 namespace DotNetService.Domain.Role.Services
 {
@@ -11,7 +11,7 @@ namespace DotNetService.Domain.Role.Services
         private readonly RoleStoreRepository _roleStoreRepository = roleStoreRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
 
-        public void Create(RoleCreate roleCreate)
+        public void Create(RoleCreateRequest roleCreate)
         {
             var roleRepository = new Models.Role
             {
@@ -35,7 +35,7 @@ namespace DotNetService.Domain.Role.Services
             return _roleQueryRepository.CountAll(search);
         }
 
-        public void Update(Guid id, RoleUpdate roleUpdate)
+        public void Update(Guid id, RoleUpdateRequest roleUpdate)
         {
             Models.Role roleRepository = new Models.Role();
             roleRepository.Name = roleUpdate.Name;
