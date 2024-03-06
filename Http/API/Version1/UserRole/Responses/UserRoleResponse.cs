@@ -9,7 +9,7 @@ namespace DotNetService.Http.API.Version1.UserRole
         public Guid Roleid { get; set; }
         public RoleItem Role { get; set; }
         public Guid Userid { get; set; }
-        public UserItem User { get; set; }
+        public UserResponse User { get; set; }
 
         public UserRoleDetail()
         {
@@ -20,7 +20,7 @@ namespace DotNetService.Http.API.Version1.UserRole
             this.Id = userRole.Id;
             this.Roleid = userRole.Roleid;
             this.Userid = userRole.Userid;
-            this.User = new UserItem(userRole.User);
+            this.User = new UserResponse(userRole.User);
             this.Role = new RoleItem(userRole.Role);
         }
     }

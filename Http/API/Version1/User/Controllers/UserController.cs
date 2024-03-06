@@ -7,16 +7,11 @@ namespace DotNetService.Http.API.Version1.User
 {
     [Route("api/v1/users")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(
+        UserService userService
+        ) : ControllerBase
     {
-        private readonly UserService _userService;
-
-        public UserController(
-            UserService userService
-        )
-        {
-            _userService = userService;
-        }
+        private readonly UserService _userService = userService;
 
         [HttpGet()]
         public ApiResponse Index([FromQuery] UserQueryRequest query, [FromHeader] Header header)
@@ -28,29 +23,29 @@ namespace DotNetService.Http.API.Version1.User
         public ApiResponse Show(Guid id)
         {
             Models.User data = _userService.DetailById(id);
-            return new ApiResponseData(HttpStatusCode.OK, new UserDetail(data));
+            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
 
         [HttpPost()]
         [Consumes("application/json")]
-        public ApiResponse Store(UserCreateRequest userCreate)
+        public ApiResponse Store(UserCreateRequest dataCreate)
         {
-            _userService.Create(userCreate);
-            return (new ApiResponseData(HttpStatusCode.OK, null));
+            var data = _userService.Create(dataCreate);
+            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
 
         [HttpPut("{id}")]
-        public ApiResponse Update(Guid id, UserUpdateRequest userUpdate)
+        public ApiResponse Update(Guid id, UserUpdateRequest dataUpdate)
         {
-            _userService.Update(id, userUpdate);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            var data = _userService.Update(id, dataUpdate);
+            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
 
         [HttpDelete("{id}")]
         public ApiResponse Delete(Guid id)
         {
-            _userService.Delete(id);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            var data = _userService.Delete(id);
+            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
     }
 }

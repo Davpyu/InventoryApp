@@ -3,46 +3,23 @@ using DotNetService.Http.API.Version1.UserRole;
 using System.Collections.Generic;
 
 namespace DotNetService.Http.API.Version1.User
-{
-    public class UserDetail
+{    
+    public class UserResponse : Models.User
     {
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
-        public string Email { get; set; }
-
-        public UserDetail()
-        {
-        }
-
-        public UserDetail(Models.User user)
-        {
-            this.Id = user.Id;
-            this.Name = user.Name;
-            this.Email = user.Email;
-        }
-    }
-    public class UserItem
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public List<UserRoleItem> UserRoles { get; set; }
-        public string Email { get; set; }
-
-        public UserItem()
-        {
-        }
-
-        public UserItem(Models.User user)
+        public new List<UserRoleItem> UserRoles { get; set; }
+        
+        public UserResponse(Models.User user)
         {
             this.Id = user.Id;
             this.Name = user.Name;
             this.Email = user.Email;
             this.UserRoles = UserRoleItem.MapRepo(user.UserRoles?.ToList());
         }
-        public static List<UserItem> MapRepo(List<Models.User> userRepositories)
+
+        public static List<UserResponse> MapRepo(List<Models.User> userRepositories)
         {
-            var Books = new List<UserItem>();
+            List<UserResponse> data = [];
+
             if (userRepositories == null)
             {
                 return [];
@@ -50,16 +27,10 @@ namespace DotNetService.Http.API.Version1.User
 
             foreach (Models.User user in userRepositories)
             {
-                Books.Add(new UserItem(user));
+                data.Add(new UserResponse(user));
             }
 
-            return Books;
+            return data;
         }
-    }
-    public class UserList
-    {
-
-        public List<UserDetail> Data { get; set; }
-        public string Count { get; set; }
     }
 }
