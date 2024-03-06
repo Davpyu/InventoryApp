@@ -42,7 +42,7 @@ namespace DotNetService.Domain.User.Repositories
             // EXAMPLE: filter by email
             if (queryParams.Email != null)
             {
-                query = query.Where(user => user.Email == queryParams.Email);
+                query = query.Where(user => user.Email.Equals(queryParams.Email));
             }
 
             return query;
