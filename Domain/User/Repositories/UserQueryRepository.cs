@@ -97,8 +97,6 @@ namespace DotNetService.Domain.User.Repositories
                 throw new DataNotFoundException("User with id " + id + " not found.");
             };
 
-            Console.WriteLine(data.Name);
-
             return data;
         }
 
