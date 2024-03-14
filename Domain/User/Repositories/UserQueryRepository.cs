@@ -86,23 +86,23 @@ namespace DotNetService.Domain.User.Repositories
     public partial class UserQueryRepository
     {
 
-        internal Models.User Find(Guid id = default)
+        public Models.User FindOneById(Guid id = default, bool isThrowException = false)
         {
-            return _context.Users.Where(data => data.Id == id).FirstOrDefault();
-        }
+            var data = _context.Users
+                .Where(data => data.Id == id)
+                .FirstOrDefault();
 
-        public Models.User FindById(Guid id = default)
-        {
-            var data = this.Find(id);
-            if (data == null)
+            if (data == null && isThrowException)
             {
-                return null;
-            }
+                throw new DataNotFoundException("User with id " + id + " not found.");
+            };
+
+            Console.WriteLine(data.Name);
 
             return data;
         }
 
-        public Models.User FindByEmail(string email, bool isValidateExist = false)
+        public Models.User FindOneByEmail(string email, bool isValidateExist = false)
         {
             var data = _context.Users.Where(data => data.Email == email).FirstOrDefault();
             if (data == null)

@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using BC = BCrypt.Net.BCrypt;
+
 namespace DotNetService.Http.API.Version1.User
 {
     public class UserUpdateRequest
@@ -15,5 +17,17 @@ namespace DotNetService.Http.API.Version1.User
         [Required]
         [MinLength(6)]
         public string Password { get; set; }
+
+        public static Models.User Assign(UserUpdateRequest data)
+        {
+            Models.User res = new()
+            {
+                Name = data.Name,
+                Email = data.Email,
+                Password = BC.HashPassword(data.Password)
+            };
+
+            return res;
+        }
     }
 }

@@ -47,31 +47,18 @@ namespace DotNetService.Domain.User.Services
 
         public Models.User Create(UserCreateRequest dataCreate)
         {
-            Models.User data = new()
-            {
-                Name = dataCreate.Name,
-                Email = dataCreate.Email,
-                Password = BC.HashPassword(dataCreate.Password)
-
-            };
-
+            var data = UserCreateRequest.Assign(dataCreate);
             return _userStoreRepository.Create(data);
         }
 
-        public Models.User DetailById(Guid id)
+        public Models.User Detail(Guid id)
         {
-            return _userQueryRepository.FindById(id);
+            return _userQueryRepository.FindOneById(id, true);
         }
 
         public Models.User Update(Guid id, UserUpdateRequest dataUpdate)
         {
-            Models.User data = new()
-            {
-                Name = dataUpdate.Name,
-                Email = dataUpdate.Email,
-                Password = BC.HashPassword(dataUpdate.Password)
-            };
-
+            var data = UserUpdateRequest.Assign(dataUpdate);
             return _userStoreRepository.Update(id, data);
         }
 

@@ -46,7 +46,7 @@ namespace DotNetService.Domain.User.Repositories
 
             if (!isUpdate)
             {
-                _userQueryRepository.FindByEmail(data.Email, true);                
+                _userQueryRepository.FindOneByEmail(data.Email, true);                
 
                 var dataCreated = _context.Users.Add(data);
                 _context.SaveChanges();

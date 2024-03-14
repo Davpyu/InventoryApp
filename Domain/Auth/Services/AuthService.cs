@@ -31,7 +31,7 @@ namespace DotNetService.Domain.Auth.Services
 
         public AuthInfo SignIn(AuthSignInRequest authSignIn)
         {
-            var user = _userQueryRepository.FindByEmail(authSignIn.Email);
+            var user = _userQueryRepository.FindOneByEmail(authSignIn.Email);
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (user == null || !isPasswordVerified)
