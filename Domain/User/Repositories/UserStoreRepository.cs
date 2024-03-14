@@ -25,10 +25,9 @@ namespace DotNetService.Domain.User.Repositories
             return this.Save(newData, true);
         }
 
-        public Models.User Delete(Guid id)
+        public void Delete(Guid id)
         {
-            Models.User data = _context.Users.FirstOrDefault(item => item.Id == id) ??
-            throw new DataNotFoundException("User with id " + id + " not found.");
+            Models.User data = _userQueryRepository.FindOneById(id, true);
 
             _context.Users.Remove(data);
             int affectedRows = _context.SaveChanges();
@@ -37,8 +36,6 @@ namespace DotNetService.Domain.User.Repositories
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }
-
-            return data;
         }
 
         private Models.User Save(Models.User data, bool isUpdate = false)

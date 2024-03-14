@@ -62,9 +62,9 @@ namespace DotNetService.Domain.User.Services
             return _userStoreRepository.Update(id, data);
         }
 
-        public Models.User Delete(Guid id)
+        public void Delete(Guid id)
         {
-            return _userStoreRepository.Delete(id);
+            _userStoreRepository.Delete(id);
         }
     }
 }
