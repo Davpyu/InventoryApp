@@ -3,11 +3,11 @@ using DotNetService.Http.API.Version1.UserRole;
 using System.Collections.Generic;
 
 namespace DotNetService.Http.API.Version1.User
-{    
+{
     public class UserResponse : Models.User
     {
         public new List<UserRoleItem> UserRoles { get; set; }
-        
+
         public UserResponse(Models.User user)
         {
             this.Id = user.Id;
@@ -16,21 +16,10 @@ namespace DotNetService.Http.API.Version1.User
             this.UserRoles = UserRoleItem.MapRepo(user.UserRoles?.ToList());
         }
 
-        public static List<UserResponse> MapRepo(List<Models.User> userRepositories)
+        public static List<UserResponse> MapRepo(List<Models.User> data)
         {
-            List<UserResponse> data = [];
-
-            if (userRepositories == null)
-            {
-                return [];
-            }
-
-            foreach (Models.User user in userRepositories)
-            {
-                data.Add(new UserResponse(user));
-            }
-
-            return data;
+            if (data == null) return [];
+            return data.Select(data => new UserResponse(data)).ToList();
         }
     }
 }

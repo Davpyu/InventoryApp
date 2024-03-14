@@ -22,7 +22,7 @@ namespace DotNetService.Http.API.Version1.User
         [HttpGet("{id}")]
         public ApiResponse Show(Guid id)
         {
-            Models.User data = _userService.DetailById(id);
+            Models.User data = _userService.Detail(id);
             return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
 
@@ -44,8 +44,8 @@ namespace DotNetService.Http.API.Version1.User
         [HttpDelete("{id}")]
         public ApiResponse Delete(Guid id)
         {
-            var data = _userService.Delete(id);
-            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
+            _userService.Delete(id);
+            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(null));
         }
     }
 }
