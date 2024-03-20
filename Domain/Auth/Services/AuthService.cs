@@ -8,6 +8,7 @@ using DotNetService.Exceptions;
 using BC = BCrypt.Net.BCrypt;
 using DotNetService.Infrastructure.Shareds;
 using Newtonsoft.Json;
+using DotNetService.Domain.Auth.Util;
 
 namespace DotNetService.Domain.Auth.Services
 {

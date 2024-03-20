@@ -1,6 +1,3 @@
-using System.Net;
-using DotNetService.Http.API.Version1;
-using System.Runtime.Serialization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
@@ -8,29 +5,8 @@ using System.Text;
 using DotNetService.Exceptions;
 using System.Text.Json;
 
-namespace DotNetService.Infrastructure.Shareds
+namespace DotNetService.Domain.Auth.Util
 {
-    public class ErrorUtility
-    {
-        public static List<IDictionary<string, string>> CreateSingleErrorValidation(string key, string field)
-        {
-            IDictionary<string, string> errorsValidation = ErrorUtility.SetErrorValidation(key, field);
-            List<IDictionary<string, string>> validations = new List<IDictionary<string, string>>();
-            validations.Add(errorsValidation);
-
-            return validations;
-        }
-        public static IDictionary<string, string> SetErrorValidation(string key, string field)
-        {
-            IDictionary<string, string> validation = new Dictionary<string, string>
-            {
-                { "key", key },
-                { "field", field }
-            };
-            return validation;
-        }
-    }
-
     public class AuthUtility
     {
         public static string GenerateJwtToken(string secretKey, string userJson, DateTime expires = default)
@@ -66,21 +42,6 @@ namespace DotNetService.Infrastructure.Shareds
         public static SymmetricSecurityKey GenerateSymetricKey(string key)
         {
             return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-        }
-
-        public static Guid GetId(string token)
-        {
-            try
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var tokenDecoded = tokenHandler.ReadToken(token) as JwtSecurityToken;
-
-                return new Guid(tokenDecoded.Claims.First(claim => claim.Type == "id")?.Value);
-            }
-            catch
-            {
-                throw new UnauthenticatedException();
-            }
         }
 
         public static dynamic GetUserLogged(string token)
@@ -137,66 +98,5 @@ namespace DotNetService.Infrastructure.Shareds
                 throw new UnauthenticatedException();
             }
         }
-    }
-
-    [DataContract]
-    public abstract class ApiResponse
-    {
-        [DataMember]
-        public string Version { get { return "1.0.0"; } }
-    }
-
-    public class ApiResponseData(HttpStatusCode statusCode, object data = null) : ApiResponse
-    {
-        [DataMember]
-        public int StatusCode { get; set; } = (int)statusCode;
-
-        [DataMember(EmitDefaultValue = true)]
-        public object Data { get; set; } = data;
-    }
-
-    public class ApiResponseDataList(HttpStatusCode statusCode, object items, int count) : ApiResponse
-    {
-        [DataMember]
-        public int StatusCode { get; set; } = (int)statusCode;
-
-        [DataMember(EmitDefaultValue = true)]
-        public object Items { get; set; } = items;
-
-        [DataMember(EmitDefaultValue = true)]
-        public int Count { get; set; } = count;
-    }
-
-    public class ApiResponsePagination(HttpStatusCode statusCode, PaginationModel paginationModel) : ApiResponse
-    {
-        [DataMember]
-        public int StatusCode { get; set; } = (int)statusCode;
-
-        [DataMember(EmitDefaultValue = true)]
-        public object items { get; set; } = paginationModel.Data;
-
-        [DataMember(EmitDefaultValue = true)]
-        public int Page { get; set; } = paginationModel.Page;
-
-        [DataMember(EmitDefaultValue = true)]
-        public int PerPage { get; set; } = paginationModel.PerPage;
-
-        [DataMember(EmitDefaultValue = true)]
-        public int Total { get; set; } = paginationModel.Total;
-
-        [DataMember(EmitDefaultValue = true)]
-        public int TotalPage { get; set; } = paginationModel.TotalPage;
-    }
-
-    public class ApiResponseError(HttpStatusCode statusCode, string errorMessage, object errors = null) : ApiResponse
-    {
-        [DataMember(EmitDefaultValue = true)]
-        public string ErrorMessage { get; set; } = errorMessage;
-
-        [DataMember(EmitDefaultValue = true)]
-        public object Errors { get; set; } = errors;
-
-        [DataMember]
-        public int StatusCode { get; set; } = (int)statusCode;
     }
 }
