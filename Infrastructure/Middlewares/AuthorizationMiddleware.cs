@@ -1,7 +1,5 @@
-using System;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using DotNetService.Infrastructure.Shareds;
+using DotNetService.Domain.Auth.Util;
 
 namespace DotNetService.Infrastructure.Middlewares
 {

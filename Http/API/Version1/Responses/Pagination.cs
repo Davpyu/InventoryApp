@@ -1,11 +1,15 @@
 namespace DotNetService.Http.API.Version1
 {
-    public class PaginationModel
+    public class PaginationMeta
     {
         public int TotalPage;
         public int Total;
         public int Page;
         public int PerPage;
-        public object Data;
     }
+
+    public class PaginationModel: PaginationMeta
+    {       
+        public object Data;
+    }    
 }
