@@ -1,3 +1,6 @@
+using DotNetService.Exceptions;
+using Microsoft.AspNetCore.Server.IIS;
+
 namespace DotNetService
 {
     public class Program
@@ -9,7 +12,8 @@ namespace DotNetService
             .Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) {
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
@@ -20,16 +24,22 @@ namespace DotNetService
             //get dsn value
             string dsn = config["Sentry:Dsn"] ?? "";
             var hostBuilder = Host.CreateDefaultBuilder(args)
-                 .ConfigureWebHostDefaults(webBuilder =>
-                 {
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
                     webBuilder.UseSentry(o =>
                     {
                         o.Dsn = dsn;
                         o.TracesSampleRate = sentryTraceSampleRate;
+                        
+                        o.AddExceptionFilterForType<Microsoft.AspNetCore.Http.BadHttpRequestException>();
+                        o.AddExceptionFilterForType<UnauthenticatedException>();
+                        o.AddExceptionFilterForType<ValidationException>();
+                        o.AddExceptionFilterForType<DataNotFoundException>();
+                        o.AddExceptionFilterForType<UnprocessableEntityException>();
                     });
                     webBuilder.UseStartup<Startup>();
-                 });
-            
+                });
+
             return hostBuilder;
         }
     }
