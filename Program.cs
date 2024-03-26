@@ -23,6 +23,7 @@ namespace DotNetService
             double sentryTraceSampleRate = double.Parse(config["Sentry:TracesSampleRate"] ?? "1");
             //get dsn value
             string dsn = config["Sentry:Dsn"] ?? "";
+            string env = config["Sentry:Environment"] ?? "Development";
             var hostBuilder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -30,6 +31,7 @@ namespace DotNetService
                     {
                         o.Dsn = dsn;
                         o.TracesSampleRate = sentryTraceSampleRate;
+                        o.Environment = env;
                         
                         o.AddExceptionFilterForType<Microsoft.AspNetCore.Http.BadHttpRequestException>();
                         o.AddExceptionFilterForType<UnauthenticatedException>();
