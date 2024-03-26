@@ -23,7 +23,7 @@ namespace DotNetService
             double sentryTraceSampleRate = double.Parse(config["Sentry:TracesSampleRate"] ?? "1");
             //get dsn value
             string dsn = config["Sentry:Dsn"] ?? "";
-            string env = config["Sentry:Environment"] ?? "Development";
+            string env = config["App:Environment"] ?? "Development";
             var hostBuilder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
