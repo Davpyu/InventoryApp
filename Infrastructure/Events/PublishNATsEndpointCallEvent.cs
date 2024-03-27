@@ -1,9 +1,11 @@
+using DotNetService.Constants.Event;
 using DotNetService.Constants.Logger;
 using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Shareds;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace DotNetService.Infrastructure.Events {
+namespace DotNetService.Infrastructure.Events
+{
     public class PublishNATsEndpointCallEvent(
         NATsIntegration natsIntegration,
         ILoggerFactory loggerFactory
@@ -21,12 +23,25 @@ namespace DotNetService.Infrastructure.Events {
             var endpoint = context.HttpContext.Request.Path;
             await next();
 
-            var subject = userId + "." + method.ToLower() + "." + endpoint;
-            Utils.BackgroundProcessThreadAsync(async Task () => {
-                try {
-                    var reply = await _natsIntegration.PublishAndGetReply<string, object>(NATsEventConstant.SUBS_AND_REPLY_PREFIX_SUBJECT + "." + subject, Utils.JsonSerialize(context.ActionArguments));
+            string subject = _natsIntegration.Subject(true, NATsEventModuleEnum.LOGGER, NATsEventActionEnum.DEBUG, NATsEventStatusEnum.INFO);
+
+            Utils.BackgroundProcessThreadAsync(async Task () =>
+            {
+                try
+                {
+                    var data = new
+                    {
+                        userId,
+                        method,
+                        endpoint,
+                        actionArguments = context.ActionArguments,
+                    };
+
+                    var reply = await _natsIntegration.PublishAndGetReply<string, object>(subject, Utils.JsonSerialize(data));
                     _loggerIntegration.LogInformation("Publish NATs Event Reply with Subject : " + subject + " | Reply : " + reply);
-                } catch (Exception err) {
+                }
+                catch (Exception err)
+                {
                     _loggerIntegration.LogInformation("Publish NATs Event Error : " + subject);
                     _loggerIntegration.LogError(err.StackTrace);
                     Console.WriteLine("Reply Error");

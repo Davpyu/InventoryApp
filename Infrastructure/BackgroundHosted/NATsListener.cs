@@ -1,4 +1,5 @@
 
+using DotNetService.Constants.Event;
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;

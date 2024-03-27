@@ -1,4 +1,4 @@
-namespace DotNetService.Constants.Logger
+namespace DotNetService.Constants.Event
 {
     public class AuthenticationEventConstant
     {
