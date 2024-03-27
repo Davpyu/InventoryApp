@@ -5,23 +5,37 @@ using DotNetService.Infrastructure.Shareds;
 using DotNetService.Infrastructure.Subscriptions;
 using NATS.Client.Core;
 using NATS.Client;
+using DotNetService.Constants.Event;
 
-namespace DotNetService.Infrastructure.Integrations.NATs 
+namespace DotNetService.Infrastructure.Integrations.NATs
 {
     public class NATsIntegration(
         ILoggerFactory loggerFactory,
-        IConfiguration config,
         NatsConnection natsConnection
         )
     {
-        private readonly IConfiguration _config = config;
         private readonly NatsConnection _natsConnection = natsConnection;
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
 
-        public void Subs<T>(string subject, ISubscriptionActionAsync<T> subAction) {
+        public string Subject(
+            bool isReply,
+            NATsEventModuleEnum modul,
+            NATsEventActionEnum action,
+            NATsEventStatusEnum status
+        )
+        {
+            return (isReply
+                ? NATsEventConstant.SUBS_AND_REPLY_PREFIX_SUBJECT + "."
+                + modul + "." + action + "." + status
+                : modul + "." + action + "." + status).ToLower();
+        }
+
+        public void Subs<T>(string subject, ISubscriptionActionAsync<T> subAction)
+        {
             _logger.LogInformation("Start Subscription Of Subject : " + subject);
             var task = Task.Run(
-                async () => {
+                async () =>
+                {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
                     {
                         var data = msg.Data;
@@ -31,10 +45,12 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public void Subs<T>(string subject, ISubscriptionAction<T> subAction) {
+        public void Subs<T>(string subject, ISubscriptionAction<T> subAction)
+        {
             _logger.LogInformation("Start Subscription Of Subject : " + subject);
             var task = Task.Run(
-                async () => {
+                async () =>
+                {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
                     {
                         var data = msg.Data;
@@ -44,10 +60,12 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public void SubsAndReply<T, R>(string subject, IReplyAsyncAction<T, R> subAction) {
+        public void SubsAndReply<T, R>(string subject, IReplyAsyncAction<T, R> subAction)
+        {
             _logger.LogInformation("Start Subscription With Reply Of Subject : " + subject);
             var task = Task.Run(
-                async () => {
+                async () =>
+                {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
                     {
                         var data = msg.Data;
@@ -60,10 +78,12 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public void SubsAndReply<T, R>(string subject, IReplyAction<T, R> subAction) {
+        public void SubsAndReply<T, R>(string subject, IReplyAction<T, R> subAction)
+        {
             _logger.LogInformation("Start Subscription With Reply Of Subject : " + subject);
             var task = Task.Run(
-                async () => {
+                async () =>
+                {
                     await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
                     {
                         var data = msg.Data;
@@ -76,17 +96,20 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public async Task UnSub<T>(INatsSub<T> sub) {
+        public async Task UnSub<T>(INatsSub<T> sub)
+        {
             _logger.LogInformation("Stop Subscription Of Subject : " + sub.Subject);
             await sub.UnsubscribeAsync();
         }
 
-        public async Task Publish<T>(string subject, T data) {
+        public async Task Publish<T>(string subject, T data)
+        {
             _logger.LogInformation("Publish With Subject : " + subject + " | Data : " + data);
             await _natsConnection.PublishAsync(subject, data);
         }
 
-        public async Task<R> PublishAndGetReply<T, R>(string subject, T data) {
+        public async Task<R> PublishAndGetReply<T, R>(string subject, T data)
+        {
             _logger.LogInformation("Publish With Subject : " + subject + " | Data : " + data);
             try
             {

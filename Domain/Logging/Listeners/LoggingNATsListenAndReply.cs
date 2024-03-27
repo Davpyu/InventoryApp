@@ -17,6 +17,8 @@ namespace DotNetService.Domain.Logging.Listeners
 
         public IDictionary<string, object> Reply(IDictionary<string, object> data)
         {
+            // EXAMPLE: Do operation for reply event
+
             var reply = new Dictionary<string, object> {
                 { "status", "OK" },
             };
