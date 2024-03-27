@@ -44,7 +44,6 @@ namespace DotNetService.Infrastructure.Events
                 {
                     _loggerIntegration.LogInformation("Publish NATs Event Error : " + subject);
                     _loggerIntegration.LogError(err.StackTrace);
-                    Console.WriteLine("Reply Error");
                 }
             });
         }
