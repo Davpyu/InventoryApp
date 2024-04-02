@@ -14,7 +14,7 @@ namespace DotNetService.Domain.User.Repositories
         public List<Models.User> Pagination(UserQueryRequest queryParams)
         {
             int skip = (1 - queryParams.Page) * queryParams.PerPage;
-            var query = _context.Users.AsQueryable().Include(user => user.UserRoles);
+            var query = _context.Users.AsQueryable().Include(data => data.UserRoles);
 
             query = this.QuerySearch(query, queryParams);
             query = this.QueryFilter(query, queryParams);
@@ -29,9 +29,9 @@ namespace DotNetService.Domain.User.Repositories
         {
             if (queryParams.Search != null)
             {
-                query = query.Where(user =>
-                    user.Name.Contains(queryParams.Search) ||
-                    user.Email.Contains(queryParams.Search));
+                query = query.Where(data =>
+                    data.Name.Contains(queryParams.Search) ||
+                    data.Email.Contains(queryParams.Search));
             }
 
             return query;
@@ -42,7 +42,7 @@ namespace DotNetService.Domain.User.Repositories
             // EXAMPLE: filter by email
             if (queryParams.Email != null)
             {
-                query = query.Where(user => user.Email.Equals(queryParams.Email));
+                query = query.Where(data => data.Email.Equals(queryParams.Email));
             }
 
             return query;
@@ -54,10 +54,10 @@ namespace DotNetService.Domain.User.Repositories
 
             Dictionary<string, Func<Models.User, object>> sortFunctions = new()
             {
-                { "name", user => user.Name },
-                { "email", user => user.Email },
-                { "updated_at", user => user.UpdatedAt },
-                { "created_at", user => user.CreatedAt },
+                { "name", data => data.Name },
+                { "email", data => data.Email },
+                { "updated_at", data => data.UpdatedAt },
+                { "created_at", data => data.CreatedAt },
             };
 
             if (!sortFunctions.TryGetValue(queryParams.SortBy, out Func<Models.User, object> value))

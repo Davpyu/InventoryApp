@@ -3,6 +3,7 @@ using System.Net;
 using DotNetService.Domain.Auth.Services;
 using DotNetService.Infrastructure.Shareds;
 using Microsoft.AspNetCore.Authorization;
+using DotNetService.Http.API.Version1.User;
 
 namespace DotNetService.Http.API.Version1.Auth
 {
@@ -37,6 +38,13 @@ namespace DotNetService.Http.API.Version1.Auth
         {
             _authService.Register(authRegister);
             return new ApiResponseData(HttpStatusCode.OK, null);
+        }
+
+        [HttpGet("account")]
+        public ApiResponse Account()
+        {
+            var data = _authService.Account();
+            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
     }
 }

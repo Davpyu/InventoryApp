@@ -19,7 +19,8 @@ namespace DotNetService.Domain.Auth.Services
         PermissionQueryRepository permissionQueryRepository,
         RoleQueryRepository roleQueryRepository,
         RolePermissionQueryRepository rolePermissionQueryRepository,
-        IConfiguration config
+        IConfiguration config,
+        IHttpContextAccessor httpContextAccessor
         )
     {
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
@@ -29,6 +30,7 @@ namespace DotNetService.Domain.Auth.Services
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
         private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
         private readonly IConfiguration _config = config;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public AuthInfo SignIn(AuthSignInRequest authSignIn)
         {
@@ -63,6 +65,12 @@ namespace DotNetService.Domain.Auth.Services
             };
 
             _userStoreRepository.Create(data);
+        }
+
+        public Models.User Account()
+        {
+            _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
+            return _userQueryRepository.FindOneById(userId);
         }
 
         public bool IsUserHaveRole(Guid userId, string role)

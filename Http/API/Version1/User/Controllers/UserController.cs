@@ -14,7 +14,7 @@ namespace DotNetService.Http.API.Version1.User
         private readonly UserService _userService = userService;
 
         [HttpGet()]
-        public ApiResponse Index([FromQuery] UserQueryRequest query, [FromHeader] Header header)
+        public ApiResponse Index([FromQuery] UserQueryRequest query)
         {
             return _userService.Index(query);
         }
@@ -27,7 +27,6 @@ namespace DotNetService.Http.API.Version1.User
         }
 
         [HttpPost()]
-        [Consumes("application/json")]
         public ApiResponse Store(UserCreateRequest dataCreate)
         {
             var data = _userService.Create(dataCreate);
