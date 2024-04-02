@@ -32,12 +32,23 @@ namespace DotNetService
                         o.Dsn = dsn;
                         o.TracesSampleRate = sentryTraceSampleRate;
                         o.Environment = env;
-                        
-                        o.AddExceptionFilterForType<Microsoft.AspNetCore.Http.BadHttpRequestException>();
-                        o.AddExceptionFilterForType<UnauthenticatedException>();
-                        o.AddExceptionFilterForType<ValidationException>();
-                        o.AddExceptionFilterForType<DataNotFoundException>();
-                        o.AddExceptionFilterForType<UnprocessableEntityException>();
+
+                        o.SetBeforeSend((@event, hint) =>
+                        {
+                            if (
+                                @event.Exception is Microsoft.AspNetCore.Http.BadHttpRequestException ||
+                                @event.Exception is UnauthenticatedException ||
+                                @event.Exception is ValidationException ||
+                                @event.Exception is DataNotFoundException ||
+                                @event.Exception is UnprocessableEntityException
+                            )
+                            {
+                                return null;
+                            }
+
+                            return @event;
+                        });
+
                     });
                     webBuilder.UseStartup<Startup>();
                 });

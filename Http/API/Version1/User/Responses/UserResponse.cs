@@ -18,8 +18,7 @@ namespace DotNetService.Http.API.Version1.User
 
         public static List<UserResponse> MapRepo(List<Models.User> data)
         {
-            if (data == null) return [];
-            return data.Select(data => new UserResponse(data)).ToList();
+            return data?.Select(data => new UserResponse(data)).ToList();
         }
     }
 }
