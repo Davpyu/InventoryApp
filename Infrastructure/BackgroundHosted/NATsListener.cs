@@ -5,7 +5,7 @@ using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;
 using DotNetService.Infrastructure.Subscriptions;
 
-namespace DotNetService.Infrastructure.BackgroundHosted 
+namespace DotNetService.Infrastructure.BackgroundHosted
 {
     public class NATsListener(
         ILoggerFactory loggerFactory,
@@ -29,6 +29,7 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
                 var loggingNatsListener = scope.ServiceProvider.GetRequiredService<LoggingNATsListener>();
+
                 var listeners = new Dictionary<string, ISubscriptionAction<IDictionary<string, object>>>
                 {
                     // Define all listeners here
@@ -37,25 +38,32 @@ namespace DotNetService.Infrastructure.BackgroundHosted
                     { EndpointCallEventConstant.SUBS_PUT_SUBJECT, loggingNatsListener},
                     { EndpointCallEventConstant.SUBS_PATCH_SUBJECT, loggingNatsListener},
                     { EndpointCallEventConstant.SUBS_DELETE_SUBJECT, loggingNatsListener},
-                    { EndpointCallEventConstant.SUBS_OPTIONS_SUBJECT, loggingNatsListener}
+                    { EndpointCallEventConstant.SUBS_OPTIONS_SUBJECT, loggingNatsListener},
                 };
-                
-                foreach (var listener in listeners) {
-                    _natsIntegration.Subs(listener.Key, listener.Value); 
+
+                foreach (var listener in listeners)
+                {
+                    _natsIntegration.Subs(listener.Key, listener.Value);
                 }
             }
 
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
-            {   
+            {
+                var loggingNATsListenAndReply = scope.ServiceProvider.GetRequiredService<LoggingNATsListenAndReply>();
+
                 var listenersAndReply = new Dictionary<string, IReplyAction<IDictionary<string, object>, IDictionary<string, object>>>
                 {
-                    // Define all listenersAndReply here
-                    { NATsEventConstant.SUBS_AND_REPLY_ALL, scope.ServiceProvider.GetRequiredService<LoggingNATsListenAndReply>() }
+                    // Logger
+                    {
+                        _natsIntegration.Subject(NATsEventModuleEnum.LOGGER, NATsEventActionEnum.DEBUG, NATsEventStatusEnum.INFO),
+                        loggingNATsListenAndReply
+                    }
                 };
-                
+
                 _logger.LogInformation("NATs Subscription Hosted Service running reply.");
-                foreach (var listener in listenersAndReply) {
-                    _natsIntegration.SubsAndReply(listener.Key, listener.Value); 
+                foreach (var listener in listenersAndReply)
+                {
+                    _natsIntegration.SubsAndReply(listener.Key, listener.Value);
                 }
             }
         }
