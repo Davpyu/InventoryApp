@@ -18,16 +18,16 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
 
         public string Subject(
-            bool isReply,
             NATsEventModuleEnum modul,
             NATsEventActionEnum action,
             NATsEventStatusEnum status
         )
         {
-            return (isReply
-                ? NATsEventConstant.SUBS_AND_REPLY_PREFIX_SUBJECT + "."
-                + modul + "." + action + "." + status
-                : modul + "." + action + "." + status).ToLower();
+            string subject = modul + "." + action + "." + status;
+            
+            subject = subject.Replace(NATsEventCommonEnum.ALL.ToString(), ">");
+
+            return subject.ToLower();
         }
 
         public void Subs<T>(string subject, ISubscriptionActionAsync<T> subAction)

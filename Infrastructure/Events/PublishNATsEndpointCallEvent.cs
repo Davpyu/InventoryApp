@@ -23,7 +23,7 @@ namespace DotNetService.Infrastructure.Events
             var endpoint = context.HttpContext.Request.Path;
             await next();
 
-            string subject = _natsIntegration.Subject(true, NATsEventModuleEnum.LOGGER, NATsEventActionEnum.DEBUG, NATsEventStatusEnum.INFO);
+            string subject = _natsIntegration.Subject(NATsEventModuleEnum.LOGGER, NATsEventActionEnum.DEBUG, NATsEventStatusEnum.INFO);
 
             Utils.BackgroundProcessThreadAsync(async Task () =>
             {
@@ -37,7 +37,7 @@ namespace DotNetService.Infrastructure.Events
                         actionArguments = context.ActionArguments,
                     };
 
-                    var reply = await _natsIntegration.PublishAndGetReply<string, object>(subject, Utils.JsonSerialize(data));
+                    var reply = await _natsIntegration.PublishAndGetReply<object, object>(subject, Utils.JsonSerialize(data));
                     _loggerIntegration.LogInformation("Publish NATs Event Reply with Subject : " + subject + " | Reply : " + reply);
                 }
                 catch (Exception err)

@@ -2,7 +2,6 @@ using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Services;
 using DotNetService.Infrastructure.Shareds;
 using DotNetService.Infrastructure.Subscriptions;
-using Sentry;
 
 namespace DotNetService.Domain.Logging.Listeners
 {
