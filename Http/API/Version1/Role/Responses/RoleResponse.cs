@@ -1,24 +1,28 @@
 using DotNetService.Domain.Role;
+using DotNetService.Http.API.Version1.Permission;
+using DotNetService.Http.API.Version1.UserRole;
 using System.Collections.Generic;
 
 namespace DotNetService.Http.API.Version1.Role
 {
-    public class RoleDetail
+    public class RoleResponse : Models.Role
     {
-        public Guid Id { get; set; }
+        public new List<UserRoleItem> UserRoles { get; set; }
+        public List<PermissionResponse> Permissions { get; set; }
 
-        public string Name { get; set; }
-
-        public RoleDetail()
+        public RoleResponse(Models.Role role)
         {
+            this.Id = role.Id;
+            this.Name = role.Name;
+            this.Permissions = role.RolePermissions?.Count > 0 ? PermissionResponse.MapRepo(role.RolePermissions?.Select(data => data.Permission).ToList()) : null;
         }
 
-        public RoleDetail(Models.Role roleRepository)
+        public static List<RoleResponse> MapRepo(List<Models.Role> data)
         {
-            this.Id = roleRepository.Id;
-            this.Name = roleRepository.Name;
+            return data?.Select(data => new RoleResponse(data)).ToList();
         }
     }
+
     public class RoleItem
     {
         public Guid Id { get; set; }
@@ -48,11 +52,5 @@ namespace DotNetService.Http.API.Version1.Role
 
             return roleMapped;
         }
-    }
-    public class RoleList
-    {
-
-        public List<RoleDetail> data { get; set; }
-        public string count { get; set; }
     }
 }

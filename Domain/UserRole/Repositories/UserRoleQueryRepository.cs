@@ -2,9 +2,11 @@ using System.Data.Entity;
 
 namespace DotNetService.Domain.UserRole.Repositories
 {
-    public class UserRoleQueryRepository
+    public class UserRoleQueryRepository(
+        Models.IamDBContext context
+        )
     {
-        private readonly Models.IamDBContext _context;
+        private readonly Models.IamDBContext _context = context;
 
         internal Models.UserRole Find(Guid id = default)
         {

@@ -18,6 +18,8 @@ namespace DotNetService.Http.API.Version1.User
         [MinLength(6)]
         public string Password { get; set; }
 
+        public List<Guid> RoleIds { get; set; }
+
         public static Models.User Assign(UserCreateRequest data)
         {
             Models.User res = new()

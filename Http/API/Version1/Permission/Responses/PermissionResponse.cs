@@ -3,20 +3,18 @@ using System.Collections.Generic;
 
 namespace DotNetService.Http.API.Version1.Permission
 {
-    public class PermissionDetail
+    public class PermissionResponse : Models.Permission
     {
-        public Guid Id { get; set; }
 
-        public string Name { get; set; }
-
-        public PermissionDetail()
+        public PermissionResponse(Models.Permission permission)
         {
+            this.Id = permission.Id;
+            this.Name = permission.Name;
         }
 
-        public PermissionDetail(Models.Permission permissionRepository)
+        public static List<PermissionResponse> MapRepo(List<Models.Permission> data)
         {
-            this.Id = permissionRepository.Id;
-            this.Name = permissionRepository.Name;
+            return data?.Select(data => new PermissionResponse(data)).ToList();
         }
     }
     
@@ -50,12 +48,5 @@ namespace DotNetService.Http.API.Version1.Permission
 
             return permissionMapped;
         }
-    }
-
-    public class PermissionList
-    {
-
-        public List<PermissionDetail> data { get; set; }
-        public string count { get; set; }
     }
 }

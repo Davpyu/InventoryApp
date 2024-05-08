@@ -5,18 +5,13 @@ using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Http.API.Version1.UserRole
 {
-    [Route("api/user-role")]
+    [Route("api/v1/user-roles")]
     [ApiController]
-    public class UserRoleController : ControllerBase
+    public class UserRoleController(
+        UserRoleService userRoleService
+        ) : ControllerBase
     {
-        private readonly UserRoleService _userRoleService;
-
-        public UserRoleController(
-            UserRoleService userRoleService
-        )
-        {
-            _userRoleService = userRoleService;
-        }
+        private readonly UserRoleService _userRoleService = userRoleService;
 
         // GET: api/UserRole
         [HttpGet()]

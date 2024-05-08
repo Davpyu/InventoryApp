@@ -1,7 +1,7 @@
-using System.Data.Entity;
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.User;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -14,7 +14,10 @@ namespace DotNetService.Domain.User.Repositories
         public List<Models.User> Pagination(UserQueryRequest queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
-            var query = _context.Users.AsQueryable().Include(data => data.UserRoles);
+            var query = _context.Users
+            .Include(data => data.UserRoles)
+            .ThenInclude(data => data.Role)
+            .AsQueryable();
 
             query = this.QuerySearch(query, queryParams);
             query = this.QueryFilter(query, queryParams);
@@ -90,6 +93,10 @@ namespace DotNetService.Domain.User.Repositories
         {
             var data = _context.Users
                 .Where(data => data.Id == id)
+                .Include(data => data.UserRoles)
+                .ThenInclude(data => data.Role)
+                .ThenInclude(data => data.RolePermissions)
+                .ThenInclude(data => data.Permission)
                 .FirstOrDefault();
 
             if (data == null && isThrowException)
