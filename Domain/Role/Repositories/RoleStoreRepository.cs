@@ -1,3 +1,6 @@
+using System.Data.Entity.Infrastructure;
+using DotNetService.Exceptions;
+
 namespace DotNetService.Domain.Role.Repositories
 {
     public class RoleStoreRepository
@@ -14,14 +17,14 @@ namespace DotNetService.Domain.Role.Repositories
             _roleQueryRepository = roleQueryRepository;
         }
 
-        public void Create(Models.Role roleRepository)
+        public Models.Role Create(Models.Role role)
         {
             Models.Role newRole = new()
             {
-                Name = roleRepository.Name
+                Name = role.Name
             };
 
-            this.Save(newRole);
+            return this.Save(newRole);
         }
 
         public void Update(Guid id, Models.Role roleRepository)
@@ -43,14 +46,32 @@ namespace DotNetService.Domain.Role.Repositories
             _context.SaveChanges();
         }
 
-        private void Save(Models.Role Role, bool isUpdate = false)
+        private Models.Role Save(Models.Role data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
-                _context.Roles.Add(Role);
+
+                var dataCreated = _context.Roles.Add(data);
+                _context.SaveChanges();
+                return dataCreated.Entity;
             }
 
-            _context.SaveChanges();
+            try
+            {
+                var dataUpdated = _context.Roles.Update(data);
+                int affectedRows = _context.SaveChanges();
+
+                if (affectedRows == 0)
+                {
+                    throw new UnprocessableEntityException("No data was updated.");
+                }
+
+                return dataUpdated.Entity;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new DataNotFoundException("User with id " + data.Id + " not found.");
+            }
         }
     }
 }

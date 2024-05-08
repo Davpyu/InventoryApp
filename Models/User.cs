@@ -20,6 +20,6 @@ namespace DotNetService.Models
         [Column("password")]
         public string Password { get; set; }
 
-        public virtual ICollection<UserRole> UserRoles { get; set; }
+        public virtual List<UserRole> UserRoles { get; set; }
     }
 }

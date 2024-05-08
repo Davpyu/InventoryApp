@@ -1,29 +1,25 @@
+using System.Data.Entity.Infrastructure;
+using DotNetService.Exceptions;
 using Models = DotNetService.Models;
 
 namespace DotNetService.Domain.Permission.Repositories
 {
-    public class PermissionStoreRepository
+    public class PermissionStoreRepository(
+        PermissionQueryRepository permissionQueryRepository,
+        Models.IamDBContext context
+    )
     {
-        private readonly PermissionQueryRepository _permissionQueryRepository;
-        private readonly Models.IamDBContext _context;
+        private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
+        private readonly Models.IamDBContext _context = context;
 
-        public PermissionStoreRepository(
-            Models.IamDBContext context,
-            PermissionQueryRepository permissionQueryRepository
-        )
-        {
-            _context = context;
-            _permissionQueryRepository = permissionQueryRepository;
-        }
-
-        public void Create(Models.Permission permissionRepository)
+        public Models.Permission Create(Models.Permission permissionRepository)
         {
             Models.Permission newPermission = new()
             {
                 Name = permissionRepository.Name
             };
             
-            this.Save(newPermission);
+            return this.Save(newPermission);
         }
 
         public void Update(Guid id, Models.Permission permissionRepository)
@@ -45,12 +41,37 @@ namespace DotNetService.Domain.Permission.Repositories
             _context.SaveChanges();
         }
 
-        private void Save(Models.Permission Permission, bool isUpdate = false)
+        private Models.Permission Save(Models.Permission data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
-                _context.Permissions.Add(Permission);
+
+                var dataCreated = _context.Permissions.Add(data);
+                _context.SaveChanges();
+                return dataCreated.Entity;
             }
+
+            try
+            {
+                var dataUpdated = _context.Permissions.Update(data);
+                int affectedRows = _context.SaveChanges();
+
+                if (affectedRows == 0)
+                {
+                    throw new UnprocessableEntityException("No data was updated.");
+                }
+
+                return dataUpdated.Entity;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new DataNotFoundException("Permissions with id " + data.Id + " not found.");
+            }
+        }
+
+        public void BulkSave(Models.Permission[] data)
+        {
+            _context.Permissions.AddRange(data);
             _context.SaveChanges();
         }
     }

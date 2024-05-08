@@ -47,6 +47,20 @@ namespace DotNetService.Domain.RolePermission.Repositories
 
             return rolePermission;
         }
+
+        public List<Models.RolePermission> FindByRoleId(Guid roleId)
+        {
+            var rolePermissions = _context.RolePermissions
+                .Where(rolePermission => rolePermission.Roleid == roleId)
+                .ToList();
+
+            if (rolePermissions.Count < 1)
+            {
+                return [];
+            }
+
+            return rolePermissions;
+        }
         
         public List<Models.RolePermission> Get(int page, int perPage)
         {

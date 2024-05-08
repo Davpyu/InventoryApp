@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 namespace DotNetService.Http.API.Version1.Role
 {
-    public class RoleCreateRequest
+    public class RoleQueryRequest : Query
     {
-        [Required]
+        [FromQuery(Name = "name")]
         public string Name { get; set; }
-
-        public List<Guid> PermissionIds { get; set; }
     }
 }

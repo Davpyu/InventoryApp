@@ -3,10 +3,13 @@ using DotNetService.Domain.UserRole.Repositories;
 
 namespace DotNetService.Domain.UserRole.Services
 {
-    public class UserRoleService
+    public class UserRoleService (
+        UserRoleQueryRepository userRoleQueryRepository,
+        UserRoleStoreRepository userRoleStoreRepository
+        )
     {
-        private readonly UserRoleQueryRepository _userRoleQueryRepository;
-        private readonly UserRoleStoreRepository _userRoleStoreRepository;
+        private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
+        private readonly UserRoleStoreRepository _userRoleStoreRepository = userRoleStoreRepository;
 
         public void Update(Guid id, UserRoleUpdateRequest userUpdate)
         {
@@ -38,6 +41,11 @@ namespace DotNetService.Domain.UserRole.Services
         public Models.UserRole DetailById(Guid id)
         {
             return _userRoleQueryRepository.FindById(id);
+        }
+
+        public List<Models.UserRole> FindByUserId(Guid userId)
+        {
+            return _userRoleQueryRepository.FindByUserId(userId);
         }
 
         public List<Models.UserRole> GetList(int page, int perPage)

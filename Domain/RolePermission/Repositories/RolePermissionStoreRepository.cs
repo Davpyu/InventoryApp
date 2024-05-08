@@ -1,22 +1,18 @@
 using Models = DotNetService.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Data.Entity.Infrastructure;
+using DotNetService.Exceptions;
 
 namespace DotNetService.Domain.RolePermission.Repositories
 {
-    public class RolePermissionStoreRepository
-    {
-        private readonly Models.IamDBContext _context;
-        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository;
-
-        public RolePermissionStoreRepository(
+    public class RolePermissionStoreRepository(
             Models.IamDBContext context,
             RolePermissionQueryRepository rolePermissionQueryRepository
         )
-        {
-            _context = context;
-            _rolePermissionQueryRepository = rolePermissionQueryRepository;
-        }
+    {
+        private readonly Models.IamDBContext _context = context;
+        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
 
         public void Create(Models.RolePermission rolePermission)
         {
@@ -41,12 +37,39 @@ namespace DotNetService.Domain.RolePermission.Repositories
             _context.SaveChanges();
         }
 
-        private void Save(Models.RolePermission RolePermission, bool isUpdate = false)
+        public void DeleteBulk(List<Models.RolePermission> data)
+        {
+            _context.RolePermissions.RemoveRange(data);
+            _context.SaveChanges();
+        }
+
+        private void Save(Models.RolePermission data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
-                _context.RolePermissions.Add(RolePermission);
+                _context.RolePermissions.Add(data);
+                _context.SaveChanges();
             }
+            try
+            {
+                var dataUpdated = _context.RolePermissions.Update(data);
+                int affectedRows = _context.SaveChanges();
+
+                if (affectedRows == 0)
+                {
+                    throw new UnprocessableEntityException("No data was updated.");
+                }
+
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new DataNotFoundException("Permissions with id " + data.Id + " not found.");
+            }
+        }
+
+        public void BulkSave(Models.RolePermission[] data)
+        {
+            _context.RolePermissions.AddRange(data);
             _context.SaveChanges();
         }
     }

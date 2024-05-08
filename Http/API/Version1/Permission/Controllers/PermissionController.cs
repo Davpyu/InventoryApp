@@ -5,37 +5,19 @@ using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Http.API.Version1.Permission
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/permissions")]
     [ApiController]
-    public class PermissionController : ControllerBase
+    public class PermissionController(
+        PermissionService permissionService
+        ) : ControllerBase
     {
-        private readonly PermissionService _permissionService;
+        private readonly PermissionService _permissionService = permissionService;
 
         // GET: api/Permission
         [HttpGet()]
-        public ApiResponse Index([FromQuery] Query query, [FromHeader] Header header)
+        public ApiResponse Index([FromQuery] PermissionQueryRequest query)
         {
-            if (query.Pagination)
-            {
-                var permissionsRepo = _permissionService.GetList(query.Search, query.Page, query.PerPage);
-                int count = _permissionService.Count(query.Search);
-                decimal pageInCount = ((decimal)count) / query.PerPage;
-                var paginate = new PaginationModel()
-                {
-                    TotalPage = (int)Math.Ceiling(pageInCount),
-                    Page = query.Page,
-                    PerPage = query.PerPage,
-                    Data = PermissionItem.MapRepo(permissionsRepo),
-                    Total = count
-                };
-
-                return new ApiResponsePagination(HttpStatusCode.OK, paginate);
-            }
-            else
-            {
-                var permissionsRepo = _permissionService.GetList(query.Search, query.Page, query.PerPage);
-                return new ApiResponseDataList(HttpStatusCode.OK, permissionsRepo, permissionsRepo.Count);
-            }
+            return _permissionService.Index(query);
         }
 
         // GET: api/Permission/5
@@ -43,7 +25,14 @@ namespace DotNetService.Http.API.Version1.Permission
         public ApiResponse Show(Guid id)
         {
             var permissionRepository = _permissionService.DetailById(id);
-            return new ApiResponseData(HttpStatusCode.OK, new PermissionDetail(permissionRepository));
+            return new ApiResponseData(HttpStatusCode.OK, new PermissionResponse(permissionRepository));
+        }
+
+        [HttpPost()]
+        public ApiResponse Store(PermissionCreateRequest dataCreate)
+        {
+            var data = _permissionService.Create(dataCreate);
+            return new ApiResponseData(HttpStatusCode.OK, new PermissionResponse(data));
         }
     }
 }

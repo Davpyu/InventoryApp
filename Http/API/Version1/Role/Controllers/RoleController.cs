@@ -2,40 +2,23 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetService.Domain.Role.Services;
 using System.Net;
 using DotNetService.Infrastructure.Shareds;
+using Newtonsoft.Json;
 
 namespace DotNetService.Http.API.Version1.Role
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/roles")]
     [ApiController]
-    public class RoleController : ControllerBase
+    public class RoleController(
+        RoleService roleService
+        ) : ControllerBase
     {
-        private readonly RoleService _roleService;
+        private readonly RoleService _roleService = roleService;
 
         // GET: api/Role
         [HttpGet()]
-        public ApiResponse Index([FromQuery] Query query, [FromHeader] Header header)
+        public ApiResponse Index([FromQuery] RoleQueryRequest query)
         {
-            if (query.Pagination)
-            {
-                var rolesRepo = _roleService.GetList(query.Search, query.Page, query.PerPage);
-                int count = _roleService.Count(query.Search);
-                decimal pageInCount = ((decimal)count) / query.PerPage;
-                PaginationModel paginate = new PaginationModel()
-                {
-                    TotalPage = (int)Math.Ceiling(pageInCount),
-                    Page = query.Page,
-                    PerPage = query.PerPage,
-                    Data = RoleItem.MapRepo(rolesRepo),
-                    Total = count
-                };
-
-                return new ApiResponsePagination(HttpStatusCode.OK, paginate);
-            }
-            else
-            {
-                var rolesRepo = _roleService.GetList(query.Search, query.Page, query.PerPage);
-                return new ApiResponseDataList(HttpStatusCode.OK, rolesRepo, rolesRepo.Count);
-            }
+            return _roleService.Index(query);
         }
 
         // GET: api/Role/5
@@ -43,7 +26,14 @@ namespace DotNetService.Http.API.Version1.Role
         public ApiResponse Show(Guid id)
         {
             var role = _roleService.DetailById(id);
-            return new ApiResponseData(HttpStatusCode.OK, new RoleDetail(role));
+            return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(role));
+        }
+
+        [HttpPost()]
+        public ApiResponse Store(RoleCreateRequest dataCreate)
+        {
+            var data = _roleService.Create(dataCreate);
+            return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(data));
         }
     }
 }
