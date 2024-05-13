@@ -36,9 +36,15 @@ namespace DotNetService.Domain.Permission.Repositories
 
         public void Delete(Guid id)
         {
-            Models.Permission permission = _context.Permissions.Where(permission => permission.Id == id).FirstOrDefault();
-            _context.Permissions.Remove(permission);
-            _context.SaveChanges();
+            Models.Permission data = _permissionQueryRepository.FindOneById(id, true);
+
+            _context.Permissions.Remove(data);
+            int affectedRows = _context.SaveChanges();
+
+            if (affectedRows == 0)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
+            }
         }
 
         private Models.Permission Save(Models.Permission data, bool isUpdate = false)

@@ -54,7 +54,7 @@ namespace DotNetService.Domain.User.Services
         {
             var data = UserCreateRequest.Assign(dataCreate);
             var user = _userStoreRepository.Create(data);
-            if (dataCreate.RoleIds.Count > 0)
+            if (dataCreate.RoleIds?.Count > 0)
             {
                 var userRoles = new List<Models.UserRole>();
                 foreach (var roleId in dataCreate.RoleIds)
@@ -86,7 +86,7 @@ namespace DotNetService.Domain.User.Services
                 var userRolesToDelete = _userRoleQueryRepository.FindByUserId(id);
                 _userRoleStoreRepository.DeleteBulk(userRolesToDelete);
             }
-            if (dataUpdate.RoleIds.Count > 0)
+            if (dataUpdate.RoleIds?.Count > 0)
             {
                 var newUserRoles = new List<Models.UserRole>();
                 foreach (var roleId in dataUpdate.RoleIds)

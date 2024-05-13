@@ -34,5 +34,19 @@ namespace DotNetService.Http.API.Version1.Permission
             var data = _permissionService.Create(dataCreate);
             return new ApiResponseData(HttpStatusCode.OK, new PermissionResponse(data));
         }
+
+        [HttpPut("{id}")]
+        public ApiResponse Update(Guid id, PermissionUpdateRequest dataUpdate)
+        {
+            _permissionService.Update(id, dataUpdate);
+            return new ApiResponseData(HttpStatusCode.OK, null);
+        }
+
+        [HttpDelete("{id}")]
+        public ApiResponse Delete(Guid id)
+        {
+            _permissionService.Delete(id);
+            return new ApiResponseData(HttpStatusCode.OK, null);
+        }
     }
 }

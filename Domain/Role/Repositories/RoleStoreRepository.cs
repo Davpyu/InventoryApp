@@ -41,9 +41,15 @@ namespace DotNetService.Domain.Role.Repositories
 
         public void Delete(Guid id)
         {
-            Models.Role role = _context.Roles.Where(role => role.Id == id).FirstOrDefault();
-            _context.Roles.Remove(role);
-            _context.SaveChanges();
+            Models.Role data = _roleQueryRepository.FindOneById(id, true);
+
+            _context.Roles.Remove(data);
+            int affectedRows = _context.SaveChanges();
+
+            if (affectedRows == 0)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
+            }
         }
 
         private Models.Role Save(Models.Role data, bool isUpdate = false)

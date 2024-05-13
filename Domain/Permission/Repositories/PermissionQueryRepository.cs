@@ -1,3 +1,4 @@
+using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Permission;
 using Microsoft.EntityFrameworkCore;
@@ -85,15 +86,18 @@ namespace DotNetService.Domain.Permission.Repositories
             return _context.Permissions.Where(permission => permission.Id == id).FirstOrDefault();
         }
 
-        public Models.Permission FindById(Guid id = default)
+        public Models.Permission FindOneById(Guid id = default, bool isThrowException = false)
         {
-            Models.Permission permission = this.Find(id);
-            if (permission == null)
-            {
-                return null;
-            }
+            var data = _context.Permissions
+                .Where(data => data.Id == id)
+                .FirstOrDefault();
 
-            return permission;
+            if (data == null && isThrowException)
+            {
+                throw new DataNotFoundException("Role with id " + id + " not found.");
+            };
+
+            return data;
         }
 
         public Models.Permission FindByName(string name)
