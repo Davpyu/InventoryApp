@@ -35,5 +35,19 @@ namespace DotNetService.Http.API.Version1.Role
             var data = _roleService.Create(dataCreate);
             return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(data));
         }
+
+        [HttpPut("{id}")]
+        public ApiResponse Update(Guid id, RoleUpdateRequest dataUpdate)
+        {
+            var data = _roleService.Update(id, dataUpdate);
+            return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(data));
+        }
+
+        [HttpDelete("{id}")]
+        public ApiResponse Delete(Guid id)
+        {
+            _roleService.Delete(id);
+            return new ApiResponseData(HttpStatusCode.OK, null);
+        }
     }
 }

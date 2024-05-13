@@ -44,19 +44,16 @@ namespace DotNetService.Domain.Permission.Services
             return _permissionQueryRepository.Pagination(query);
         }
         
-        public Models.Permission Create(PermissionCreateRequest permissionCreate)
+        public Models.Permission Create(PermissionCreateRequest dataCreate)
         {
-            var permissionRepository = new Models.Permission
-            {
-                Name = permissionCreate.Name
-            };
+            var data = PermissionCreateRequest.Assign(dataCreate);
             
-            return _permissionStoreRepository.Create(permissionRepository);
+            return _permissionStoreRepository.Create(data);
         }
 
         public Models.Permission DetailById(Guid id)
         {
-            return _permissionQueryRepository.FindById(id);
+            return _permissionQueryRepository.FindOneById(id);
         }
 
         public List<Models.Permission> GetList(string search, int page, int perPage)
@@ -68,11 +65,10 @@ namespace DotNetService.Domain.Permission.Services
             return _permissionQueryRepository.CountAll(search);
         }
 
-        public void Update(Guid id, PermissionUpdate permissionUpdate)
+        public void Update(Guid id, PermissionUpdateRequest dataUpdate)
         {
-            Models.Permission permissionRepository = new Models.Permission();
-            permissionRepository.Name = permissionUpdate.Name;
-            _permissionStoreRepository.Update(id, permissionRepository);
+            var data = PermissionUpdateRequest.Assign(dataUpdate);
+            _permissionStoreRepository.Update(id, data);
         }
 
         public void Delete(Guid id)

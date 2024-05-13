@@ -50,18 +50,15 @@ namespace DotNetService.Domain.Role.Services
             return _roleQueryRepository.Pagination(query);
         }
 
-        public Models.Role Create(RoleCreateRequest roleCreate)
+        public Models.Role Create(RoleCreateRequest dataCreate)
         {
-            var role = new Models.Role
-            {
-                Name = roleCreate.Name
-            };
+            var data = RoleCreateRequest.Assign(dataCreate);
 
-            var roleCreated = _roleStoreRepository.Create(role);
-            if (roleCreate.PermissionIds.Count > 0)
+            var roleCreated = _roleStoreRepository.Create(data);
+            if (dataCreate.PermissionIds?.Count > 0)
             {
                 var rolePermissions = new List<Models.RolePermission>();
-                foreach (var permissionId in roleCreate.PermissionIds)
+                foreach (var permissionId in dataCreate.PermissionIds)
                 {
                     var rolePermission = new Models.RolePermission
                     {
@@ -91,20 +88,19 @@ namespace DotNetService.Domain.Role.Services
             return _roleQueryRepository.CountAll(search);
         }
 
-        public Models.Role Update(Guid id, RoleUpdateRequest roleUpdate)
+        public Models.Role Update(Guid id, RoleUpdateRequest dataUpdate)
         {
-            Models.Role roleRepository = new Models.Role();
-            roleRepository.Name = roleUpdate.Name;
-            _roleStoreRepository.Update(id, roleRepository);
+            var data = RoleUpdateRequest.Assign(dataUpdate);
+            _roleStoreRepository.Update(id, data);
             var role = this.DetailById(id);
             if(role.RolePermissions?.Count > 0){
                 var rolePermissionsToDelete = _rolePermissionQueryRepository.FindByRoleId(id);
                 _rolePermissionStoreRepository.DeleteBulk(rolePermissionsToDelete);
             }
-            if (roleUpdate.PermissionIds.Count > 0)
+            if (dataUpdate.PermissionIds?.Count > 0)
             {
                 var newRolePermissions = new List<Models.RolePermission>();
-                foreach (var permissionId in roleUpdate.PermissionIds)
+                foreach (var permissionId in dataUpdate.PermissionIds)
                 {
                     var rolePermission = new Models.RolePermission
                     {
