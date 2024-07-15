@@ -1,9 +1,6 @@
-
-using DotNetService.Constants.Event;
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;
-using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Infrastructure.BackgroundHosted
 {
@@ -23,54 +20,41 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             // TODO: Dispose
         }
 
-        public async Task StartAsync(CancellationToken stoppingToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("NATs Subscription Hosted Service running listen.");
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
-                var loggingNatsListener = scope.ServiceProvider.GetRequiredService<LoggingNATsListener>();
+                _logger.LogInformation("NATs Subscription Hosted Service running listen.");
 
-                var listeners = new Dictionary<string, ISubscriptionAction<IDictionary<string, object>>>
-                {
-                    // Define all listeners here
-                    { EndpointCallEventConstant.SUBS_POST_SUBJECT,  loggingNatsListener},
-                    { EndpointCallEventConstant.SUBS_GET_SUBJECT, loggingNatsListener},
-                    { EndpointCallEventConstant.SUBS_PUT_SUBJECT, loggingNatsListener},
-                    { EndpointCallEventConstant.SUBS_PATCH_SUBJECT, loggingNatsListener},
-                    { EndpointCallEventConstant.SUBS_DELETE_SUBJECT, loggingNatsListener},
-                    { EndpointCallEventConstant.SUBS_OPTIONS_SUBJECT, loggingNatsListener},
-                };
+                // === Logging === \\
+                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenPost();
+                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenGet();
+                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenPut();
+                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenPatch();
+                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenDelete();
+                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenOption();
 
-                foreach (var listener in listeners)
-                {
-                    _natsIntegration.Subs(listener.Key, listener.Value);
-                }
+                // === OtherModule === \\
             }
 
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
-                var loggingNATsListenAndReply = scope.ServiceProvider.GetRequiredService<LoggingNATsListenAndReply>();
-
-                var listenersAndReply = new Dictionary<string, IReplyAction<IDictionary<string, object>, IDictionary<string, object>>>
-                {
-                    // Logger
-                    {
-                        _natsIntegration.Subject(NATsEventModuleEnum.LOGGER, NATsEventActionEnum.DEBUG, NATsEventStatusEnum.INFO),
-                        loggingNATsListenAndReply
-                    }
-                };
-
                 _logger.LogInformation("NATs Subscription Hosted Service running reply.");
-                foreach (var listener in listenersAndReply)
-                {
-                    _natsIntegration.SubsAndReply(listener.Key, listener.Value);
-                }
+
+                // === Logging === \\
+                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenAndReply();
+
+                // === OtherModule === \\
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task StopAsync(CancellationToken stoppingToken)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("NATs Subscription Hosted Service is stopping.");
+
+            return Task.CompletedTask;
         }
     }
 }
