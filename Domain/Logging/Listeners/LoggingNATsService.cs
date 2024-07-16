@@ -5,7 +5,7 @@ using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Domain.Logging.Listeners
 {
-    public class LoggingNATsListener(
+    public class LoggingNATsService(
         ILoggerFactory loggerFactory,
         LoggingService loggingService
     ) : ISubscriptionAction<IDictionary<string, object>>
@@ -16,6 +16,8 @@ namespace DotNetService.Domain.Logging.Listeners
 
         public void Handle(IDictionary<string, object> data)
         {
+            // EXAMPLE: Do operation event
+
             var jsonData = Utils.JsonSerialize(data);
             _logger.LogInformation(jsonData);
         }

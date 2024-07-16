@@ -1,11 +1,10 @@
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Logging.Services;
-using DotNetService.Infrastructure.Shareds;
 using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Domain.Logging.Listeners
 {
-    public class LoggingNATsListenAndReply(
+    public class LoggingNATsReplyService(
         ILoggerFactory loggerFactory,
         LoggingService loggingService
     ) : IReplyAction<IDictionary<string, object>, IDictionary<string, object>>

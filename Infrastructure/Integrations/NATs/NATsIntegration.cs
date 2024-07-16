@@ -2,7 +2,6 @@
 using DotNetService.Constants.Logger;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Shareds;
-using DotNetService.Infrastructure.Subscriptions;
 using NATS.Client.Core;
 using NATS.Client;
 using DotNetService.Constants.Event;
@@ -28,72 +27,6 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             subject = subject.Replace(NATsEventCommonEnum.ALL.ToString(), ">");
 
             return subject.ToLower();
-        }
-
-        public void Subs<T>(string subject, ISubscriptionActionAsync<T> subAction)
-        {
-            _logger.LogInformation($"Start Subscription Of Subject : {subject}");
-            var task = Task.Run(
-                async () =>
-                {
-                    await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
-                    {
-                        var data = msg.Data;
-                        await subAction.HandleAsync(Utils.JsonDeserialize<T>(data));
-                    }
-                }
-            );
-        }
-
-        public void Subs<T>(string subject, ISubscriptionAction<T> subAction)
-        {
-            _logger.LogInformation($"Start Subscription Of Subject : {subject}");
-            var task = Task.Run(
-                async () =>
-                {
-                    await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
-                    {
-                        var data = msg.Data;
-                        subAction.Handle(Utils.JsonDeserialize<T>(data));
-                    }
-                }
-            );
-        }
-
-        public void SubsAndReply<T, R>(string subject, IReplyAsyncAction<T, R> subAction)
-        {
-            _logger.LogInformation($"Start Subscription With Reply Of Subject : {subject}");
-            var task = Task.Run(
-                async () =>
-                {
-                    await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
-                    {
-                        var data = msg.Data;
-                        var reply = await subAction.ReplyAsync(Utils.JsonDeserialize<T>(data));
-
-                        var jsonReply = Utils.JsonSerialize(reply);
-                        await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
-                    }
-                }
-            );
-        }
-
-        public void SubsAndReply<T, R>(string subject, IReplyAction<T, R> subAction)
-        {
-            _logger.LogInformation($"Start Subscription With Reply Of Subject : {subject}");
-            var task = Task.Run(
-                async () =>
-                {
-                    await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
-                    {
-                        var data = msg.Data;
-                        var reply = subAction.Reply(Utils.JsonDeserialize<T>(data));
-
-                        var jsonReply = Utils.JsonSerialize(reply);
-                        await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
-                    }
-                }
-            );
         }
 
         public async Task UnSub<T>(INatsSub<T> sub)
