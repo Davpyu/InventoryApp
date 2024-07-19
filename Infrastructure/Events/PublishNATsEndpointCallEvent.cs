@@ -38,12 +38,12 @@ namespace DotNetService.Infrastructure.Events
                     };
 
                     var reply = await _natsIntegration.PublishAndGetReply<object, object>(subject, Utils.JsonSerialize(data));
-                    _loggerIntegration.LogInformation($"Publish NATs Event Reply with Subject : {subject} | Reply : {reply}");
+                    _loggerIntegration.LogInformation("Publish NATs Event Reply with Subject : {Subject} | Reply : {Reply}", subject, reply);
                 }
                 catch (Exception err)
                 {
-                    _loggerIntegration.LogInformation($"Publish NATs Event Error : {subject}");
-                    _loggerIntegration.LogError(err.StackTrace);
+                    _loggerIntegration.LogInformation("Publish NATs Event Error : {Subject}", subject);
+                    _loggerIntegration.LogError("Error StackTrace: {StackTrace}", err.StackTrace);
                 }
             });
         }

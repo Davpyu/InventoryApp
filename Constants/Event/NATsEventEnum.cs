@@ -1,13 +1,13 @@
 namespace DotNetService.Constants.Event
 {
-    public enum NATsEventCommonEnum
+    public enum NATsEventCommon
     {
         ALL,
     }
 
     public enum NATsEventStatusEnum
     {
-        ALL = NATsEventCommonEnum.ALL,
+        ALL = NATsEventCommon.ALL,
         INFO,
         SUCCESS,
         FAILED
@@ -16,7 +16,7 @@ namespace DotNetService.Constants.Event
     public enum NATsEventActionEnum
     {
         // Common action
-        ALL = NATsEventCommonEnum.ALL,
+        ALL = NATsEventCommon.ALL,
         DEBUG,
         CREATE,
         UPDATE,
@@ -29,7 +29,7 @@ namespace DotNetService.Constants.Event
 
     public enum NATsEventModuleEnum
     {
-        ALL = NATsEventCommonEnum.ALL,
+        ALL = NATsEventCommon.ALL,
         LOGGER,
         AUTH,
         USER
