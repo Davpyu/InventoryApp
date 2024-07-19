@@ -23,6 +23,7 @@ namespace DotNetService.Http.API.Version1.User
         public ApiResponse Show(Guid id)
         {
             Models.User data = _userService.Detail(id);
+            data = null;
             return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
 

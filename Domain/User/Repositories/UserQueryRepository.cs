@@ -19,28 +19,29 @@ namespace DotNetService.Domain.User.Repositories
             .ThenInclude(data => data.Role)
             .AsQueryable();
 
-            query = this.QuerySearch(query, queryParams);
-            query = this.QueryFilter(query, queryParams);
-            query = this.QuerySort(query, queryParams);
+            query = QuerySearch(query, queryParams);
+            query = QueryFilter(query, queryParams);
+            query = QuerySort(query, queryParams);
 
             var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
 
             return data;
         }
 
-        private IQueryable<Models.User> QuerySearch(IQueryable<Models.User> query, UserQueryRequest queryParams)
+        private static IQueryable<Models.User> QuerySearch(IQueryable<Models.User> query, UserQueryRequest queryParams)
         {
             if (queryParams.Search != null)
             {
                 query = query.Where(data =>
                     data.Name.Contains(queryParams.Search) ||
-                    data.Email.Contains(queryParams.Search));
+                    data.Email.Contains(queryParams.Search)
+                );
             }
 
             return query;
         }
 
-        private IQueryable<Models.User> QueryFilter(IQueryable<Models.User> query, UserQueryRequest queryParams)
+        private static IQueryable<Models.User> QueryFilter(IQueryable<Models.User> query, UserQueryRequest queryParams)
         {
             // EXAMPLE: filter by email
             if (queryParams.Email != null)
@@ -51,7 +52,7 @@ namespace DotNetService.Domain.User.Repositories
             return query;
         }
 
-        private IQueryable<Models.User> QuerySort(IQueryable<Models.User> query, UserQueryRequest queryParams)
+        private static IQueryable<Models.User> QuerySort(IQueryable<Models.User> query, UserQueryRequest queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 
@@ -79,8 +80,8 @@ namespace DotNetService.Domain.User.Repositories
         {
             IQueryable<Models.User> query = _context.Users;
 
-            query = this.QuerySearch(query, queryParams);
-            query = this.QueryFilter(query, queryParams);
+            query = QuerySearch(query, queryParams);
+            query = QueryFilter(query, queryParams);
 
             return query.Count();
         }
@@ -121,6 +122,6 @@ namespace DotNetService.Domain.User.Repositories
             }
 
             return data;
-        }        
+        }
     }
 }

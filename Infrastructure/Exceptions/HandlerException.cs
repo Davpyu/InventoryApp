@@ -81,7 +81,19 @@ namespace DotNetService.Exceptions
                         break;
                     // case for unhandled exception
                     default:
+                        // log error to sentry 500 error only
+                        SentrySdk.CaptureException(error);
                         statusCode = HttpStatusCode.InternalServerError;
+                        var errorFormat = new Dictionary<string, string>
+                        {
+                            {"Type", error.GetType().ToString()},
+                            {"Message", error.Message},
+                            {"Source", error.Source}
+                        };
+                        if (config["App:Environment"] == "Development")
+                        {
+                            errorFormat.Add("StackTrace", error.StackTrace);
+                        }
                         break;
                 }
 

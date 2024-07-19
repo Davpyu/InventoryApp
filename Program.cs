@@ -1,5 +1,5 @@
 using DotNetService.Exceptions;
-using Microsoft.AspNetCore.Server.IIS;
+using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService
 {
@@ -31,24 +31,14 @@ namespace DotNetService
                     {
                         o.Dsn = dsn;
                         o.TracesSampleRate = sentryTraceSampleRate;
+                        o.EnableTracing = true;
                         o.Environment = env;
-
-                        o.SetBeforeSend((@event, hint) =>
+                        o.SetBeforeSend((sentryEvent) =>
                         {
-                            if (
-                                @event.Exception is Microsoft.AspNetCore.Http.BadHttpRequestException ||
-                                @event.Exception is UnauthenticatedException ||
-                                @event.Exception is ValidationException ||
-                                @event.Exception is DataNotFoundException ||
-                                @event.Exception is UnprocessableEntityException
-                            )
-                            {
-                                return null;
-                            }
-
-                            return @event;
+                            // Manual send sentry error if Exception exist and status code 500, config at HandlerException.cs
+                            if (sentryEvent.Exception == null) return null;
+                            return sentryEvent;
                         });
-
                     });
                     webBuilder.UseStartup<Startup>();
                 });
