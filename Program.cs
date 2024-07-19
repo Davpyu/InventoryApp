@@ -1,6 +1,3 @@
-using DotNetService.Exceptions;
-using DotNetService.Infrastructure.Shareds;
-
 namespace DotNetService
 {
     public class Program
