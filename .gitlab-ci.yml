@@ -2,6 +2,6 @@ include:
   # sonarqube scanner
   - component: gitlab.dot.co.id/cicd-components/sonarqube/dotnet@main
     inputs:
-      run-on: master
+      run-on: /^master$/i
       sonar-project-name: dot-boilerplate-dotnet-service
       sonar-project-key: playground_boilerplates_dotnet-service-boilerplate_AZDIzjb_EVsGbpNK3KAg
