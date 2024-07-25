@@ -27,11 +27,11 @@ namespace DotNetService.Exceptions
             }
             catch (Exception error)
             {
-                var devModeMessage = error.Message + " | " + error.StackTrace;
-                var message = bool.Parse(_config["App:Debug"]) ? devModeMessage : error.Message;
+                var stackTrace = bool.Parse(_config["App:Debug"]) ? error.StackTrace?.Trim() : null;
+                string errorMessage = error.Message;
                 var validationError = ErrorValidation.ErrorModel(null);
 
-                _logger.LogError(message);
+                _logger.LogError(error, "{errorMessage}", errorMessage);
 
                 HttpStatusCode statusCode;
                 switch (error)
@@ -101,7 +101,7 @@ namespace DotNetService.Exceptions
                 context.Response.StatusCode = (int)statusCode;
                 context.Response.ContentType = MediaTypeNames.Application.Json;
 
-                var errorResponseValidation = new ApiResponseError(statusCode, message, validationError);
+                var errorResponseValidation = new ApiResponseError(statusCode, errorMessage, validationError, stackTrace);
                 await context.Response.WriteAsync(Utils.JsonSerialize(errorResponseValidation));
             }
         }
