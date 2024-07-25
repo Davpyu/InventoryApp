@@ -70,10 +70,13 @@ namespace DotNetService.Infrastructure.Shareds
         };
     }
 
-    public class ApiResponseError(HttpStatusCode statusCode, string errorMessage, object errors = null) : ApiResponse
+    public class ApiResponseError(HttpStatusCode statusCode, string errorMessage, object errors = null, string stackTrace = null) : ApiResponse
     {
         [DataMember(EmitDefaultValue = true)]
         public string ErrorMessage { get; set; } = errorMessage;
+
+        [DataMember(EmitDefaultValue = true)]
+        public string StackTrace { get; set; } = stackTrace;
 
         [DataMember(EmitDefaultValue = true)]
         public object Errors { get; set; } = errors;
