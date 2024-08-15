@@ -4,7 +4,7 @@ using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Domain.Logging.Listeners
 {
-    public class LoggingNATsReplyService(
+    public class LoggingNATsListenAndReply(
         ILoggerFactory loggerFactory,
         LoggingService loggingService
     ) : IReplyAction<IDictionary<string, object>, IDictionary<string, object>>

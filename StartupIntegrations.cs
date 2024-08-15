@@ -1,4 +1,5 @@
 using DotNetService.Domain.Logging.Listeners;
+using DotNetService.Infrastructure.BackgroundHosted;
 using DotNetService.Infrastructure.Integrations.Http;
 using DotNetService.Infrastructure.Integrations.NATs;
 
@@ -10,8 +11,7 @@ namespace DotNetService
         {
             services.AddScoped<HttpIntegration>();
             services.AddSingleton<NATsIntegration>();
-
-            services.AddSingleton<LoggingNATsListenTask>();
+            services.AddSingleton<NATsTask>();
         }
     }
 }

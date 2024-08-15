@@ -24,7 +24,7 @@ namespace DotNetService.Domain.User.Services
         {
             if (query.Pagination)
             {
-                var data = this.Pagination(query);
+                var data = _userQueryRepository.Pagination(query);
                 int count = _userQueryRepository.Count(query);
                 decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
@@ -40,16 +40,11 @@ namespace DotNetService.Domain.User.Services
             }
             else
             {
-                var data = Pagination(query);
+                var data = _userQueryRepository.Pagination(query);
                 return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
             }
         }
-
-        public List<Models.User> Pagination(UserQueryRequest query = null)
-        {
-            return _userQueryRepository.Pagination(query);
-        }
-
+        
         public Models.User Create(UserCreateRequest dataCreate)
         {
             var data = UserCreateRequest.Assign(dataCreate);
