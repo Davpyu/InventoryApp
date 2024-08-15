@@ -6,7 +6,7 @@ namespace DotNetService
     {
         public void Listeners(IServiceCollection services)
         {
-            services.AddScoped<LoggingNATsListenAndReply>();
+            services.AddScoped<LoggingNATsListen>();
             services.AddScoped<LoggingNATsListenAndReply>();
         }
     }
