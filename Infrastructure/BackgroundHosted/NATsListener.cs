@@ -1,5 +1,4 @@
 using DotNetService.Constants.Logger;
-using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;
 
 namespace DotNetService.Infrastructure.BackgroundHosted
@@ -25,26 +24,13 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
                 _logger.LogInformation("NATs Subscription Hosted Service running listen.");
-
-                // === Logging === \\
-                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenPost();
-                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenGet();
-                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenPut();
-                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenPatch();
-                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenDelete();
-                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenOption();
-
-                // === OtherModule === \\
+                scope.ServiceProvider.GetRequiredService<NATsTask>().Listen();
             }
 
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
                 _logger.LogInformation("NATs Subscription Hosted Service running reply.");
-
-                // === Logging === \\
-                scope.ServiceProvider.GetRequiredService<LoggingNATsListenTask>().ListenAndReply();
-
-                // === OtherModule === \\
+                scope.ServiceProvider.GetRequiredService<NATsTask>().ListenAndReply();
             }
 
             return Task.CompletedTask;

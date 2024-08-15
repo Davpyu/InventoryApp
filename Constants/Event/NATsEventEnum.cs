@@ -8,9 +8,11 @@ namespace DotNetService.Constants.Event
     public enum NATsEventStatusEnum
     {
         ALL = NATsEventCommon.ALL,
-        INFO,
+        INFO, // For info or initial process
+        PROCESS,
         SUCCESS,
-        FAILED
+        FAILED,
+        REQUEST // For request & reply event only
     }
 
     public enum NATsEventActionEnum
@@ -18,6 +20,8 @@ namespace DotNetService.Constants.Event
         // Common action
         ALL = NATsEventCommon.ALL,
         DEBUG,
+        GET_BY_IDS,
+        GET,
         CREATE,
         UPDATE,
         DELETE,

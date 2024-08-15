@@ -5,7 +5,7 @@ using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Domain.Logging.Listeners
 {
-    public class LoggingNATsService(
+    public class LoggingNATsListen(
         ILoggerFactory loggerFactory,
         LoggingService loggingService
     ) : ISubscriptionAction<IDictionary<string, object>>
