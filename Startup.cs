@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using DotNetService.Infrastructure.Integrations.Http;
 using DotNetService.Constants.Logger;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Middlewares;
 using DotNetService.Infrastructure.Filters;
@@ -20,8 +19,6 @@ using DotNetService.Infrastructure.Events;
 using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.BackgroundHosted;
 using System.Net;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace DotNetService
 {
@@ -58,7 +55,11 @@ namespace DotNetService
 
             services.AddLogging(loggingBuilder =>
             {
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-default.log",
+                var appName = SanitizeFileName(Configuration["App:Name"]);
+                var hostName = SanitizeFileName(Dns.GetHostName());
+                var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-default.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -73,7 +74,7 @@ namespace DotNetService
                         };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-integration.log",
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-integration.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -83,7 +84,7 @@ namespace DotNetService
                         };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-nats.log",
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-nats.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -93,7 +94,7 @@ namespace DotNetService
                         };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-activity.log",
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-activity.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -103,7 +104,7 @@ namespace DotNetService
                         };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-error.log",
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-error.log",
                     fileLoggerOpts =>
                     {
                         fileLoggerOpts.Append = true;
@@ -183,7 +184,7 @@ namespace DotNetService
             services.AddFluentValidation(fvc => fvc.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             var poolSize = Configuration["ConnectionPoolSize:DefaultConnection1"] != null ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"]) : 1024;
-            
+
             services.AddDbContextPool<IamDBContext>(
                 options => options.UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""),
                 poolSize
@@ -271,6 +272,12 @@ namespace DotNetService
                 x.MapControllers();
                 x.MapHealthChecks("/health").AllowAnonymous();
             });
+        }
+
+        private static string SanitizeFileName(string fileName)
+        {
+            var invalidChars = Path.GetInvalidFileNameChars();
+            return string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
         }
     }
 }
