@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using DotNetService.Infrastructure.Integrations.Http;
 using DotNetService.Constants.Logger;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Middlewares;
 using DotNetService.Infrastructure.Filters;
@@ -20,8 +19,6 @@ using DotNetService.Infrastructure.Events;
 using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.BackgroundHosted;
 using System.Net;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace DotNetService
 {
@@ -35,7 +32,7 @@ namespace DotNetService
         public IConfiguration Configuration { get; }
 
         public IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
-        {   
+        {
             var cooldownBreak = int.Parse(Configuration["CircuitBreaker:External:Cooldown"] ?? "5");
             var AllowedBroken = int.Parse(Configuration["CircuitBreaker:External:AllowedBroken"] ?? "5");
 
@@ -56,50 +53,65 @@ namespace DotNetService
 
             var hostName = Dns.GetHostName();
 
-            services.AddLogging(loggingBuilder => {
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-default.log", 
-                    fileLoggerOpts => {
+            services.AddLogging(loggingBuilder =>
+            {
+                var appName = SanitizeFileName(Configuration["App:Name"]);
+                var hostName = SanitizeFileName(Dns.GetHostName());
+                var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-default.log",
+                    fileLoggerOpts =>
+                    {
                         fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) => {
-                            return msg.LogLevel == LogLevel.Information 
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
+                            return msg.LogLevel == LogLevel.Information
                                 && !(
-                                    msg.LogName == LoggerConstant.NATS || 
-                                    msg.LogName == LoggerConstant.INTEGRATION || 
+                                    msg.LogName == LoggerConstant.NATS ||
+                                    msg.LogName == LoggerConstant.INTEGRATION ||
                                     msg.LogName == LoggerConstant.ACTIVITY
                                 );
-                        };   
+                        };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-integration.log", 
-                    fileLoggerOpts => {
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-integration.log",
+                    fileLoggerOpts =>
+                    {
                         fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) => {
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
                             return msg.LogName == LoggerConstant.INTEGRATION;
-                        };   
+                        };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-nats.log", 
-                    fileLoggerOpts => {
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-nats.log",
+                    fileLoggerOpts =>
+                    {
                         fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) => {
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
                             return msg.LogName == LoggerConstant.NATS;
-                        };   
+                        };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-activity.log", 
-                    fileLoggerOpts => {
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-activity.log",
+                    fileLoggerOpts =>
+                    {
                         fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) => {
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
                             return msg.LogName == LoggerConstant.ACTIVITY;
-                        };   
+                        };
                     }
                 );
-                loggingBuilder.AddFile("Log/" + Configuration["App:Name"] + "-" + hostName + "-" + DateTime.Now.ToString("yyyy-MM-dd") + "-error.log", 
-                    fileLoggerOpts => {
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-error.log",
+                    fileLoggerOpts =>
+                    {
                         fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) => {
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
                             return msg.LogLevel == LogLevel.Error;
-                        };   
+                        };
                     }
                 );
             });
@@ -117,22 +129,25 @@ namespace DotNetService
             // }
 
 
-            services.AddNats(1000, options => {
+            services.AddNats(1000, options =>
+            {
 
-                    var opts = new NatsOpts {
-                        Url = Configuration["Nats:Url"],
-                        AuthOpts = new NatsAuthOpts{
-                            Username = Configuration["Nats:Username"],
-                            Password = Configuration["Nats:Password"],
-                        },
-                        Name = Configuration["Nats:Server"]
-                    };
+                var opts = new NatsOpts
+                {
+                    Url = Configuration["Nats:Url"],
+                    AuthOpts = new NatsAuthOpts
+                    {
+                        Username = Configuration["Nats:Username"],
+                        Password = Configuration["Nats:Password"],
+                    },
+                    Name = Configuration["Nats:Server"]
+                };
 
-                    return opts;
+                return opts;
             });
-            
+
             Services(services);
-            
+
             Repositories(services);
 
             Integrations(services);
@@ -145,7 +160,7 @@ namespace DotNetService
             {
                 if (!int.TryParse(Configuration["Queue:Capacity"], out var queueCapacity))
                     queueCapacity = 100;
-                    
+
                 return new BackgroundTaskQueue(queueCapacity);
             });
 
@@ -158,17 +173,22 @@ namespace DotNetService
             {
                 options.AddPolicy(
                     name: "AllowOrigin",
-                    builder => {
+                    builder =>
+                    {
                         builder.AllowAnyOrigin()
                                 .AllowAnyMethod()
                                 .AllowAnyHeader();
                     });
             });
-            
+
             services.AddFluentValidation(fvc => fvc.RegisterValidatorsFromAssemblyContaining<Startup>());
-            
-            services.AddDbContext<IamDBContext>(options => options
-                .UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""));
+
+            var poolSize = Configuration["ConnectionPoolSize:DefaultConnection1"] != null ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"]) : 1024;
+
+            services.AddDbContextPool<IamDBContext>(
+                options => options.UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""),
+                poolSize
+            );
 
             services.AddHttpContextAccessor();
 
@@ -178,12 +198,14 @@ namespace DotNetService
             });
 
             services.AddControllers(
-                options => {
+                options =>
+                {
                     options.Filters.Add<ValidatorAttribute>();
                     options.Filters.Add<PublishNATsEndpointCallEvent>();
                 }
             ).AddNewtonsoftJson(
-                options => {
+                options =>
+                {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new SnakeCaseNamingStrategy()
@@ -198,13 +220,14 @@ namespace DotNetService
                 .AddPolicyHandler(circuitBreakerPolicy);
 
             var IsRedisEnable = bool.Parse(Configuration["Redis:IsEnable"]);
-            var redisConnectionString = Configuration["Redis:Host"] + ':' + Configuration["Redis:Port"] + ",password=" + Configuration["Redis:Password"];   
-            if (IsRedisEnable) {
+            var redisConnectionString = Configuration["Redis:Host"] + ':' + Configuration["Redis:Port"] + ",password=" + Configuration["Redis:Password"];
+            if (IsRedisEnable)
+            {
                 services.AddDataProtection()
                     .SetApplicationName(Configuration["App:Name"] ?? "DotNetService")
                     .SetDefaultKeyLifetime(TimeSpan.FromDays(60))
                     .PersistKeysToStackExchangeRedis(ConnectionMultiplexer.Connect(redisConnectionString), Configuration["App:DataProtectionKey"]);
-                
+
                 services.AddStackExchangeRedisCache(options => options.ConfigurationOptions = new ConfigurationOptions
                 {
                     AllowAdmin = true,
@@ -212,8 +235,9 @@ namespace DotNetService
                     EndPoints = { Configuration["Redis:Host"] + ':' + Configuration["Redis:Port"] },
                     Ssl = false
                 });
-            } 
-            else {
+            }
+            else
+            {
                 services.AddDistributedMemoryCache();
             }
         }
@@ -230,7 +254,7 @@ namespace DotNetService
             app.UseMiddleware<HandlerException>();
             app.UseMiddleware<CircuitBreakerMiddleware>();
             // ------
-            
+
             app.UseMiddleware<HandlerException>();
 
             app.UseHttpsRedirection();
@@ -238,7 +262,7 @@ namespace DotNetService
             app.UseCors();
 
             app.UseRouting();
-            
+
             app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseResponseCaching();
@@ -248,6 +272,12 @@ namespace DotNetService
                 x.MapControllers();
                 x.MapHealthChecks("/health").AllowAnonymous();
             });
+        }
+
+        private static string SanitizeFileName(string fileName)
+        {
+            var invalidChars = Path.GetInvalidFileNameChars();
+            return string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
         }
     }
 }
