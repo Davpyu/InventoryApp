@@ -1,3 +1,5 @@
+using DotNetService.Infrastructure.Filters;
+
 namespace DotNetService
 {
     public class Program
@@ -30,6 +32,7 @@ namespace DotNetService
                         o.TracesSampleRate = sentryTraceSampleRate;
                         o.EnableTracing = true;
                         o.Environment = env;
+                        o.AddExceptionFilter(new SentryExceptionFilter());
                         o.SetBeforeSend((sentryEvent) =>
                         {
                             // Manual send sentry error if Exception exist and status code 500, config at HandlerException.cs

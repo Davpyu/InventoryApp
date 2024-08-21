@@ -5,10 +5,6 @@ namespace DotNetService.Models
 {
     public partial class IamDBContext : DbContext
     {
-        public IamDBContext()
-        {
-        }
-
         public IamDBContext(DbContextOptions<IamDBContext> options)
             : base(options)
         {
