@@ -32,6 +32,10 @@ namespace DotNetService
                         o.TracesSampleRate = sentryTraceSampleRate;
                         o.EnableTracing = true;
                         o.Environment = env;
+                        o.AutoSessionTracking = true;
+                        o.Debug = true;
+                        o.StackTraceMode = StackTraceMode.Enhanced;
+
                         o.AddExceptionFilter(new SentryExceptionFilter());
                         o.SetBeforeSend((sentryEvent) =>
                         {
