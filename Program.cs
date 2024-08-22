@@ -30,6 +30,10 @@ namespace DotNetService
                         o.TracesSampleRate = sentryTraceSampleRate;
                         o.EnableTracing = true;
                         o.Environment = env;
+                        o.AutoSessionTracking = true;
+                        o.Debug = true;
+                        o.StackTraceMode = StackTraceMode.Enhanced;
+
                         o.SetBeforeSend((sentryEvent) =>
                         {
                             // Manual send sentry error if Exception exist and status code 500, config at HandlerException.cs
