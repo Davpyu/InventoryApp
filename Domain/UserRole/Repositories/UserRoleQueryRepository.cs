@@ -52,19 +52,17 @@ namespace DotNetService.Domain.UserRole.Repositories
             List<Models.UserRole> userRoles;
             IQueryable<Models.UserRole> userQuery = _context.UserRoles;
             userRoles = userQuery.Skip(skip).Take(perPage).ToList();
-            
+
             return userRoles;
         }
 
         public int Count(string search)
         {
-            return _context.UserRoles
-            .Include(
-                x => new { x.Role, x.User }
-            )
-            .Where(
-                x => x.Role.Name.Contains(search) || x.User.Name.Contains(search)
-            ).Count();
+            return _context
+                .UserRoles.Include(x => x.Role)
+                .Include(x => x.User)
+                .Where(x => x.Role.Name.Contains(search) || x.User.Name.Contains(search))
+                .Count();
         }
     }
 }
