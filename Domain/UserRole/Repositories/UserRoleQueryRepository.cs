@@ -68,7 +68,7 @@ namespace DotNetService.Domain.UserRole.Repositories
             return query.Count();
         }
 
-        private IQueryable<Models.UserRole> QuerySearch(
+        private static  IQueryable<Models.UserRole> QuerySearch(
             IQueryable<Models.UserRole> query,
             Query queryParams
         )
