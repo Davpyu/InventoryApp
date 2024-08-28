@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetService.Http.API.Version1
@@ -21,6 +22,7 @@ namespace DotNetService.Http.API.Version1
         public string Search { get; set; }
 
         [FromQuery(Name = "per_page")]
+        [Range(1, 100)]
         public int PerPage { get; set; }
 
         [FromQuery(Name = "page")]
