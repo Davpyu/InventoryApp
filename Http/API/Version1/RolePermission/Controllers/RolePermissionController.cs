@@ -3,13 +3,11 @@ using DotNetService.Http.API.Version1.RolePermission;
 using System.Net;
 using DotNetService.Applications.RolePermission.Service;
 using DotNetService.Infrastructure.Shareds;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.RolePermission
 {
     [Route("api/v1/role-permission")]
     [ApiController]
-    [AllowAnonymous]
     public class RolePermissionController(RolePermissionService rolePermissionService)
         : ControllerBase
     {

@@ -3,13 +3,11 @@ using DotNetService.Domain.Role.Services;
 using System.Net;
 using DotNetService.Infrastructure.Shareds;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.Role
 {
     [Route("api/v1/roles")]
     [ApiController]
-    [AllowAnonymous]
     public class RoleController(
         RoleService roleService
         ) : ControllerBase
