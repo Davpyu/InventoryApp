@@ -18,9 +18,6 @@ namespace DotNetService.Http.API.Version1
         [FromQuery(Name = "search")]
         public string Search { get; set; }
 
-        [FromQuery(Name = "pagination")]
-        public bool Pagination { get; set; }
-
         [FromQuery(Name = "per_page")]
         public int PerPage { get; set; }
 
