@@ -1,4 +1,5 @@
 using System.Data.Entity;
+using DotNetService.Http.API.Version1;
 
 namespace DotNetService.Domain.UserRole.Repositories
 {
@@ -52,19 +53,35 @@ namespace DotNetService.Domain.UserRole.Repositories
             List<Models.UserRole> userRoles;
             IQueryable<Models.UserRole> userQuery = _context.UserRoles;
             userRoles = userQuery.Skip(skip).Take(perPage).ToList();
-            
+
             return userRoles;
         }
 
         public int Count(string search)
         {
-            return _context.UserRoles
-            .Include(
-                x => new { x.Role, x.User }
-            )
-            .Where(
-                x => x.Role.Name.Contains(search) || x.User.Name.Contains(search)
-            ).Count();
+            IQueryable<Models.UserRole> query = _context
+                .UserRoles.Include(x => x.Role)
+                .Include(x => x.User);
+
+            query = QuerySearch(query, new Query { Search = search });
+
+            return query.Count();
+        }
+
+        private static  IQueryable<Models.UserRole> QuerySearch(
+            IQueryable<Models.UserRole> query,
+            Query queryParams
+        )
+        {
+            if (queryParams.Search != null)
+            {
+                query = query.Where(x =>
+                    x.Role.Name.Contains(queryParams.Search)
+                    || x.User.Name.Contains(queryParams.Search)
+                );
+            }
+
+            return query;
         }
     }
 }

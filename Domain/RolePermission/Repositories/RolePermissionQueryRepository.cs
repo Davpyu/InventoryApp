@@ -1,9 +1,4 @@
-using Models = DotNetService.Models;
-using System.Linq;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace DotNetService.Domain.RolePermission.Repositories
 {

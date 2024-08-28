@@ -7,6 +7,7 @@ namespace DotNetService.Http.API.Version1.User
 {
     [Route("api/v1/users")]
     [ApiController]
+    
     public class UserController(
         UserService userService
         ) : ControllerBase

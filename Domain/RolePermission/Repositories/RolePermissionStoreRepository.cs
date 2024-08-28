@@ -1,6 +1,3 @@
-using Models = DotNetService.Models;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data.Entity.Infrastructure;
 using DotNetService.Exceptions;
 
