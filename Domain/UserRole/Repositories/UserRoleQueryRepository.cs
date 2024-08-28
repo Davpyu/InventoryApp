@@ -1,4 +1,5 @@
 using System.Data.Entity;
+using DotNetService.Http.API.Version1;
 
 namespace DotNetService.Domain.UserRole.Repositories
 {
@@ -58,11 +59,29 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public int Count(string search)
         {
-            return _context
+            IQueryable<Models.UserRole> query = _context
                 .UserRoles.Include(x => x.Role)
-                .Include(x => x.User)
-                .Where(x => x.Role.Name.Contains(search) || x.User.Name.Contains(search))
-                .Count();
+                .Include(x => x.User);
+
+            query = QuerySearch(query, new Query { Search = search });
+
+            return query.Count();
+        }
+
+        private IQueryable<Models.UserRole> QuerySearch(
+            IQueryable<Models.UserRole> query,
+            Query queryParams
+        )
+        {
+            if (queryParams.Search != null)
+            {
+                query = query.Where(x =>
+                    x.Role.Name.Contains(queryParams.Search)
+                    || x.User.Name.Contains(queryParams.Search)
+                );
+            }
+
+            return query;
         }
     }
 }
