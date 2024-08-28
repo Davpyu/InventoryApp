@@ -9,11 +9,11 @@ using DotNetService.Domain.UserRole.Repositories;
 namespace DotNetService.Domain.User.Services
 {
     public class UserService(
-            UserQueryRepository userQueryRepository,
-            UserStoreRepository userStoreRepository,
-            UserRoleStoreRepository userRoleStoreRepository,
-            UserRoleQueryRepository userRoleQueryRepository
-        )
+        UserQueryRepository userQueryRepository,
+        UserStoreRepository userStoreRepository,
+        UserRoleStoreRepository userRoleStoreRepository,
+        UserRoleQueryRepository userRoleQueryRepository
+    )
     {
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
         private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
@@ -22,11 +22,9 @@ namespace DotNetService.Domain.User.Services
 
         public ApiResponse Index(UserQueryRequest query = null)
         {
-            if (query.Pagination)
-            {
-                var data = _userQueryRepository.Pagination(query);
-                int count = _userQueryRepository.Count(query);
-                decimal pageInCount = ((decimal)count) / query.PerPage;
+            var data = _userQueryRepository.Pagination(query);
+            int count = _userQueryRepository.Count(query);
+            decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
                 {
                     TotalPage = (int)Math.Ceiling(pageInCount),
@@ -36,15 +34,9 @@ namespace DotNetService.Domain.User.Services
                     Total = count
                 };
 
-                return new ApiResponsePagination(HttpStatusCode.OK, paginate);
-            }
-            else
-            {
-                var data = _userQueryRepository.Pagination(query);
-                return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
-            }
+            return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }
-        
+
         public Models.User Create(UserCreateRequest dataCreate)
         {
             var data = UserCreateRequest.Assign(dataCreate);

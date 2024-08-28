@@ -13,7 +13,7 @@ namespace DotNetService.Domain.Role.Services
         RoleQueryRepository roleQueryRepository,
         RolePermissionStoreRepository rolePermissionStoreRepository,
         RolePermissionQueryRepository rolePermissionQueryRepository
-        )
+    )
     {
         private readonly RoleStoreRepository _roleStoreRepository = roleStoreRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
@@ -22,11 +22,9 @@ namespace DotNetService.Domain.Role.Services
 
         public ApiResponse Index(RoleQueryRequest query = null)
         {
-            if (query.Pagination)
-            {
-                var data = this.Pagination(query);
-                int count = _roleQueryRepository.Count(query);
-                decimal pageInCount = ((decimal)count) / query.PerPage;
+            var data = this.Pagination(query);
+            int count = _roleQueryRepository.Count(query);
+            decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
                 {
                     TotalPage = (int)Math.Ceiling(pageInCount),
@@ -36,13 +34,7 @@ namespace DotNetService.Domain.Role.Services
                     Total = count
                 };
 
-                return new ApiResponsePagination(HttpStatusCode.OK, paginate);
-            }
-            else
-            {
-                var data = Pagination(query);
-                return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
-            }
+            return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }
 
         public List<Models.Role> Pagination(RoleQueryRequest query = null)
