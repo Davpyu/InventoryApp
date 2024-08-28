@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data.Entity.Infrastructure;
 using DotNetService.Exceptions;
+using DotNetService.Http.API.Version1.RolePermission;
 
 namespace DotNetService.Domain.RolePermission.Repositories
 {
