@@ -3,10 +3,15 @@ using DotNetService.Domain.RolePermission.Repositories;
 
 namespace DotNetService.Applications.RolePermission.Service
 {
-    public class RolePermissionService
+    public class RolePermissionService(
+        RolePermissionStoreRepository rolePermissionStoreRepository,
+        RolePermissionQueryRepository rolePermissionQueryRepository
+    )
     {
-        private readonly RolePermissionStoreRepository _rolePermissionStoreRepository;
-        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository;
+        private readonly RolePermissionStoreRepository _rolePermissionStoreRepository =
+            rolePermissionStoreRepository;
+        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository =
+            rolePermissionQueryRepository;
 
         public void Create(RolePermissionCreateRequest rolePermissionCreate)
         {
@@ -46,7 +51,7 @@ namespace DotNetService.Applications.RolePermission.Service
                 Roleid = rolePermissionUpdate.Roleid,
                 Permissionid = rolePermissionUpdate.Permissionid
             };
-            
+
             _rolePermissionStoreRepository.Update(id, rolePermissionRepository);
         }
 

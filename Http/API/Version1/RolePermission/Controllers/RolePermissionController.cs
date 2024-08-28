@@ -4,13 +4,14 @@ using System.Net;
 using DotNetService.Applications.RolePermission.Service;
 using DotNetService.Infrastructure.Shareds;
 
-namespace DotNetService.Http.API.Version1.Controllers.IAM
+namespace DotNetService.Http.API.Version1.RolePermission
 {
     [Route("api/v1/role-permission")]
     [ApiController]
-    public class RolePermissionController : ControllerBase
+    public class RolePermissionController(RolePermissionService rolePermissionService)
+        : ControllerBase
     {
-        private readonly RolePermissionService _rolePermissionService;
+        private readonly RolePermissionService _rolePermissionService = rolePermissionService;
 
         // GET: api/RolePermission
         [HttpGet()]
