@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetService.Domain.UserRole.Services;
 using System.Net;
 using DotNetService.Infrastructure.Shareds;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.UserRole
 {
     [Route("api/v1/user-roles")]
     [ApiController]
+     [AllowAnonymous]
     public class UserRoleController(
         UserRoleService userRoleService
         ) : ControllerBase

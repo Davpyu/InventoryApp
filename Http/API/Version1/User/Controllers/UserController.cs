@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using DotNetService.Infrastructure.Shareds;
 using DotNetService.Domain.User.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.User
 {
     [Route("api/v1/users")]
     [ApiController]
+    [AllowAnonymous]
     public class UserController(
         UserService userService
         ) : ControllerBase

@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetService.Domain.Permission.Services;
 using System.Net;
 using DotNetService.Infrastructure.Shareds;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.Permission
 {
     [Route("api/v1/permissions")]
     [ApiController]
+    [AllowAnonymous]
     public class PermissionController(
         PermissionService permissionService
         ) : ControllerBase
