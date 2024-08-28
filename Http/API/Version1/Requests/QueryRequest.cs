@@ -13,6 +13,8 @@ namespace DotNetService.Http.API.Version1
         public Query()
         {
             Order = SortOrderEnum.Desc;
+            PerPage = 10;
+            Page = 1;
         }
 
         [FromQuery(Name = "search")]
