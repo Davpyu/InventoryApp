@@ -59,7 +59,7 @@ namespace DotNetService.Domain.User.Repositories
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new UnprocessableEntityException("User with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException("No data was updated.");
             }
         }
     }

@@ -55,7 +55,7 @@ namespace DotNetService.Domain.UserRole.Repositories
             catch (DbUpdateConcurrencyException)
             {
                 throw new UnprocessableEntityException(
-                    "User Role with id " + data.Id + " not found."
+                    "No data was updated."
                 );
             }
         }

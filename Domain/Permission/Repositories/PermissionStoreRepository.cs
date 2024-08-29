@@ -67,7 +67,7 @@ namespace DotNetService.Domain.Permission.Repositories
             catch (DbUpdateConcurrencyException)
             {
                 throw new UnprocessableEntityException(
-                    "Permissions with id " + data.Id + " not found."
+                    "No data was updated."
                 );
             }
         }
