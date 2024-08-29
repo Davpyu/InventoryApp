@@ -65,18 +65,13 @@ namespace DotNetService.Domain.Role.Repositories
             try
             {
                 var dataUpdated = _context.Roles.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
+                _context.SaveChanges();
 
                 return dataUpdated.Entity;
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("User with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException("User with id " + data.Id + " not found.");
             }
         }
     }

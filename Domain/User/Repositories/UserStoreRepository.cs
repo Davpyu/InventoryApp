@@ -9,7 +9,7 @@ namespace DotNetService.Domain.User.Repositories
     public class UserStoreRepository(
         Models.IamDBContext context,
         UserQueryRepository userQueryRepository
-        )
+    )
     {
         private readonly Models.IamDBContext _context = context;
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
@@ -43,7 +43,7 @@ namespace DotNetService.Domain.User.Repositories
 
             if (!isUpdate)
             {
-                _userQueryRepository.FindOneByEmail(data.Email, true);                
+                _userQueryRepository.FindOneByEmail(data.Email, true);
 
                 var dataCreated = _context.Users.Add(data);
                 _context.SaveChanges();
@@ -53,18 +53,13 @@ namespace DotNetService.Domain.User.Repositories
             try
             {
                 var dataUpdated = _context.Users.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
+                _context.SaveChanges();
 
                 return dataUpdated.Entity;
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("User with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException("User with id " + data.Id + " not found.");
             }
         }
     }

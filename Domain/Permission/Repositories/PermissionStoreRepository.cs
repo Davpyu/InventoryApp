@@ -18,7 +18,7 @@ namespace DotNetService.Domain.Permission.Repositories
             {
                 Name = permissionRepository.Name
             };
-            
+
             return this.Save(newPermission);
         }
 
@@ -60,18 +60,15 @@ namespace DotNetService.Domain.Permission.Repositories
             try
             {
                 var dataUpdated = _context.Permissions.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
+                _context.SaveChanges();
 
                 return dataUpdated.Entity;
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("Permissions with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException(
+                    "Permissions with id " + data.Id + " not found."
+                );
             }
         }
 

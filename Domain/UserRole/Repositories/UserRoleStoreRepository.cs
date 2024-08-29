@@ -6,7 +6,7 @@ namespace DotNetService.Domain.UserRole.Repositories
     public class UserRoleStoreRepository(
         UserRoleQueryRepository userRoleQueryRepository,
         Models.IamDBContext context
-        )
+    )
     {
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
         private readonly Models.IamDBContext _context = context;
@@ -50,17 +50,13 @@ namespace DotNetService.Domain.UserRole.Repositories
             try
             {
                 var dataUpdated = _context.UserRoles.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
-
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("User Role with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException(
+                    "User Role with id " + data.Id + " not found."
+                );
             }
         }
 

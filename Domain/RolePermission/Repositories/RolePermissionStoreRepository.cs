@@ -4,9 +4,9 @@ using DotNetService.Exceptions;
 namespace DotNetService.Domain.RolePermission.Repositories
 {
     public class RolePermissionStoreRepository(
-            Models.IamDBContext context,
-            RolePermissionQueryRepository rolePermissionQueryRepository
-        )
+        Models.IamDBContext context,
+        RolePermissionQueryRepository rolePermissionQueryRepository
+    )
     {
         private readonly Models.IamDBContext _context = context;
         private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
@@ -50,17 +50,13 @@ namespace DotNetService.Domain.RolePermission.Repositories
             try
             {
                 var dataUpdated = _context.RolePermissions.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
-
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("Permissions with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException(
+                    "Permissions with id " + data.Id + " not found."
+                );
             }
         }
 
