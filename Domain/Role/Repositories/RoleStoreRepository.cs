@@ -41,12 +41,14 @@ namespace DotNetService.Domain.Role.Repositories
 
         public void Delete(Guid id)
         {
-            Models.Role data = _roleQueryRepository.FindOneById(id, true);
-
-            _context.Roles.Remove(data);
-            int affectedRows = _context.SaveChanges();
-
-            if (affectedRows == 0)
+            try
+            {
+                Models.Role data = new Models.Role { Id = id };
+                _context.Roles.Attach(data);
+                _context.Roles.Remove(data);
+                _context.SaveChanges();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }

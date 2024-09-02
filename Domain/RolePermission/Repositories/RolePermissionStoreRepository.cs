@@ -29,9 +29,17 @@ namespace DotNetService.Domain.RolePermission.Repositories
 
         public void Delete(Guid id)
         {
-            Models.RolePermission rolePermission = _context.RolePermissions.Where(rolePermission => rolePermission.Id == id).FirstOrDefault();
-            _context.RolePermissions.Remove(rolePermission);
-            _context.SaveChanges();
+            try
+            {
+                Models.RolePermission data = new Models.RolePermission { Id = id };
+                _context.RolePermissions.Attach(data);
+                _context.RolePermissions.Remove(data);
+                _context.SaveChanges();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
+            }
         }
 
         public void DeleteBulk(List<Models.RolePermission> data)

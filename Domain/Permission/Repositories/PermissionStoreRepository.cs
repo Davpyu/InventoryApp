@@ -36,12 +36,14 @@ namespace DotNetService.Domain.Permission.Repositories
 
         public void Delete(Guid id)
         {
-            Models.Permission data = _permissionQueryRepository.FindOneById(id, true);
-
-            _context.Permissions.Remove(data);
-            int affectedRows = _context.SaveChanges();
-
-            if (affectedRows == 0)
+            try
+            {
+                Models.Permission data = new Models.Permission { Id = id };
+                _context.Permissions.Attach(data);
+                _context.Permissions.Remove(data);
+                _context.SaveChanges();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }

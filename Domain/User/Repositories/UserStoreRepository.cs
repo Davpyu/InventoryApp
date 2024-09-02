@@ -27,12 +27,14 @@ namespace DotNetService.Domain.User.Repositories
 
         public void Delete(Guid id)
         {
-            Models.User data = _userQueryRepository.FindOneById(id, true);
-
-            _context.Users.Remove(data);
-            int affectedRows = _context.SaveChanges();
-
-            if (affectedRows == 0)
+            try
+            {
+                Models.User data = new Models.User { Id = id };
+                _context.Users.Attach(data);
+                _context.Users.Remove(data);
+                _context.SaveChanges();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }
