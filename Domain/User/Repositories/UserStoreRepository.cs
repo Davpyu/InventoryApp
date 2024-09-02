@@ -1,8 +1,5 @@
-using Models = DotNetService.Models;
-using System.Linq;
-using DotNetService.Exceptions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
 namespace DotNetService.Domain.User.Repositories
 {
@@ -34,7 +31,7 @@ namespace DotNetService.Domain.User.Repositories
                 _context.Users.Remove(data);
                 _context.SaveChanges();
             }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
+            catch (DbDeleteConcurrencyException)
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }
