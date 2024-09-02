@@ -1,5 +1,5 @@
 using System.Data.Entity.Infrastructure;
-using DotNetService.Exceptions;
+using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
 namespace DotNetService.Domain.UserRole.Repositories
 {
@@ -29,9 +29,17 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public void Delete(Guid id)
         {
-            var userRole = _context.UserRoles.Where(userRole => userRole.Id == id).FirstOrDefault();
-            _context.UserRoles.Remove(userRole);
-            _context.SaveChanges();
+            try
+            {
+                Models.UserRole data = new Models.UserRole { Id = id };
+                _context.UserRoles.Attach(data);
+                _context.UserRoles.Remove(data);
+                _context.SaveChanges();
+            }
+            catch (DbDeleteConcurrencyException)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
+            }
         }
 
         public void DeleteBulk(List<Models.UserRole> data)
