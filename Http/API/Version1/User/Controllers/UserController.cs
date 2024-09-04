@@ -45,7 +45,7 @@ namespace DotNetService.Http.API.Version1.User
         public async Task<ApiResponse> Delete(Guid id)
         {
             await _userService.Delete(id);
-            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(null));
+            return new ApiResponseData(HttpStatusCode.OK, null);
         }
     }
 }
