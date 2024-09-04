@@ -1,4 +1,3 @@
-using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
