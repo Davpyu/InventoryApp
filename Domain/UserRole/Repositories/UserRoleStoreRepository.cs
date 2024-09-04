@@ -11,30 +11,30 @@ namespace DotNetService.Domain.UserRole.Repositories
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
         private readonly Models.IamDBContext _context = context;
 
-        public void Create(Models.UserRole userRole)
+        public async Task Create(Models.UserRole userRole)
         {
-            this.Save(userRole);
+            await this.Save(userRole);
         }
 
-        public void Update(Guid id, Models.UserRole userRole)
+        public async Task Update(Guid id, Models.UserRole userRole)
         {
-            Models.UserRole oldUserRole = _userRoleQueryRepository.Find(id);
+            Models.UserRole oldUserRole = await _userRoleQueryRepository.Find(id);
             if (oldUserRole == null)
             {
                 return;
             }
 
-            this.Save(userRole, true);
+           await this.Save(userRole, true);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             try
             {
                 Models.UserRole data = new Models.UserRole { Id = id };
                 _context.UserRoles.Attach(data);
                 _context.UserRoles.Remove(data);
-                _context.SaveChanges();
+               await _context.SaveChangesAsync();
             }
             catch (DbDeleteConcurrencyException)
             {
@@ -42,23 +42,23 @@ namespace DotNetService.Domain.UserRole.Repositories
             }
         }
 
-        public void DeleteBulk(List<Models.UserRole> data)
+        public async Task DeleteBulk(List<Models.UserRole> data)
         {
             _context.UserRoles.RemoveRange(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        private void Save(Models.UserRole data, bool isUpdate = false)
+        private async Task Save(Models.UserRole data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
                 _context.UserRoles.Add(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             try
             {
                 var dataUpdated = _context.UserRoles.Update(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -68,10 +68,10 @@ namespace DotNetService.Domain.UserRole.Repositories
             }
         }
 
-        public void BulkSave(Models.UserRole[] data)
+        public async Task BulkSave(Models.UserRole[] data)
         {
             _context.UserRoles.AddRange(data);
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
         }
     }
 }

@@ -9,14 +9,14 @@ namespace DotNetService.Domain.UserRole.Repositories
     {
         private readonly Models.IamDBContext _context = context;
 
-        internal Models.UserRole Find(Guid id = default)
+        internal async Task<Models.UserRole>  Find(Guid id = default)
         {
-            return _context.UserRoles.Include("User").Include("Role").Where(userRole => userRole.Id == id).FirstOrDefault();
+            return await _context.UserRoles.Include("User").Include("Role").Where(userRole => userRole.Id == id).FirstOrDefaultAsync();
         }
 
-        public Models.UserRole FindById(Guid id = default)
+        public async Task<Models.UserRole> FindById(Guid id = default)
         {
-            var userRole = this.Find(id);
+            var userRole = await this.Find(id);
             if (userRole == null)
             {
                 return null;
@@ -25,9 +25,9 @@ namespace DotNetService.Domain.UserRole.Repositories
             return userRole;
         }
 
-        public Models.UserRole FindByUserAndRole(Guid userid, Guid roleid)
+        public async Task<Models.UserRole> FindByUserAndRole(Guid userid, Guid roleid)
         {
-            Models.UserRole userRole = _context.UserRoles.Where(userRole => userRole.Userid == userid && userRole.Roleid == roleid).FirstOrDefault();
+            Models.UserRole userRole = await _context.UserRoles.Where(userRole => userRole.Userid == userid && userRole.Roleid == roleid).FirstOrDefaultAsync();
             if (userRole == null)
             {
                 return null;
@@ -36,9 +36,9 @@ namespace DotNetService.Domain.UserRole.Repositories
             return userRole;
         }
 
-        public List<Models.UserRole> FindByUserId(Guid userId = default)
+        public async Task<List<Models.UserRole>> FindByUserId(Guid userId = default)
         {
-            var userRoles = _context.UserRoles.Where(userRole => userRole.Userid == userId).ToList();
+            var userRoles = await _context.UserRoles.Where(userRole => userRole.Userid == userId).ToListAsync();
             if (userRoles.Count < 1)
             {
                 return [];
@@ -47,17 +47,17 @@ namespace DotNetService.Domain.UserRole.Repositories
             return userRoles;
         }
 
-        public List<Models.UserRole> Get(int page, int perPage)
+        public async Task<List<Models.UserRole>> Get(int page, int perPage)
         {
             int skip = (1 - page) * perPage;
             List<Models.UserRole> userRoles;
             IQueryable<Models.UserRole> userQuery = _context.UserRoles;
-            userRoles = userQuery.Skip(skip).Take(perPage).ToList();
+            userRoles = await userQuery.Skip(skip).Take(perPage).ToListAsync();
 
             return userRoles;
         }
 
-        public int Count(string search)
+        public async Task<int> Count(string search)
         {
             IQueryable<Models.UserRole> query = _context
                 .UserRoles.Include(x => x.Role)
@@ -65,7 +65,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 
             query = QuerySearch(query, new Query { Search = search });
 
-            return query.Count();
+            return await query.CountAsync();
         }
 
         private static  IQueryable<Models.UserRole> QuerySearch(

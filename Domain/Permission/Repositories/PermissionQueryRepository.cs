@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Permission;
@@ -11,7 +12,7 @@ namespace DotNetService.Domain.Permission.Repositories
     {
         private readonly Models.IamDBContext _context = context;
 
-        public List<Models.Permission> Pagination(PermissionQueryRequest queryParams)
+        public async Task<List<Models.Permission>> Pagination(PermissionQueryRequest queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Permissions
@@ -22,7 +23,7 @@ namespace DotNetService.Domain.Permission.Repositories
             query = this.QueryFilter(query, queryParams);
             query = this.QuerySort(query, queryParams);
 
-            var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
+            var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
 
             return data;
         }
@@ -52,14 +53,14 @@ namespace DotNetService.Domain.Permission.Repositories
         {
             queryParams.SortBy ??= "updated_at";
 
-            Dictionary<string, Func<Models.Permission, object>> sortFunctions = new()
+            Dictionary<string, Expression<Func<Models.Permission, object>>> sortFunctions = new()
             {
                 { "name", data => data.Name },
                 { "updated_at", data => data.UpdatedAt },
                 { "created_at", data => data.CreatedAt },
             };
 
-            if (!sortFunctions.TryGetValue(queryParams.SortBy, out Func<Models.Permission, object> value))
+            if (!sortFunctions.TryGetValue(queryParams.SortBy, out Expression<Func<Models.Permission, object>> value))
             {
                 throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: " + string.Join(", ", sortFunctions.Keys));
             }
@@ -71,26 +72,26 @@ namespace DotNetService.Domain.Permission.Repositories
             return query;
         }
 
-        public int Count(PermissionQueryRequest queryParams)
+        public async Task<int> Count(PermissionQueryRequest queryParams)
         {
             IQueryable<Models.Permission> query = _context.Permissions;
 
             query = this.QuerySearch(query, queryParams);
             query = this.QueryFilter(query, queryParams);
 
-            return query.Count();
+            return await query.CountAsync();
         }
 
-        internal Models.Permission Find(Guid id = default)
+        internal async Task<Models.Permission> Find(Guid id = default)
         {
-            return _context.Permissions.Where(permission => permission.Id == id).FirstOrDefault();
+            return await _context.Permissions.Where(permission => permission.Id == id).FirstOrDefaultAsync();
         }
 
-        public Models.Permission FindOneById(Guid id = default, bool isThrowException = false)
+        public async Task<Models.Permission> FindOneById(Guid id = default, bool isThrowException = false)
         {
-            var data = _context.Permissions
+            var data = await _context.Permissions
                 .Where(data => data.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (data == null && isThrowException)
             {
@@ -100,9 +101,9 @@ namespace DotNetService.Domain.Permission.Repositories
             return data;
         }
 
-        public Models.Permission FindByName(string name)
+        public async Task<Models.Permission> FindByName(string name)
         {
-            Models.Permission permission = _context.Permissions.Where(permission => permission.Name == name).FirstOrDefault();
+            Models.Permission permission = await _context.Permissions.Where(permission => permission.Name == name).FirstOrDefaultAsync();
             if (permission == null)
             {
                 return null;
@@ -111,7 +112,7 @@ namespace DotNetService.Domain.Permission.Repositories
             return permission;
         }
 
-        public List<Models.Permission> Get(string search, int page, int perPage)
+        public async Task<List<Models.Permission>> Get(string search, int page, int perPage)
         {
             int skip = (1 - page) * perPage;
             List<Models.Permission> permissions;
@@ -120,12 +121,12 @@ namespace DotNetService.Domain.Permission.Repositories
             {
                 permissionQuery = permissionQuery.Where(permission => permission.Name.Contains(search));
             }
-            permissions = permissionQuery.Skip(skip).Take(perPage).ToList();
+            permissions = await permissionQuery.Skip(skip).Take(perPage).ToListAsync();
 
             return permissions;
         }
 
-        public int CountAll(string search)
+        public async Task<int> CountAll(string search)
         {
             IQueryable<Models.Permission> permissionQuery = _context.Permissions;
             if (search != null)
@@ -133,7 +134,7 @@ namespace DotNetService.Domain.Permission.Repositories
                 permissionQuery = permissionQuery.Where(permission => permission.Name.Contains(search));
             }
             
-            return permissionQuery.Count();
+            return await permissionQuery.CountAsync();
         }
     }
 }

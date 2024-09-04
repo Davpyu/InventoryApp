@@ -15,10 +15,10 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         // GET: api/RolePermission
         [HttpGet()]
-        public ApiResponse Index([FromQuery] Query query, [FromHeader] Header header)
+        public async Task<ApiResponse> Index([FromQuery] Query query, [FromHeader] Header header)
         {
-            var rolePermissionsRepo = _rolePermissionService.GetList(query.Page, query.PerPage);
-            int count = _rolePermissionService.Count();
+            var rolePermissionsRepo = await _rolePermissionService.GetList(query.Page, query.PerPage);
+            int count = await _rolePermissionService.Count();
             decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = (new PaginationModel()
                 {
@@ -34,34 +34,34 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         // GET: api/RolePermission/5
         [HttpGet("{id}")]
-        public ApiResponse Show(Guid id)
+        public async Task<ApiResponse> Show(Guid id)
         {
-            var rolePermissionRepository = _rolePermissionService.DetailById(id);
+            var rolePermissionRepository = await _rolePermissionService.DetailById(id);
             return (new ApiResponseData(HttpStatusCode.OK, (new RolePermissionDetail(rolePermissionRepository))));
         }
 
         // POST: api/RolePermission
         [HttpPost()]
         [Consumes("application/json")]
-        public ApiResponse Store(RolePermissionCreateRequest rolePermissionCreate)
+        public async Task<ApiResponse> Store(RolePermissionCreateRequest rolePermissionCreate)
         {
-            _rolePermissionService.Create(rolePermissionCreate);
+            await _rolePermissionService.Create(rolePermissionCreate);
             return (new ApiResponseData(HttpStatusCode.OK, null));
         }
 
         // PUT: api/RolePermission/5
         [HttpPut("{id}")]
-        public ApiResponse Update(Guid id, RolePermissionUpdateRequest rolePermissionUpdate)
+        public async Task<ApiResponse> Update(Guid id, RolePermissionUpdateRequest rolePermissionUpdate)
         {
-            _rolePermissionService.Update(id, rolePermissionUpdate);
+            await _rolePermissionService.Update(id, rolePermissionUpdate);
             return (new ApiResponseData(HttpStatusCode.OK, null));
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public ApiResponse Delete(Guid id)
+        public async Task<ApiResponse> Delete(Guid id)
         {
-            _rolePermissionService.Delete(id);
+            await _rolePermissionService.Delete(id);
             return (new ApiResponseData(HttpStatusCode.OK, null));
         }
     }

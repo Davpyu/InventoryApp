@@ -13,14 +13,14 @@ namespace DotNetService.Domain.RolePermission.Repositories
             _context = context;
         }
 
-        internal Models.RolePermission Find(Guid id = default)
+        internal async Task<Models.RolePermission> Find(Guid id = default)
         {
-            return _context.RolePermissions.Include(x => new { x.Role, x.Permission }).Where(rolePermission => rolePermission.Id == id).FirstOrDefault();
+            return await _context.RolePermissions.Include(x => new { x.Role, x.Permission }).Where(rolePermission => rolePermission.Id == id).FirstOrDefaultAsync();
         }
 
-        public Models.RolePermission FindById(Guid id = default)
+        public async Task<Models.RolePermission> FindById(Guid id = default)
         {
-            var rolePermission = this.Find(id);
+            var rolePermission = await this.Find(id);
             if (rolePermission == null)
             {
                 return null;
@@ -29,11 +29,11 @@ namespace DotNetService.Domain.RolePermission.Repositories
             return rolePermission;
         }
 
-        public Models.RolePermission FindByRoleAndPermission(Guid roleid, Guid permission)
+        public async Task<Models.RolePermission> FindByRoleAndPermission(Guid roleid, Guid permission)
         {
-            var rolePermission = _context.RolePermissions
+            var rolePermission = await _context.RolePermissions
                 .Where(rolePermission => rolePermission.Roleid == roleid && rolePermission.Permissionid == permission)
-                .First();
+                .FirstAsync();
 
             if (rolePermission == null)
             {
@@ -43,11 +43,11 @@ namespace DotNetService.Domain.RolePermission.Repositories
             return rolePermission;
         }
 
-        public List<Models.RolePermission> FindByRoleId(Guid roleId)
+        public async Task<List<Models.RolePermission>> FindByRoleId(Guid roleId)
         {
-            var rolePermissions = _context.RolePermissions
+            var rolePermissions = await _context.RolePermissions
                 .Where(rolePermission => rolePermission.Roleid == roleId)
-                .ToList();
+                .ToListAsync();
 
             if (rolePermissions.Count < 1)
             {
@@ -57,18 +57,18 @@ namespace DotNetService.Domain.RolePermission.Repositories
             return rolePermissions;
         }
         
-        public List<Models.RolePermission> Get(int page, int perPage)
+        public async Task<List<Models.RolePermission>> Get(int page, int perPage)
         {
             int skip = (1 - page) * perPage;
             List<Models.RolePermission> rolePermissions;
-            rolePermissions = _context.RolePermissions.Skip(skip).Take(perPage).ToList();
+            rolePermissions = await _context.RolePermissions.Skip(skip).Take(perPage).ToListAsync();
 
             return rolePermissions;
         }
 
-        public int CountAll()
+        public async Task<int> CountAll()
         {
-            return _context.RolePermissions.Count();
+            return await _context.RolePermissions.CountAsync();
         }
     }
 }
