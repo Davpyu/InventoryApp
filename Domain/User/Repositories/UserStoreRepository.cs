@@ -11,25 +11,25 @@ namespace DotNetService.Domain.User.Repositories
         private readonly Models.IamDBContext _context = context;
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
 
-        public Models.User Create(Models.User data)
+        public async Task<Models.User> Create(Models.User data)
         {
-            return this.Save(data);
+            return await this.Save(data);
         }
 
-        public Models.User Update(Guid id, Models.User newData)
+        public async Task<Models.User> Update(Guid id, Models.User newData)
         {
             newData.Id = id;
-            return this.Save(newData, true);
+            return await this.Save(newData, true);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             try
             {
                 Models.User data = new Models.User { Id = id };
                 _context.Users.Attach(data);
                 _context.Users.Remove(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbDeleteConcurrencyException)
             {
@@ -37,22 +37,22 @@ namespace DotNetService.Domain.User.Repositories
             }
         }
 
-        private Models.User Save(Models.User data, bool isUpdate = false)
+        private async Task<Models.User> Save(Models.User data, bool isUpdate = false)
         {
 
             if (!isUpdate)
             {
-                _userQueryRepository.FindOneByEmail(data.Email, true);
+                await _userQueryRepository.FindOneByEmail(data.Email, true);
 
                 var dataCreated = _context.Users.Add(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return dataCreated.Entity;
             }
 
             try
             {
                 var dataUpdated = _context.Users.Update(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return dataUpdated.Entity;
             }

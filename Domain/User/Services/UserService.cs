@@ -20,10 +20,10 @@ namespace DotNetService.Domain.User.Services
         private readonly UserRoleStoreRepository _userRoleStoreRepository = userRoleStoreRepository;
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
 
-        public ApiResponse Index(UserQueryRequest query = null)
+        public async Task<ApiResponse> Index(UserQueryRequest query = null)
         {
-            var data = _userQueryRepository.Pagination(query);
-            int count = _userQueryRepository.Count(query);
+            var data = await _userQueryRepository.Pagination(query);
+            int count = await _userQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
                 {
@@ -37,10 +37,10 @@ namespace DotNetService.Domain.User.Services
             return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }
 
-        public Models.User Create(UserCreateRequest dataCreate)
+        public async Task<Models.User> Create(UserCreateRequest dataCreate)
         {
             var data = UserCreateRequest.Assign(dataCreate);
-            var user = _userStoreRepository.Create(data);
+            var user = await _userStoreRepository.Create(data);
             if (dataCreate.RoleIds?.Count > 0)
             {
                 var userRoles = new List<Models.UserRole>();
@@ -54,24 +54,25 @@ namespace DotNetService.Domain.User.Services
 
                     userRoles.Add(userRole);
                 }
-                _userRoleStoreRepository.BulkSave(userRoles.ToArray());
+                await _userRoleStoreRepository.BulkSave(userRoles.ToArray());
             }
-            return this.Detail(user.Id);
+            return await this.Detail(user.Id);
         }
 
-        public Models.User Detail(Guid id)
+        public async Task<Models.User> Detail(Guid id)
         {
-            return _userQueryRepository.FindOneById(id, true);
+            return await _userQueryRepository.FindOneById(id, true);
         }
 
-        public Models.User Update(Guid id, UserUpdateRequest dataUpdate)
+        public async Task<Models.User> Update(Guid id, UserUpdateRequest dataUpdate)
         {
             var data = UserUpdateRequest.Assign(dataUpdate);
-            var updatedData = _userStoreRepository.Update(id, data);
-            var userRoles = this.Detail(id).UserRoles;
+            var updatedData = await _userStoreRepository.Update(id, data);
+            var user = await this.Detail(id);
+            var userRoles = user?.UserRoles;
             if(userRoles?.Count > 0){
-                var userRolesToDelete = _userRoleQueryRepository.FindByUserId(id);
-                _userRoleStoreRepository.DeleteBulk(userRolesToDelete);
+                var userRolesToDelete = await _userRoleQueryRepository.FindByUserId(id);
+                await _userRoleStoreRepository.DeleteBulk(userRolesToDelete);
             }
             if (dataUpdate.RoleIds?.Count > 0)
             {
@@ -86,15 +87,15 @@ namespace DotNetService.Domain.User.Services
 
                     newUserRoles.Add(userRole);
                 }
-                _userRoleStoreRepository.BulkSave(newUserRoles.ToArray());
+                await _userRoleStoreRepository.BulkSave(newUserRoles.ToArray());
             }
-            return this.Detail(updatedData.Id);
+            return await this.Detail(updatedData.Id);
 
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _userStoreRepository.Delete(id);
+            await _userStoreRepository.Delete(id);
         }
     }
 }

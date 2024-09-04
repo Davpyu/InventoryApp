@@ -17,36 +17,36 @@ namespace DotNetService.Domain.Role.Repositories
             _roleQueryRepository = roleQueryRepository;
         }
 
-        public Models.Role Create(Models.Role role)
+        public async Task<Models.Role> Create(Models.Role role)
         {
             Models.Role newRole = new()
             {
                 Name = role.Name
             };
 
-            return this.Save(newRole);
+            return await this.Save(newRole);
         }
 
-        public void Update(Guid id, Models.Role roleRepository)
+        public async Task Update(Guid id, Models.Role roleRepository)
         {
-            Models.Role oldRole = _roleQueryRepository.Find(id);
+            Models.Role oldRole = await _roleQueryRepository.Find(id);
             if (oldRole == null)
             {
                 return;
             }
 
             oldRole.Name = roleRepository.Name;
-            this.Save(oldRole, true);
+            await this.Save(oldRole, true);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             try
             {
                 Models.Role data = new Models.Role { Id = id };
                 _context.Roles.Attach(data);
                 _context.Roles.Remove(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbDeleteConcurrencyException)
             {
@@ -54,20 +54,20 @@ namespace DotNetService.Domain.Role.Repositories
             }
         }
 
-        private Models.Role Save(Models.Role data, bool isUpdate = false)
+        private async Task<Models.Role> Save(Models.Role data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
 
                 var dataCreated = _context.Roles.Add(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return dataCreated.Entity;
             }
 
             try
             {
                 var dataUpdated = _context.Roles.Update(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return dataUpdated.Entity;
             }

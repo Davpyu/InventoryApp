@@ -32,9 +32,9 @@ namespace DotNetService.Domain.Auth.Services
         private readonly IConfiguration _config = config;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public AuthInfo SignIn(AuthSignInRequest authSignIn)
+        public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
         {
-            var user = _userQueryRepository.FindOneByEmail(authSignIn.Email);
+            var user = await _userQueryRepository.FindOneByEmail(authSignIn.Email);
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (user == null || !isPasswordVerified)
@@ -55,7 +55,7 @@ namespace DotNetService.Domain.Auth.Services
             };
         }
 
-        public void Register(AuthRegisterRequest authRegister)
+        public async Task Register(AuthRegisterRequest authRegister)
         {
             Models.User data = new()
             {
@@ -64,30 +64,30 @@ namespace DotNetService.Domain.Auth.Services
                 Password = BC.HashPassword(authRegister.Password)
             };
 
-            _userStoreRepository.Create(data);
+            await _userStoreRepository.Create(data);
         }
 
-        public Models.User Account()
+        public async Task<Models.User> Account()
         {
             _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
-            return _userQueryRepository.FindOneById(userId);
+            return await _userQueryRepository.FindOneById(userId);
         }
 
-        public bool IsUserHaveRole(Guid userId, string role)
+        public async Task<bool> IsUserHaveRole(Guid userId, string role)
         {
-            var userRoles = _userRoleQueryRepository.FindByUserId(userId);
+            var userRoles = await _userRoleQueryRepository.FindByUserId(userId);
             var roleIds = userRoles.Select(userRole => userRole.Id).ToArray();
-            return _roleQueryRepository.IsExistsByNameAndIds(role, roleIds);
+            return await _roleQueryRepository.IsExistsByNameAndIds(role, roleIds);
         }
 
-        public bool IsRoleHavePermission(string role, string permission)
+        public async Task<bool> IsRoleHavePermission(string role, string permission)
         {
-            var roleRepository = _roleQueryRepository.FindByName(role);
-            var permissionRepository = _permissionQueryRepository.FindByName(permission);
+            var roleRepository = await _roleQueryRepository.FindByName(role);
+            var permissionRepository = await _permissionQueryRepository.FindByName(permission);
             Guid roleId = roleRepository.Id;
             Guid permissionId = permissionRepository.Id;
 
-            var rolePermission = _rolePermissionQueryRepository.FindByRoleAndPermission(roleId, permissionId);
+            var rolePermission = await _rolePermissionQueryRepository.FindByRoleAndPermission(roleId, permissionId);
             return rolePermission != null;
         }
     }

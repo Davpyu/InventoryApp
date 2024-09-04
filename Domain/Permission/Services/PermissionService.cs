@@ -14,10 +14,10 @@ namespace DotNetService.Domain.Permission.Services
         private readonly PermissionStoreRepository _permissionStoreRepository = permissionStoreRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
 
-        public ApiResponse Index(PermissionQueryRequest query = null)
+        public async Task<ApiResponse> Index(PermissionQueryRequest query = null)
         {
-            var data = this.Pagination(query);
-            int count = _permissionQueryRepository.Count(query);
+            var data = await this.Pagination(query);
+            int count = await _permissionQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
                 PaginationModel paginate = new()
                 {
@@ -31,41 +31,41 @@ namespace DotNetService.Domain.Permission.Services
             return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }
 
-        public List<Models.Permission> Pagination(PermissionQueryRequest query = null)
+        public async Task<List<Models.Permission>> Pagination(PermissionQueryRequest query = null)
         {
-            return _permissionQueryRepository.Pagination(query);
+            return await _permissionQueryRepository.Pagination(query);
         }
 
-        public Models.Permission Create(PermissionCreateRequest dataCreate)
+        public async Task<Models.Permission> Create(PermissionCreateRequest dataCreate)
         {
             var data = PermissionCreateRequest.Assign(dataCreate);
 
-            return _permissionStoreRepository.Create(data);
+            return await _permissionStoreRepository.Create(data);
         }
 
-        public Models.Permission DetailById(Guid id)
+        public async Task<Models.Permission> DetailById(Guid id)
         {
-            return _permissionQueryRepository.FindOneById(id);
+            return await _permissionQueryRepository.FindOneById(id);
         }
 
-        public List<Models.Permission> GetList(string search, int page, int perPage)
+        public async Task<List<Models.Permission>> GetList(string search, int page, int perPage)
         {
-            return _permissionQueryRepository.Get(search, page, perPage);
+            return await _permissionQueryRepository.Get(search, page, perPage);
         }
-        public int Count(string search)
+        public async Task<int> Count(string search)
         {
-            return _permissionQueryRepository.CountAll(search);
+            return await _permissionQueryRepository.CountAll(search);
         }
 
-        public void Update(Guid id, PermissionUpdateRequest dataUpdate)
+        public async Task Update(Guid id, PermissionUpdateRequest dataUpdate)
         {
             var data = PermissionUpdateRequest.Assign(dataUpdate);
-            _permissionStoreRepository.Update(id, data);
+            await _permissionStoreRepository.Update(id, data);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _permissionStoreRepository.Delete(id);
+            await _permissionStoreRepository.Delete(id);
         }
     }
 }
