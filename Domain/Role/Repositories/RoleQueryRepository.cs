@@ -122,7 +122,7 @@ namespace DotNetService.Domain.Role.Repositories
 
         public async Task<bool> IsExistsByNameAndIds(string nameRole, Guid[] roleIds)
         {
-            return await _context.Roles.Where(role => role.Name == nameRole).Where(role => roleIds.Contains(role.Id)).CountAsync() > 0;
+            return await _context.Roles.Where(role => role.Name == nameRole).Where(role => roleIds.Contains(role.Id)).AnyAsync();
         }
 
         public async Task<List<Models.Role>> Get(string search, int page, int perPage)
