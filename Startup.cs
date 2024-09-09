@@ -58,7 +58,7 @@ namespace DotNetService
                 var appName = SanitizeFileName(Configuration["App:Name"]);
                 var hostName = SanitizeFileName(Dns.GetHostName());
                 var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-            
+
                 loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-default.log",
                     fileLoggerOpts =>
                     {
@@ -156,6 +156,13 @@ namespace DotNetService
 
             // Queue Servicee
             services.AddHostedService<QueuedHostedService>();
+            services.AddHostedService<ConnectionPoolCheckerService>(sp =>
+            {
+                var logger = sp.GetRequiredService<ILogger<ConnectionPoolCheckerService>>();
+                var connectionString = Configuration["ConnectionString:DefaultConnection1"];
+                var interval = Configuration["ConnectionPoolCheckerInterval"] != null ? int.Parse(Configuration["ConnectionPoolCheckerInterval"]) : 60;
+                return new ConnectionPoolCheckerService(logger, connectionString, interval);
+            });
             services.AddSingleton(ctx =>
             {
                 if (!int.TryParse(Configuration["Queue:Capacity"], out var queueCapacity))
