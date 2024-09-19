@@ -7,35 +7,23 @@ namespace DotNetService.Infrastructure.BackgroundHosted
 {
     public class NATsTask(
         IServiceScopeFactory serviceScopeFactory,
-        NATsIntegration natsIntegration
+        NATsIntegration _natsIntegration
         )
     {
         public void Listen()
         {
             /** Init all task listeners here */
 
-            /*==================== Logging ====================*/
-            natsIntegration.InitListenTask<LoggingNATsListen>(serviceScopeFactory,
-                EndpointCallEventConstant.SUBS_POST_SUBJECT
-            );
-            natsIntegration.InitListenTask<LoggingNATsListen>(serviceScopeFactory,
-                EndpointCallEventConstant.SUBS_GET_SUBJECT
-            );
-            natsIntegration.InitListenTask<LoggingNATsListen>(serviceScopeFactory,
-                EndpointCallEventConstant.SUBS_PUT_SUBJECT
-            );
-            natsIntegration.InitListenTask<LoggingNATsListen>(serviceScopeFactory,
-                EndpointCallEventConstant.SUBS_PATCH_SUBJECT
-            );
-            natsIntegration.InitListenTask<LoggingNATsListen>(serviceScopeFactory,
-                EndpointCallEventConstant.SUBS_DELETE_SUBJECT
-            );
-            natsIntegration.InitListenTask<LoggingNATsListen>(serviceScopeFactory,
-                EndpointCallEventConstant.SUBS_OPTIONS_SUBJECT
-            );
-
             /*==================== Other Module ====================*/
+        }
 
+        public void ConsumeJetStream() 
+        {
+            /*==================== Logging ====================*/
+            _natsIntegration.InitPullListenerTask<LoggingNATsListener>(serviceScopeFactory,
+                NATsEventStreamModuleEnum.JETSTREAM_PAMA.ToString(),
+                LoggingCallEventConstant.SUBS_LOGGER_SUBJECT
+            );
         }
 
         public void ListenAndReply()
@@ -43,14 +31,13 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             /** Init all task listeners here */
 
             /*==================== Logging ====================*/
-            natsIntegration.InitListenAndReplyTask<LoggingNATsListenAndReply>(serviceScopeFactory,
-                natsIntegration.Subject(
+            _natsIntegration.InitListenAndReplyTask<LoggingNATsListenAndReply>(serviceScopeFactory,
+                _natsIntegration.Subject(
                     NATsEventModuleEnum.LOGGER,
                     NATsEventActionEnum.DEBUG,
                     NATsEventStatusEnum.INFO
                 )
             );
-
             /*==================== Other Module ====================*/
         }
     }

@@ -31,7 +31,7 @@ namespace DotNetService.Exceptions
                 string errorMessage = error.Message;
                 var validationError = ErrorValidation.ErrorModel(null);
 
-                _logger.LogError(error, "{errorMessage}", errorMessage);
+                // _logger.LogError(error, "{errorMessage}", errorMessage);
 
                 HttpStatusCode statusCode;
                 switch (error)
