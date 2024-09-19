@@ -208,7 +208,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                         DeliverPolicy = ConsumerConfigDeliverPolicy.All,
                         FilterSubject = subject,
                         MaxAckPending = 0,
-                        AckWait = TimeSpan.FromSeconds(3600),
+                        AckWait = TimeSpan.FromSeconds(5),
                         MaxDeliver = -1,
                     };
 
