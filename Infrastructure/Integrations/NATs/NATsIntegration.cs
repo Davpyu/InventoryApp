@@ -6,7 +6,6 @@ using DotNetService.Constants.Event;
 using DotNetService.Infrastructure.Subscriptions;
 using NATS.Client.JetStream;
 using NATS.Client.JetStream.Models;
-using Newtonsoft.Json.Linq;
 
 namespace DotNetService.Infrastructure.Integrations.NATs
 {
@@ -47,7 +46,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
 
         public async Task Publish<T>(string subject, T data)
         {
-            _logger.LogError("Start Publihing with subject : {subject} | data : {data}", subject, data);
+            _logger.LogError("Start Publishing with subject : {subject} | data : {data}", subject, data);
             try
             {
                 var ack = await _js.PublishAsync(subject, data);
@@ -105,7 +104,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public async void InitAsyncListenAndReplyTask<TListenAndReply>(IServiceScopeFactory serviceScopeFactory, string subject) where TListenAndReply : IReplyAsyncAction<IDictionary<string, object>, IDictionary<string, object>>
+        public async Task InitAsyncListenAndReplyTask<TListenAndReply>(IServiceScopeFactory serviceScopeFactory, string subject) where TListenAndReply : IReplyAsyncAction<IDictionary<string, object>, IDictionary<string, object>>
         {
             _logger.LogInformation("Start Subscription With Async Reply Of {Subject} : ", subject);
             await Task.Run(
@@ -162,7 +161,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
  
-        public async void InitPushListenerTask<TListen>(IServiceScopeFactory serviceScopeFactory, string streamName, string subject) where TListen : ISubscriptionAction<IDictionary<string, object>>
+        public async Task InitPushListenerTask<TListen>(IServiceScopeFactory serviceScopeFactory, string streamName, string subject) where TListen : ISubscriptionAction<IDictionary<string, object>>
         {
             _logger.LogInformation("Start Subscription NATs JetStream of {Subject} : ", subject);
             await Task.Run(
@@ -197,7 +196,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public async void InitPullListenerTask<TListen>(IServiceScopeFactory serviceScopeFactory, string streamName, string subject, int maxConsumption = 10) where TListen : ISubscriptionAction<IDictionary<string, object>>
+        public async Task InitPullListenerTask<TListen>(IServiceScopeFactory serviceScopeFactory, string streamName, string subject, int maxConsumption = 10) where TListen : ISubscriptionAction<IDictionary<string, object>>
         {
             await Task.Run(
                 async () =>

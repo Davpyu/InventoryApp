@@ -6,16 +6,18 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace DotNetService.Infrastructure.Events
 {
-    public class PublishNATsLoggingEvent(
-        NATsIntegration natsIntegration,
-        ILoggerFactory loggerFactory
-    ) : IAsyncActionFilter
+    public class PublishNATsLoggingEvent : IAsyncActionFilter
     {
-        public readonly ILogger _loggerIntegration = loggerFactory.CreateLogger(LoggerConstant.INTEGRATION);
-        public readonly NATsIntegration _natsIntegration = natsIntegration;
+        public readonly ILogger _loggerIntegration;
+        public readonly NATsIntegration _natsIntegration;
 
-        public async Task OnActionExecutionAsync(
-            ActionExecutingContext context, ActionExecutionDelegate next)
+        public PublishNATsLoggingEvent(ILoggerFactory loggerFactory, NATsIntegration natsIntegration)
+        {
+            _loggerIntegration = loggerFactory.CreateLogger(LoggerConstant.INTEGRATION);
+            _natsIntegration = natsIntegration;
+        }
+
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var method = context.HttpContext.Request.Method;
             var isAuthenticated = context.HttpContext.User.Identity.IsAuthenticated;
@@ -27,20 +29,23 @@ namespace DotNetService.Infrastructure.Events
 
             await next();
 
+            RunBackgroundProcess(context, subject, dataTime, userId, method, endpoint);
+        }
+
+        private void RunBackgroundProcess(ActionExecutingContext context, string subject, string dataTime, string userId, string method, string endpoint)
+        {
             Utils.BackgroundProcessThreadAsync(async Task () =>
             {
+                var data = new
                 {
-                    var data = new
-                    {
-                        dataTime,
-                        userId,
-                        method,
-                        endpoint,
-                        actionArguments = context.ActionArguments,
-                    };
+                    dataTime,
+                    userId,
+                    method,
+                    endpoint,
+                    actionArguments = context.ActionArguments,
+                };
 
-                    await _natsIntegration.Publish<object>(subject, Utils.JsonSerialize(data));
-                }
+                await _natsIntegration.Publish<object>(subject, Utils.JsonSerialize(data));
             });
         }
     }
