@@ -48,7 +48,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
 
         public async Task Publish<T>(string subject, T data)
         {
-            _logger.LogError("Start Publishing with subject : {subject} | data : {data}", subject, data);
+            _logger.LogInformation("Start Publishing with subject : {subject} | data : {data}", subject, data);
             try
             {
                 var ack = await _js.PublishAsync(subject, data);
