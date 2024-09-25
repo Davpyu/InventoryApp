@@ -31,7 +31,7 @@ namespace DotNetService.Constants.Event
         LOGIN
     }
 
-    public enum NATsEventNATSTypeEnum
+    public enum NATsEventNATSType
     {
         CORE,
         JETSTREAM,
@@ -47,7 +47,7 @@ namespace DotNetService.Constants.Event
         // Add more module here
     }
     
-    public enum NATsEventStreamModuleEnum
+    public enum NATsEventStreamModule
     {
         JETSTREAM_PAMA,
         // Add more module here

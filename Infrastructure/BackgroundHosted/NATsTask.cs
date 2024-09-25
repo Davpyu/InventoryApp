@@ -21,7 +21,7 @@ namespace DotNetService.Infrastructure.BackgroundHosted
         {
             /*==================== Logging ====================*/
             _ = _natsIntegration.InitPullListenerTask<LoggingNATsListener>(serviceScopeFactory,
-                NATsEventStreamModuleEnum.JETSTREAM_PAMA.ToString(),
+                NATsEventStreamModule.JETSTREAM_PAMA.ToString(),
                 LoggingCallEventConstant.SUBS_LOGGER_SUBJECT
             );
         }

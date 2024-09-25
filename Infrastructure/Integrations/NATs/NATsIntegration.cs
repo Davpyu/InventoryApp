@@ -29,7 +29,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             NATsEventModuleEnum modul,
             NATsEventActionEnum action,
             NATsEventStatusEnum status,
-            NATsEventNATSTypeEnum? type = null
+            NATsEventNATSType? type = null
         )
         {
             string subject = $"{modul}.{action}.{status}";

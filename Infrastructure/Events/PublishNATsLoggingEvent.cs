@@ -25,7 +25,7 @@ namespace DotNetService.Infrastructure.Events
             var endpoint = context.HttpContext.Request.Path;
             var dataTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
-            string subject = _natsIntegration.Subject(NATsEventModuleEnum.LOGGER, NATsEventActionEnum.DEBUG, NATsEventStatusEnum.INFO, NATsEventNATSTypeEnum.JETSTREAM);
+            string subject = _natsIntegration.Subject(NATsEventModuleEnum.LOGGER, NATsEventActionEnum.DEBUG, NATsEventStatusEnum.INFO, NATsEventNATSType.JETSTREAM);
 
             await next();
 
