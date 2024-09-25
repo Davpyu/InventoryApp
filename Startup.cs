@@ -128,7 +128,6 @@ namespace DotNetService
             //         .WithCredentials(Configuration["Minio:ClientId"], Configuration["Minio:ClientSecret"]));
             // }
 
-
             services.AddNats(1000, options =>
             {
 
@@ -202,6 +201,7 @@ namespace DotNetService
                 {
                     options.Filters.Add<ValidatorAttribute>();
                     options.Filters.Add<PublishNATsEndpointCallEvent>();
+                    options.Filters.Add<PublishNATsLoggingEvent>();
                 }
             ).AddNewtonsoftJson(
                 options =>

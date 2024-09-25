@@ -6,7 +6,6 @@ using DotNetService.Domain.RolePermission.Repositories;
 using DotNetService.Domain.UserRole.Repositories;
 using DotNetService.Exceptions;
 using BC = BCrypt.Net.BCrypt;
-using DotNetService.Infrastructure.Shareds;
 using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
 
