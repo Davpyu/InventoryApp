@@ -200,7 +200,7 @@ namespace DotNetService
                 options =>
                 {
                     options.Filters.Add<ValidatorAttribute>();
-                    // options.Filters.Add<PublishNATsEndpointCallEvent>();
+                    options.Filters.Add<PublishNATsEndpointCallEvent>();
                     options.Filters.Add<PublishNATsLoggingEvent>();
                 }
             ).AddNewtonsoftJson(

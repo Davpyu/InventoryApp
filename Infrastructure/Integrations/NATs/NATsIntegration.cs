@@ -18,7 +18,8 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         public NATsIntegration(
             ILoggerFactory loggerFactory,
             NatsConnection natsConnection
-        ) {
+        )
+        {
             _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
             _js = new NatsJSContext(natsConnection);
             _natsConnection = natsConnection;
@@ -28,10 +29,11 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             NATsEventModuleEnum modul,
             NATsEventActionEnum action,
             NATsEventStatusEnum status,
-            NATsEventNATSTypeEnum type = NATsEventNATSTypeEnum.CORE
+            NATsEventNATSTypeEnum? type = null
         )
         {
-            string subject = $"{type}.{modul}.{action}.{status}";
+            string subject = $"{modul}.{action}.{status}";
+            if (type != null) subject = $"{type}.{subject}";
 
             subject = subject.Replace(NATsEventCommon.ALL.ToString(), "*");
 
@@ -76,7 +78,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                 throw new ServiceUnavailableException();
             }
         }
-        
+
         public void InitListenTask<TListen>(IServiceScopeFactory serviceScopeFactory, string subject) where TListen : ISubscriptionAction<IDictionary<string, object>>
         {
             _logger.LogInformation("Start Subscription of {Subject} : ", subject);
@@ -160,7 +162,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                 }
             );
         }
- 
+
         public async Task InitPushListenerTask<TListen>(IServiceScopeFactory serviceScopeFactory, string streamName, string subject) where TListen : ISubscriptionAction<IDictionary<string, object>>
         {
             _logger.LogInformation("Start Subscription NATs JetStream of {Subject} : ", subject);
@@ -170,7 +172,8 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                     // Create a consumer on a stream to receive the messages
                     var consumerName = (streamName + "_consumer_push_processor").ToLower();
 
-                    var consumerConfig = new ConsumerConfig(consumerName) {
+                    var consumerConfig = new ConsumerConfig(consumerName)
+                    {
                         DeliverPolicy = ConsumerConfigDeliverPolicy.New,
                         FilterSubject = subject,
                         AckPolicy = ConsumerConfigAckPolicy.Explicit,
@@ -183,7 +186,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
 
                     await foreach (var jsMsg in consumer.ConsumeAsync<string>())
                     {
-                        
+
                         using var scope = serviceScopeFactory.CreateScope();
                         var action = scope.ServiceProvider.GetRequiredService<TListen>();
                         var data = jsMsg.Data;
@@ -198,12 +201,14 @@ namespace DotNetService.Infrastructure.Integrations.NATs
 
         public async Task InitPullListenerTask<TListen>(IServiceScopeFactory serviceScopeFactory, string streamName, string subject, int maxConsumption = 10) where TListen : ISubscriptionAction<IDictionary<string, object>>
         {
+            _logger.LogInformation("Start Subscription NATs JetStream of {Subject} : ", subject);
             await Task.Run(
                 async () =>
                 {
                     var consumerName = (streamName + "_consumer_pull_processor").ToLower();
 
-                    var consumerConfig = new ConsumerConfig(consumerName) {
+                    var consumerConfig = new ConsumerConfig(consumerName)
+                    {
                         DeliverPolicy = ConsumerConfigDeliverPolicy.All,
                         FilterSubject = subject,
                         MaxAckPending = 0,
@@ -213,7 +218,8 @@ namespace DotNetService.Infrastructure.Integrations.NATs
 
                     var consumer = await _js.CreateOrUpdateConsumerAsync(streamName, consumerConfig);
 
-                    while(true) {
+                    while (true)
+                    {
                         await foreach (var jsMsg in consumer.FetchAsync<string>(opts: new NatsJSFetchOpts { MaxMsgs = maxConsumption }))
                         {
                             using var scope = serviceScopeFactory.CreateScope();

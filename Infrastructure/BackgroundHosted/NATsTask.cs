@@ -20,7 +20,7 @@ namespace DotNetService.Infrastructure.BackgroundHosted
         public void ConsumeJetStream() 
         {
             /*==================== Logging ====================*/
-            _natsIntegration.InitPullListenerTask<LoggingNATsListener>(serviceScopeFactory,
+            _ = _natsIntegration.InitPullListenerTask<LoggingNATsListener>(serviceScopeFactory,
                 NATsEventStreamModuleEnum.JETSTREAM_PAMA.ToString(),
                 LoggingCallEventConstant.SUBS_LOGGER_SUBJECT
             );
