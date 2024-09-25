@@ -182,7 +182,7 @@ namespace DotNetService
 
             services.AddFluentValidation(fvc => fvc.RegisterValidatorsFromAssemblyContaining<Startup>());
 
-            var poolSize = Configuration["ConnectionPoolSize:DefaultConnection1"] != null ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"]) : 1024;
+            var poolSize = Configuration["ConnectionPoolSize:DefaultConnection1"] != null ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"]) : 50;
 
             services.AddDbContextPool<IamDBContext>(
                 options => options.UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""),

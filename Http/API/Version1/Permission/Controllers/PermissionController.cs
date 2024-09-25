@@ -15,37 +15,37 @@ namespace DotNetService.Http.API.Version1.Permission
 
         // GET: api/Permission
         [HttpGet()]
-        public ApiResponse Index([FromQuery] PermissionQueryRequest query)
+        public async Task<ApiResponse> Index([FromQuery] PermissionQueryRequest query)
         {
-            return _permissionService.Index(query);
+            return await _permissionService.Index(query);
         }
 
         // GET: api/Permission/5
         [HttpGet("{id}")]
-        public ApiResponse Show(Guid id)
+        public async Task<ApiResponse> Show(Guid id)
         {
-            var permissionRepository = _permissionService.DetailById(id);
+            var permissionRepository = await _permissionService.DetailById(id);
             return new ApiResponseData(HttpStatusCode.OK, new PermissionResponse(permissionRepository));
         }
 
         [HttpPost()]
-        public ApiResponse Store(PermissionCreateRequest dataCreate)
+        public async Task<ApiResponse> Store(PermissionCreateRequest dataCreate)
         {
-            var data = _permissionService.Create(dataCreate);
+            var data = await _permissionService.Create(dataCreate);
             return new ApiResponseData(HttpStatusCode.OK, new PermissionResponse(data));
         }
 
         [HttpPut("{id}")]
-        public ApiResponse Update(Guid id, PermissionUpdateRequest dataUpdate)
+        public async Task<ApiResponse> Update(Guid id, PermissionUpdateRequest dataUpdate)
         {
-            _permissionService.Update(id, dataUpdate);
+            await _permissionService.Update(id, dataUpdate);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpDelete("{id}")]
-        public ApiResponse Delete(Guid id)
+        public async Task<ApiResponse> Delete(Guid id)
         {
-            _permissionService.Delete(id);
+            await _permissionService.Delete(id);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
     }
