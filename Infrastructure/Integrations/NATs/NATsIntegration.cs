@@ -49,15 +49,24 @@ namespace DotNetService.Infrastructure.Integrations.NATs
         public async Task Publish<T>(string subject, T data)
         {
             _logger.LogInformation("Start Publishing with subject : {subject} | data : {data}", subject, data);
-            try
+            bool isJetstream = subject.Contains(NATsEventNATSType.JETSTREAM.ToString(), StringComparison.CurrentCultureIgnoreCase);
+
+            if (isJetstream)
             {
-                var ack = await _js.PublishAsync(subject, data);
-                ack.EnsureSuccess();
+                try
+                {
+                    var ack = await _js.PublishAsync(subject, data);
+                    ack.EnsureSuccess();
+                }
+                catch (NatsJSException e)
+                {
+                    _logger.LogError("Error StackTrace: {StackTrace}", e.StackTrace);
+                    throw new ServiceUnavailableException();
+                }
             }
-            catch (NatsJSException e)
+            else
             {
-                _logger.LogError("Error StackTrace: {StackTrace}", e.StackTrace);
-                throw new ServiceUnavailableException();
+                await _natsConnection.PublishAsync(subject, data);
             }
         }
 
@@ -232,7 +241,36 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                         }
 
                         await Task.Delay(1000);
-                        _logger.LogInformation("Slept for 1 second");
+                    }
+                }
+            );
+        }
+
+        public void InitListenAndReplyTaskAsync<TListenAndReply>(IServiceScopeFactory serviceScopeFactory, string subject) where TListenAndReply : IReplyAction<IDictionary<string, object>, Task<IDictionary<string, object>>>
+        {
+            _logger.LogInformation("Start Subscription With Reply Of {Subject} : ", subject);
+            Task.Run(
+                async () =>
+                {
+                    await foreach (var msg in _natsConnection.SubscribeAsync<string>(subject))
+                    {
+                        try
+                        {
+                            _logger.LogInformation("Get Subscribed Data {msg.Data}", msg.Data);
+
+                            using var scope = serviceScopeFactory.CreateScope();
+                            var action = scope.ServiceProvider.GetRequiredService<TListenAndReply>();
+
+                            var data = msg.Data;
+                            var reply = await action.Reply(Utils.JsonDeserialize<IDictionary<string, object>>(data));
+
+                            var jsonReply = Utils.JsonSerialize(reply);
+                            await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error On Get Subscribed Data {msg.Data}", msg.Data);
+                        }
                     }
                 }
             );

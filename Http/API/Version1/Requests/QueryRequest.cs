@@ -16,6 +16,7 @@ namespace DotNetService.Http.API.Version1
             Order = SortOrderEnum.Desc;
             PerPage = 10;
             Page = 1;
+            SortBy = "created_at";
         }
 
         [FromQuery(Name = "search")]
@@ -26,6 +27,7 @@ namespace DotNetService.Http.API.Version1
         public int PerPage { get; set; }
 
         [FromQuery(Name = "page")]
+        [Range(1, int.MaxValue)]
         public int Page { get; set; }
 
         [FromQuery(Name = "sort_by")]
