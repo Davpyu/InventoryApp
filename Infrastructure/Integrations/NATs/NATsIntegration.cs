@@ -61,7 +61,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                 catch (NatsJSException e)
                 {
                     _logger.LogError("Error StackTrace: {StackTrace}", e.StackTrace);
-                    throw new ServiceUnavailableException();
+                    throw new ServiceUnavailableException("Error on Publish JetStream: " + e.Message);
                 }
             }
             else
@@ -84,7 +84,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             catch (NatsException e)
             {
                 _logger.LogError("Error StackTrace: {StackTrace}", e.StackTrace);
-                throw new ServiceUnavailableException();
+                throw new ServiceUnavailableException("Error on PublishAndGetReply: " + e.Message);
             }
         }
 
