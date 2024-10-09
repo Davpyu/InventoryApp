@@ -63,6 +63,33 @@ namespace DotNetService.Models
             return base.SaveChanges();
         }
 
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e =>
+                    e.Entity is Base
+                    && (e.State == EntityState.Added || e.State == EntityState.Modified)
+                );
+
+            foreach (var entityEntry in entries)
+            {
+                if (entityEntry.State == EntityState.Modified)
+                {
+                    ((Base)entityEntry.Entity).UpdatedAt = DateTime.Now;
+                    // Ensure CreatedAt is not modified
+                    entityEntry.Property("CreatedAt").IsModified = false;
+                }
+
+                if (entityEntry.State == EntityState.Added)
+                {
+                    ((Base)entityEntry.Entity).CreatedAt = DateTime.Now;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
         /*=================================== Service Support ===========================================*/
 
         private void GenerateUuid<T>(ModelBuilder modelBuilder, string column) where T : class
