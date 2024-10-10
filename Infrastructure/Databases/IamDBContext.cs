@@ -6,9 +6,7 @@ namespace DotNetService.Models
     public partial class IamDBContext : DbContext
     {
         public IamDBContext(DbContextOptions<IamDBContext> options)
-            : base(options)
-        {
-        }
+            : base(options) { }
 
         public DbSet<Role> Roles { get; set; }
 
@@ -19,7 +17,6 @@ namespace DotNetService.Models
         public DbSet<UserRole> UserRoles { get; set; }
 
         public DbSet<RolePermission> RolePermissions { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,18 +31,17 @@ namespace DotNetService.Models
             GenerateUuid<RolePermission>(modelBuilder, "Id");
             SoftDelete<RolePermission>(modelBuilder);
 
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
         }
 
         public override int SaveChanges()
         {
             var entries = ChangeTracker
                 .Entries()
-                .Where(e => e.Entity is Base && (
-                    e.State == EntityState.Added
-                    || e.State == EntityState.Modified));
+                .Where(e =>
+                    e.Entity is Base
+                    && (e.State == EntityState.Added || e.State == EntityState.Modified)
+                );
 
             foreach (var entityEntry in entries)
             {
@@ -65,25 +61,24 @@ namespace DotNetService.Models
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            var currentTime = DateTime.Now;
+
             var entries = ChangeTracker
-                .Entries()
-                .Where(e =>
-                    e.Entity is Base
-                    && (e.State == EntityState.Added || e.State == EntityState.Modified)
-                );
+                .Entries<Base>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
-            foreach (var entityEntry in entries)
+            foreach (var entry in entries)
             {
-                if (entityEntry.State == EntityState.Modified)
-                {
-                    ((Base)entityEntry.Entity).UpdatedAt = DateTime.Now;
-                    // Ensure CreatedAt is not modified
-                    entityEntry.Property("CreatedAt").IsModified = false;
-                }
+                var entity = entry.Entity;
 
-                if (entityEntry.State == EntityState.Added)
+                if (entry.State == EntityState.Added)
                 {
-                    ((Base)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    entity.CreatedAt = currentTime;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entity.UpdatedAt = currentTime;
+                    entry.Property(nameof(entity.CreatedAt)).IsModified = false;
                 }
             }
 
@@ -92,32 +87,33 @@ namespace DotNetService.Models
 
         /*=================================== Service Support ===========================================*/
 
-        private void GenerateUuid<T>(ModelBuilder modelBuilder, string column) where T : class
+        private void GenerateUuid<T>(ModelBuilder modelBuilder, string column)
+            where T : class
         {
-            modelBuilder.Entity<T>()
-                .HasIndex(CreateExpression<T>(column));
+            modelBuilder.Entity<T>().HasIndex(CreateExpression<T>(column));
 
-            modelBuilder.Entity<T>()
+            modelBuilder
+                .Entity<T>()
                 .Property(CreateExpression<T>(column))
                 .HasDefaultValueSql("NEWID()");
         }
 
-
-        private void SetUniqueColumn<T>(ModelBuilder modelBuilder, string column) where T : class
+        private void SetUniqueColumn<T>(ModelBuilder modelBuilder, string column)
+            where T : class
         {
-            modelBuilder.Entity<T>()
-                 .HasIndex(CreateExpression<T>(column))
-                .IsUnique();
-
+            modelBuilder.Entity<T>().HasIndex(CreateExpression<T>(column)).IsUnique();
         }
 
-        private void SoftDelete<T>(ModelBuilder modelBuilder) where T : class
+        private void SoftDelete<T>(ModelBuilder modelBuilder)
+            where T : class
         {
-            modelBuilder.Entity<T>()
+            modelBuilder
+                .Entity<T>()
                 .HasQueryFilter(u => EF.Property<DateTime?>(u, "DeletedAt") == null);
         }
 
-        private static Expression<Func<T, object>> CreateExpression<T>(string uuid) where T : class
+        private static Expression<Func<T, object>> CreateExpression<T>(string uuid)
+            where T : class
         {
             var type = typeof(T);
             var property = type.GetProperty(uuid);
