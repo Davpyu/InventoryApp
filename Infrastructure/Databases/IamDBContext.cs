@@ -41,22 +41,24 @@ namespace DotNetService.Models
 
         public override int SaveChanges()
         {
+            var currentTime = DateTime.Now;
+
             var entries = ChangeTracker
-                .Entries()
-                .Where(e => e.Entity is Base && (
-                    e.State == EntityState.Added
-                    || e.State == EntityState.Modified));
+                .Entries<Base>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
-            foreach (var entityEntry in entries)
+            foreach (var entry in entries)
             {
-                if (entityEntry.State == EntityState.Modified)
-                {
-                    ((Base)entityEntry.Entity).UpdatedAt = DateTime.Now;
-                }
+                var entity = entry.Entity;
 
-                if (entityEntry.State == EntityState.Added)
+                if (entry.State == EntityState.Added)
                 {
-                    ((Base)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    entity.CreatedAt = currentTime;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entity.UpdatedAt = currentTime;
+                    entry.Property(nameof(entity.CreatedAt)).IsModified = false;
                 }
             }
 
