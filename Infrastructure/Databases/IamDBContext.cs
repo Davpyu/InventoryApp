@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+﻿﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Models
@@ -61,6 +61,32 @@ namespace DotNetService.Models
             }
 
             return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var currentTime = DateTime.Now;
+
+            var entries = ChangeTracker
+                .Entries<Base>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                var entity = entry.Entity;
+
+                if (entry.State == EntityState.Added)
+                {
+                    entity.CreatedAt = currentTime;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entity.UpdatedAt = currentTime;
+                    entry.Property(nameof(entity.CreatedAt)).IsModified = false;
+                }
+            }
+
+            return base.SaveChangesAsync(cancellationToken);
         }
 
         /*=================================== Service Support ===========================================*/
