@@ -17,8 +17,15 @@
 -   Run `dotnet ef database update` untuk migrate database
 -   Run `dotnet run`
 
+# Migration
+-   Run `dotnet run command --command seed` untuk migrate semua tabel dari database
+-   Run `dotnet run command --command seed --args <module>Seeder` untuk migrate satu tabel/module dari database
+    -   Example seeding User: `dotnet run command --command seed --args UserSeeder`
+
+
 # Directory structure :
 ```
+├── Commands
 ├── Constants
 │   ├── Cache
 │   ├── CircuitBreaker
@@ -80,6 +87,7 @@
 │   │   └── NATs
 │   ├── Middlewares
 │   ├── Queues
+|   ├── Seeders 
 │   ├── Shareds
 │   └── Subsribtions
 ├── Log

@@ -151,6 +151,8 @@ namespace DotNetService
 
             Integrations(services);
 
+            Commands(services);
+
             Listeners(services);
 
             // Queue Servicee
