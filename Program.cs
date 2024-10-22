@@ -1,4 +1,5 @@
 using DotNetService.Infrastructure.Filters;
+using RuangDeveloper.AspNetCore.Command;
 
 namespace DotNetService
 {
@@ -8,7 +9,7 @@ namespace DotNetService
         {
             CreateHostBuilder(args)
             .Build()
-            .Run();
+            .RunWithCommands(args);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
