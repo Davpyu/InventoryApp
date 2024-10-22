@@ -1,73 +1,77 @@
 using System.Data.Entity.Infrastructure;
-using DotNetService.Exceptions;
+using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
 namespace DotNetService.Domain.UserRole.Repositories
 {
     public class UserRoleStoreRepository(
         UserRoleQueryRepository userRoleQueryRepository,
         Models.IamDBContext context
-        )
+    )
     {
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
         private readonly Models.IamDBContext _context = context;
 
-        public void Create(Models.UserRole userRole)
+        public async Task Create(Models.UserRole userRole)
         {
-            this.Save(userRole);
+            await this.Save(userRole);
         }
 
-        public void Update(Guid id, Models.UserRole userRole)
+        public async Task Update(Guid id, Models.UserRole userRole)
         {
-            Models.UserRole oldUserRole = _userRoleQueryRepository.Find(id);
+            Models.UserRole oldUserRole = await _userRoleQueryRepository.Find(id);
             if (oldUserRole == null)
             {
                 return;
             }
 
-            this.Save(userRole, true);
+           await this.Save(userRole, true);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            var userRole = _context.UserRoles.Where(userRole => userRole.Id == id).FirstOrDefault();
-            _context.UserRoles.Remove(userRole);
-            _context.SaveChanges();
+            try
+            {
+                Models.UserRole data = new Models.UserRole { Id = id };
+                _context.UserRoles.Attach(data);
+                _context.UserRoles.Remove(data);
+               await _context.SaveChangesAsync();
+            }
+            catch (DbDeleteConcurrencyException)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
+            }
         }
 
-        public void DeleteBulk(List<Models.UserRole> data)
+        public async Task DeleteBulk(List<Models.UserRole> data)
         {
             _context.UserRoles.RemoveRange(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        private void Save(Models.UserRole data, bool isUpdate = false)
+        private async Task Save(Models.UserRole data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
                 _context.UserRoles.Add(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             try
             {
                 var dataUpdated = _context.UserRoles.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
-
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("User Role with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException(
+                    "No data was updated."
+                );
             }
         }
 
-        public void BulkSave(Models.UserRole[] data)
+        public async Task BulkSave(Models.UserRole[] data)
         {
             _context.UserRoles.AddRange(data);
-            _context.SaveChanges();
+           await _context.SaveChangesAsync();
         }
     }
 }

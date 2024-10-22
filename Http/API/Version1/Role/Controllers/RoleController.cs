@@ -16,37 +16,37 @@ namespace DotNetService.Http.API.Version1.Role
 
         // GET: api/Role
         [HttpGet()]
-        public ApiResponse Index([FromQuery] RoleQueryRequest query)
+        public async Task<ApiResponse> Index([FromQuery] RoleQueryRequest query)
         {
-            return _roleService.Index(query);
+            return await _roleService.Index(query);
         }
 
         // GET: api/Role/5
         [HttpGet("{id}")]
-        public ApiResponse Show(Guid id)
+        public async Task<ApiResponse> Show(Guid id)
         {
-            var role = _roleService.DetailById(id);
+            var role = await _roleService.DetailById(id);
             return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(role));
         }
 
         [HttpPost()]
-        public ApiResponse Store(RoleCreateRequest dataCreate)
+        public async Task<ApiResponse> Store(RoleCreateRequest dataCreate)
         {
-            var data = _roleService.Create(dataCreate);
+            var data = await _roleService.Create(dataCreate);
             return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(data));
         }
 
         [HttpPut("{id}")]
-        public ApiResponse Update(Guid id, RoleUpdateRequest dataUpdate)
+        public async Task<ApiResponse> Update(Guid id, RoleUpdateRequest dataUpdate)
         {
-            var data = _roleService.Update(id, dataUpdate);
+            var data = await _roleService.Update(id, dataUpdate);
             return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(data));
         }
 
         [HttpDelete("{id}")]
-        public ApiResponse Delete(Guid id)
+        public async Task<ApiResponse> Delete(Guid id)
         {
-            _roleService.Delete(id);
+            await _roleService.Delete(id);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
     }

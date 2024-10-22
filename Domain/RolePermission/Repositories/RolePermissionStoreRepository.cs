@@ -1,76 +1,77 @@
-using Models = DotNetService.Models;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Data.Entity.Infrastructure;
-using DotNetService.Exceptions;
+using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
 namespace DotNetService.Domain.RolePermission.Repositories
 {
     public class RolePermissionStoreRepository(
-            Models.IamDBContext context,
-            RolePermissionQueryRepository rolePermissionQueryRepository
-        )
+        Models.IamDBContext context,
+        RolePermissionQueryRepository rolePermissionQueryRepository
+    )
     {
         private readonly Models.IamDBContext _context = context;
         private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
 
-        public void Create(Models.RolePermission rolePermission)
+        public async Task Create(Models.RolePermission rolePermission)
         {
-            this.Save(rolePermission);
+            await this.Save(rolePermission);
         }
 
-        public void Update(Guid id, Models.RolePermission rolePermission)
+        public async Task Update(Guid id, Models.RolePermission rolePermission)
         {
-            Models.RolePermission oldRolePermission = _rolePermissionQueryRepository.Find(id);
+            Models.RolePermission oldRolePermission = await _rolePermissionQueryRepository.Find(id);
             if (oldRolePermission == null)
             {
                 return;
             }
 
-            this.Save(rolePermission, true);
+            await this.Save(rolePermission, true);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            Models.RolePermission rolePermission = _context.RolePermissions.Where(rolePermission => rolePermission.Id == id).FirstOrDefault();
-            _context.RolePermissions.Remove(rolePermission);
-            _context.SaveChanges();
+            try
+            {
+                Models.RolePermission data = new Models.RolePermission { Id = id };
+                _context.RolePermissions.Attach(data);
+                _context.RolePermissions.Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbDeleteConcurrencyException)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
+            }
         }
 
-        public void DeleteBulk(List<Models.RolePermission> data)
+        public async Task DeleteBulk(List<Models.RolePermission> data)
         {
             _context.RolePermissions.RemoveRange(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        private void Save(Models.RolePermission data, bool isUpdate = false)
+        private async Task Save(Models.RolePermission data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
                 _context.RolePermissions.Add(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             try
             {
                 var dataUpdated = _context.RolePermissions.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
-
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("Permissions with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException(
+                    "No data was updated."
+                );
             }
         }
 
-        public void BulkSave(Models.RolePermission[] data)
+        public async Task BulkSave(Models.RolePermission[] data)
         {
             _context.RolePermissions.AddRange(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

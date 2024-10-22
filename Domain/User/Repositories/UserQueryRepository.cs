@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.User;
@@ -11,7 +12,7 @@ namespace DotNetService.Domain.User.Repositories
     {
         private readonly Models.IamDBContext _context = context;
 
-        public List<Models.User> Pagination(UserQueryRequest queryParams)
+        public async Task<List<Models.User>> Pagination(UserQueryRequest queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Users
@@ -23,7 +24,7 @@ namespace DotNetService.Domain.User.Repositories
             query = QueryFilter(query, queryParams);
             query = QuerySort(query, queryParams);
 
-            var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
+            var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
 
             return data;
         }
@@ -56,7 +57,7 @@ namespace DotNetService.Domain.User.Repositories
         {
             queryParams.SortBy ??= "updated_at";
 
-            Dictionary<string, Func<Models.User, object>> sortFunctions = new()
+            Dictionary<string, Expression<Func<Models.User, object>>> sortFunctions = new()
             {
                 { "name", data => data.Name },
                 { "email", data => data.Email },
@@ -64,7 +65,7 @@ namespace DotNetService.Domain.User.Repositories
                 { "created_at", data => data.CreatedAt },
             };
 
-            if (!sortFunctions.TryGetValue(queryParams.SortBy, out Func<Models.User, object> value))
+            if (!sortFunctions.TryGetValue(queryParams.SortBy, out Expression<Func<Models.User, object>> value))
             {
                 throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: " + string.Join(", ", sortFunctions.Keys));
             }
@@ -76,29 +77,29 @@ namespace DotNetService.Domain.User.Repositories
             return query;
         }
 
-        public int Count(UserQueryRequest queryParams)
+        public async Task<int> Count(UserQueryRequest queryParams)
         {
             IQueryable<Models.User> query = _context.Users;
 
             query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams);
 
-            return query.Count();
+            return await query.CountAsync();
         }
     }
 
     public partial class UserQueryRepository
     {
 
-        public Models.User FindOneById(Guid id = default, bool isThrowException = false)
+        public async Task<Models.User> FindOneById(Guid id = default, bool isThrowException = false)
         {
-            var data = _context.Users
+            var data = await _context.Users
                 .Where(data => data.Id == id)
                 .Include(data => data.UserRoles)
                 .ThenInclude(data => data.Role)
                 .ThenInclude(data => data.RolePermissions)
                 .ThenInclude(data => data.Permission)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (data == null && isThrowException)
             {
@@ -108,9 +109,9 @@ namespace DotNetService.Domain.User.Repositories
             return data;
         }
 
-        public Models.User FindOneByEmail(string email, bool isValidateExist = false)
+        public async Task<Models.User> FindOneByEmail(string email, bool isValidateExist = false)
         {
-            var data = _context.Users.Where(data => data.Email == email).FirstOrDefault();
+            var data = await _context.Users.Where(data => data.Email == email).FirstOrDefaultAsync();
             if (data == null)
             {
                 return null;

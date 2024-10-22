@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Role;
@@ -16,7 +17,7 @@ namespace DotNetService.Domain.Role.Repositories
             _context = context;
         }
 
-        public List<Models.Role> Pagination(RoleQueryRequest queryParams)
+        public async Task<List<Models.Role>> Pagination(RoleQueryRequest queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Roles
@@ -28,7 +29,7 @@ namespace DotNetService.Domain.Role.Repositories
             query = this.QueryFilter(query, queryParams);
             query = this.QuerySort(query, queryParams);
 
-            var data = query.Skip(skip).Take(queryParams.PerPage).ToList();
+            var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
 
             return data;
         }
@@ -58,14 +59,14 @@ namespace DotNetService.Domain.Role.Repositories
         {
             queryParams.SortBy ??= "updated_at";
 
-            Dictionary<string, Func<Models.Role, object>> sortFunctions = new()
+            Dictionary<string, Expression<Func<Models.Role, object>>> sortFunctions = new()
             {
                 { "name", data => data.Name },
                 { "updated_at", data => data.UpdatedAt },
                 { "created_at", data => data.CreatedAt },
             };
 
-            if (!sortFunctions.TryGetValue(queryParams.SortBy, out Func<Models.Role, object> value))
+            if (!sortFunctions.TryGetValue(queryParams.SortBy, out Expression<Func<Models.Role, object>> value))
             {
                 throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: " + string.Join(", ", sortFunctions.Keys));
             }
@@ -77,28 +78,28 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        public int Count(RoleQueryRequest queryParams)
+        public async Task<int> Count(RoleQueryRequest queryParams)
         {
             IQueryable<Models.Role> query = _context.Roles;
 
             query = this.QuerySearch(query, queryParams);
             query = this.QueryFilter(query, queryParams);
 
-            return query.Count();
+            return await query.CountAsync();
         }
 
-        internal Models.Role Find(Guid id = default)
+        internal async Task<Models.Role> Find(Guid id = default)
         {
-            return _context.Roles.Where(role => role.Id == id).FirstOrDefault();
+            return await _context.Roles.Where(role => role.Id == id).FirstOrDefaultAsync();
         }
 
-        public Models.Role FindOneById(Guid id = default, bool isThrowException = false)
+        public async Task<Models.Role> FindOneById(Guid id = default, bool isThrowException = false)
         {
-            var data = _context.Roles
+            var data = await _context.Roles
                 .Where(data => data.Id == id)
                 .Include(data => data.RolePermissions)
                 .ThenInclude(data => data.Permission)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (data == null && isThrowException)
             {
@@ -108,9 +109,9 @@ namespace DotNetService.Domain.Role.Repositories
             return data;
         }
 
-        public Models.Role FindByName(string name)
+        public async Task<Models.Role> FindByName(string name)
         {
-            Models.Role role = _context.Roles.Where(role => role.Name == name).FirstOrDefault();
+            Models.Role role = await _context.Roles.Where(role => role.Name == name).FirstOrDefaultAsync();
             if (role == null)
             {
                 return (new Models.Role());
@@ -119,12 +120,12 @@ namespace DotNetService.Domain.Role.Repositories
             return role;
         }
 
-        public bool IsExistsByNameAndIds(string nameRole, Guid[] roleIds)
+        public async Task<bool> IsExistsByNameAndIds(string nameRole, Guid[] roleIds)
         {
-            return _context.Roles.Where(role => role.Name == nameRole).Where(role => roleIds.Contains(role.Id)).Count() > 0;
+            return await _context.Roles.Where(role => role.Name == nameRole).Where(role => roleIds.Contains(role.Id)).AnyAsync();
         }
 
-        public List<Models.Role> Get(string search, int page, int perPage)
+        public async Task<List<Models.Role>> Get(string search, int page, int perPage)
         {
             int skip = (1 - page) * perPage;
             List<Models.Role> roles;
@@ -133,18 +134,18 @@ namespace DotNetService.Domain.Role.Repositories
             {
                 roleQuery = roleQuery.Where(role => role.Name.Contains(search));
             }
-            roles = roleQuery.Skip(skip).Take(perPage).ToList();
+            roles = await roleQuery.Skip(skip).Take(perPage).ToListAsync();
             return roles;
         }
 
-        public int CountAll(string search)
+        public async Task<int> CountAll(string search)
         {
             IQueryable<Models.Role> roleQuery = _context.Roles;
             if (search != null)
             {
                 roleQuery = roleQuery.Where(role => role.Name.Contains(search));
             }
-            return roleQuery.Count();
+            return await roleQuery.CountAsync();
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.Data.Entity.Infrastructure;
-using DotNetService.Exceptions;
-using Models = DotNetService.Models;
+using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
 namespace DotNetService.Domain.Permission.Repositories
 {
@@ -12,73 +11,72 @@ namespace DotNetService.Domain.Permission.Repositories
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly Models.IamDBContext _context = context;
 
-        public Models.Permission Create(Models.Permission permissionRepository)
+        public async Task<Models.Permission> Create(Models.Permission permissionRepository)
         {
             Models.Permission newPermission = new()
             {
                 Name = permissionRepository.Name
             };
-            
-            return this.Save(newPermission);
+
+            return await this.Save(newPermission);
         }
 
-        public void Update(Guid id, Models.Permission permissionRepository)
+        public async Task Update(Guid id, Models.Permission permissionRepository)
         {
-            Models.Permission oldPermission = _permissionQueryRepository.Find(id);
+            Models.Permission oldPermission = await _permissionQueryRepository.Find(id);
             if (oldPermission == null)
             {
                 return;
             }
 
             oldPermission.Name = permissionRepository.Name;
-            this.Save(oldPermission, true);
+            await this.Save(oldPermission, true);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            Models.Permission data = _permissionQueryRepository.FindOneById(id, true);
-
-            _context.Permissions.Remove(data);
-            int affectedRows = _context.SaveChanges();
-
-            if (affectedRows == 0)
+            try
+            {
+                Models.Permission data = new Models.Permission { Id = id };
+                _context.Permissions.Attach(data);
+                _context.Permissions.Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbDeleteConcurrencyException)
             {
                 throw new UnprocessableEntityException("No data was deleted.");
             }
         }
 
-        private Models.Permission Save(Models.Permission data, bool isUpdate = false)
+        private async Task<Models.Permission> Save(Models.Permission data, bool isUpdate = false)
         {
             if (!isUpdate)
             {
 
                 var dataCreated = _context.Permissions.Add(data);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return dataCreated.Entity;
             }
 
             try
             {
                 var dataUpdated = _context.Permissions.Update(data);
-                int affectedRows = _context.SaveChanges();
-
-                if (affectedRows == 0)
-                {
-                    throw new UnprocessableEntityException("No data was updated.");
-                }
+                await _context.SaveChangesAsync();
 
                 return dataUpdated.Entity;
             }
             catch (DbUpdateConcurrencyException)
             {
-                throw new DataNotFoundException("Permissions with id " + data.Id + " not found.");
+                throw new UnprocessableEntityException(
+                    "No data was updated."
+                );
             }
         }
 
-        public void BulkSave(Models.Permission[] data)
+        public async Task BulkSave(Models.Permission[] data)
         {
             _context.Permissions.AddRange(data);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

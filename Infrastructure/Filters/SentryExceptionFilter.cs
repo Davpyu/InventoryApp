@@ -1,4 +1,5 @@
 using DotNetService.Exceptions;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Sentry.Extensibility;
 
 namespace DotNetService.Infrastructure.Filters
@@ -11,6 +12,7 @@ namespace DotNetService.Infrastructure.Filters
             return [
                 typeof(FluentValidation.ValidationException),
                 typeof(BadHttpRequestException),
+                typeof(BadRequest),
                 typeof(DataNotFoundException),
                 typeof(ValidationException),
                 typeof(NotAllowedException),
