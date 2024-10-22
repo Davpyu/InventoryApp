@@ -6,9 +6,9 @@ namespace DotNetService.Http.API.Version1.UserRole
     public class UserRoleCreateRequest
     {
         [Required]
-        public Guid Userid { get; set; }
+        public Guid UserId { get; set; }
         [Required]
-        public Guid Roleid { get; set; }
+        public Guid RoleId { get; set; }
     }
 
 }

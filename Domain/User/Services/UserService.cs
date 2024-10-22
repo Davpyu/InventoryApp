@@ -44,7 +44,7 @@ namespace DotNetService.Domain.User.Services
                 return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
             }
         }
-        
+
         public Models.User Create(UserCreateRequest dataCreate)
         {
             var data = UserCreateRequest.Assign(dataCreate);
@@ -56,8 +56,8 @@ namespace DotNetService.Domain.User.Services
                 {
                     var userRole = new Models.UserRole
                     {
-                        Userid = user.Id,
-                        Roleid = roleId
+                        UserId = user.Id,
+                        RoleId = roleId
                     };
 
                     userRoles.Add(userRole);
@@ -77,7 +77,8 @@ namespace DotNetService.Domain.User.Services
             var data = UserUpdateRequest.Assign(dataUpdate);
             var updatedData = _userStoreRepository.Update(id, data);
             var userRoles = this.Detail(id).UserRoles;
-            if(userRoles?.Count > 0){
+            if (userRoles?.Count > 0)
+            {
                 var userRolesToDelete = _userRoleQueryRepository.FindByUserId(id);
                 _userRoleStoreRepository.DeleteBulk(userRolesToDelete);
             }
@@ -88,8 +89,8 @@ namespace DotNetService.Domain.User.Services
                 {
                     var userRole = new Models.UserRole
                     {
-                        Userid = updatedData.Id,
-                        Roleid = roleId
+                        UserId = updatedData.Id,
+                        RoleId = roleId
                     };
 
                     newUserRoles.Add(userRole);

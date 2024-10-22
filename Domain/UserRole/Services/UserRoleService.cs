@@ -3,7 +3,7 @@ using DotNetService.Domain.UserRole.Repositories;
 
 namespace DotNetService.Domain.UserRole.Services
 {
-    public class UserRoleService (
+    public class UserRoleService(
         UserRoleQueryRepository userRoleQueryRepository,
         UserRoleStoreRepository userRoleStoreRepository
         )
@@ -15,8 +15,8 @@ namespace DotNetService.Domain.UserRole.Services
         {
             var updateUserRole = new Models.UserRole
             {
-                Roleid = userUpdate.Roleid,
-                Userid = userUpdate.Userid
+                RoleId = userUpdate.RoleId,
+                UserId = userUpdate.UserId
             };
 
             _userRoleStoreRepository.Update(id, updateUserRole);
@@ -26,8 +26,8 @@ namespace DotNetService.Domain.UserRole.Services
         {
             var newUserRole = new Models.UserRole
             {
-                Roleid = userUpdate.Roleid,
-                Userid = userUpdate.Userid
+                RoleId = userUpdate.RoleId,
+                UserId = userUpdate.UserId
             };
 
             _userRoleStoreRepository.Create(newUserRole);

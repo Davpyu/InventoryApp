@@ -3,13 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Models
 {
-    public partial class IamDBContext : DbContext
+    public partial class IamDBContext(DbContextOptions<IamDBContext> options) : DbContext(options)
     {
-        public IamDBContext(DbContextOptions<IamDBContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<Role> Roles { get; set; }
 
         public DbSet<User> Users { get; set; }
@@ -20,6 +15,12 @@ namespace DotNetService.Models
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            base.ConfigureConventions(configurationBuilder);
+            configurationBuilder.Properties<string>()
+            .HaveMaxLength(256);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -164,11 +164,11 @@ namespace DotNetService.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("deleted_by_username");
 
-                    b.Property<Guid>("Permissionid")
+                    b.Property<Guid>("PermissionId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("permissionid");
 
-                    b.Property<Guid>("Roleid")
+                    b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("roleid");
 
@@ -188,9 +188,9 @@ namespace DotNetService.Migrations
 
                     b.HasIndex("Id");
 
-                    b.HasIndex("Permissionid");
+                    b.HasIndex("PermissionId");
 
-                    b.HasIndex("Roleid");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("role_permission");
                 });
@@ -294,7 +294,7 @@ namespace DotNetService.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("deleted_by_username");
 
-                    b.Property<Guid>("Roleid")
+                    b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("roleid");
 
@@ -310,7 +310,7 @@ namespace DotNetService.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("updated_by_username");
 
-                    b.Property<Guid>("Userid")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("userid");
 
@@ -318,9 +318,9 @@ namespace DotNetService.Migrations
 
                     b.HasIndex("Id");
 
-                    b.HasIndex("Roleid");
+                    b.HasIndex("RoleId");
 
-                    b.HasIndex("Userid");
+                    b.HasIndex("UserId");
 
                     b.ToTable("user_role");
                 });
@@ -329,13 +329,13 @@ namespace DotNetService.Migrations
                 {
                     b.HasOne("DotNetService.Models.Permission", "Permission")
                         .WithMany("RolePermissions")
-                        .HasForeignKey("Permissionid")
+                        .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DotNetService.Models.Role", "Role")
                         .WithMany("RolePermissions")
-                        .HasForeignKey("Roleid")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -348,13 +348,13 @@ namespace DotNetService.Migrations
                 {
                     b.HasOne("DotNetService.Models.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("Roleid")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DotNetService.Models.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("Userid")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

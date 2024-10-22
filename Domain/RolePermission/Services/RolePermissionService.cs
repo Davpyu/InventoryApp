@@ -12,8 +12,8 @@ namespace DotNetService.Applications.RolePermission.Service
         {
             var rolePermissionRepository = new Models.RolePermission
             {
-                Roleid = rolePermissionCreate.Roleid,
-                Permissionid = rolePermissionCreate.Permissionid
+                RoleId = rolePermissionCreate.RoleId,
+                PermissionId = rolePermissionCreate.PermissionId
             };
 
             _rolePermissionStoreRepository.Create(rolePermissionRepository);
@@ -43,10 +43,10 @@ namespace DotNetService.Applications.RolePermission.Service
         {
             Models.RolePermission rolePermissionRepository = new Models.RolePermission
             {
-                Roleid = rolePermissionUpdate.Roleid,
-                Permissionid = rolePermissionUpdate.Permissionid
+                RoleId = rolePermissionUpdate.RoleId,
+                PermissionId = rolePermissionUpdate.PermissionId
             };
-            
+
             _rolePermissionStoreRepository.Update(id, rolePermissionRepository);
         }
 

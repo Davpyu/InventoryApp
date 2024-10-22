@@ -8,19 +8,16 @@ namespace DotNetService.Models
     {
         private readonly ILazyLoader _lazyLoader;
 
-        [Column("id")]
-        public Guid Id { get; set; }
+        [Column("role_id")]
+        public Guid RoleId { get; set; }
 
-        [Column("roleid")]
-        public Guid Roleid { get; set; }
-
-        [ForeignKey(nameof(Roleid))]
+        [ForeignKey(nameof(RoleId))]
         public virtual Role Role { get; set; }
 
-        [Column("permissionid")]
-        public Guid Permissionid { get; set; }
+        [Column("permission_id")]
+        public Guid PermissionId { get; set; }
 
-        [ForeignKey(nameof(Permissionid))]
+        [ForeignKey(nameof(PermissionId))]
         public virtual Permission Permission { get; set; }
     }
 }

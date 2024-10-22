@@ -26,7 +26,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public Models.UserRole FindByUserAndRole(Guid userid, Guid roleid)
         {
-            Models.UserRole userRole = _context.UserRoles.Where(userRole => userRole.Userid == userid && userRole.Roleid == roleid).FirstOrDefault();
+            Models.UserRole userRole = _context.UserRoles.Where(userRole => userRole.UserId == userid && userRole.RoleId == roleid).FirstOrDefault();
             if (userRole == null)
             {
                 return null;
@@ -37,7 +37,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public List<Models.UserRole> FindByUserId(Guid userId = default)
         {
-            var userRoles = _context.UserRoles.Where(userRole => userRole.Userid == userId).ToList();
+            var userRoles = _context.UserRoles.Where(userRole => userRole.UserId == userId).ToList();
             if (userRoles.Count < 1)
             {
                 return [];
@@ -52,7 +52,7 @@ namespace DotNetService.Domain.UserRole.Repositories
             List<Models.UserRole> userRoles;
             IQueryable<Models.UserRole> userQuery = _context.UserRoles;
             userRoles = userQuery.Skip(skip).Take(perPage).ToList();
-            
+
             return userRoles;
         }
 

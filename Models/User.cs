@@ -1,20 +1,18 @@
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace DotNetService.Models
 {
     [Table("users")]
     public class User : Base
     {
-
-        [Column("id")]
-        public Guid Id { get; set; }
-
         [Column("name")]
+        // [MaxLength(50)]
         public string Name { get; set; }
 
         [Column("email")]
+        [Index(IsUnique = true)]
+        // [MaxLength(50)]
         public string Email { get; set; }
 
         [Column("password")]

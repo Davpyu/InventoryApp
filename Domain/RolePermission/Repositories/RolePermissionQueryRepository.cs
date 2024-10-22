@@ -37,7 +37,7 @@ namespace DotNetService.Domain.RolePermission.Repositories
         public Models.RolePermission FindByRoleAndPermission(Guid roleid, Guid permission)
         {
             var rolePermission = _context.RolePermissions
-                .Where(rolePermission => rolePermission.Roleid == roleid && rolePermission.Permissionid == permission)
+                .Where(rolePermission => rolePermission.RoleId == roleid && rolePermission.PermissionId == permission)
                 .First();
 
             if (rolePermission == null)
@@ -51,7 +51,7 @@ namespace DotNetService.Domain.RolePermission.Repositories
         public List<Models.RolePermission> FindByRoleId(Guid roleId)
         {
             var rolePermissions = _context.RolePermissions
-                .Where(rolePermission => rolePermission.Roleid == roleId)
+                .Where(rolePermission => rolePermission.RoleId == roleId)
                 .ToList();
 
             if (rolePermissions.Count < 1)
@@ -61,7 +61,7 @@ namespace DotNetService.Domain.RolePermission.Repositories
 
             return rolePermissions;
         }
-        
+
         public List<Models.RolePermission> Get(int page, int perPage)
         {
             int skip = (1 - page) * perPage;

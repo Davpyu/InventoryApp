@@ -62,8 +62,8 @@ namespace DotNetService.Domain.Role.Services
                 {
                     var rolePermission = new Models.RolePermission
                     {
-                        Roleid = roleCreated.Id,
-                        Permissionid = permissionId
+                        RoleId = roleCreated.Id,
+                        PermissionId = permissionId
                     };
                     rolePermissions.Add(rolePermission);
                 }
@@ -71,7 +71,7 @@ namespace DotNetService.Domain.Role.Services
             }
 
             return this.DetailById(roleCreated.Id);
-            
+
         }
 
         public Models.Role DetailById(Guid id)
@@ -93,7 +93,8 @@ namespace DotNetService.Domain.Role.Services
             var data = RoleUpdateRequest.Assign(dataUpdate);
             _roleStoreRepository.Update(id, data);
             var role = this.DetailById(id);
-            if(role.RolePermissions?.Count > 0){
+            if (role.RolePermissions?.Count > 0)
+            {
                 var rolePermissionsToDelete = _rolePermissionQueryRepository.FindByRoleId(id);
                 _rolePermissionStoreRepository.DeleteBulk(rolePermissionsToDelete);
             }
@@ -104,8 +105,8 @@ namespace DotNetService.Domain.Role.Services
                 {
                     var rolePermission = new Models.RolePermission
                     {
-                        Roleid = id,
-                        Permissionid = permissionId
+                        RoleId = id,
+                        PermissionId = permissionId
                     };
 
                     newRolePermissions.Add(rolePermission);
