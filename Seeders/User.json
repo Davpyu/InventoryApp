@@ -2,11 +2,11 @@
   {
     "name": "Super Admin",
     "email": "admin@dot.co.id",
-    "password": "$2a$11$dGJAHAdnLSgjDxqg68W4leL2birufffmtgz3oeOtVBgdFKZPl2D.G"
+    "password": "rahasia123!"
   },
   {
     "name": "User",
     "email": "user@dot.co.id",
-    "password": "$2a$11$dGJAHAdnLSgjDxqg68W4leL2birufffmtgz3oeOtVBgdFKZPl2D.G"
+    "password": "rahasia123!"
   }
 ]

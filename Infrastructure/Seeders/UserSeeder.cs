@@ -1,6 +1,7 @@
 using System.Text.Json;
 using DotNetService.Infrastructure.Helpers;
 using DotNetService.Models;
+using BC = BCrypt.Net.BCrypt;
 
 namespace DotNetService.Infrastructure.Seeders
 {
@@ -23,6 +24,8 @@ namespace DotNetService.Infrastructure.Seeders
         foreach (var data in datas)
         {
           data.Id = Guid.NewGuid();
+
+          data.Password = BC.HashPassword(data.Password);
 
           data.CreatedAt = DateTime.Now;
           formatedData.Add(data);
