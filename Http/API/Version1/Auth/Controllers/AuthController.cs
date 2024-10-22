@@ -19,9 +19,9 @@ namespace DotNetService.Http.API.Version1.Auth
         [AllowAnonymous]
         [HttpPost("sign-in")]
         [Consumes("application/json")]
-        public ApiResponse SignIn(AuthSignInRequest authSignIn)
+        public async Task<ApiResponse> SignIn(AuthSignInRequest authSignIn)
         {
-            var authRepository = _authService.SignIn(authSignIn);
+            var authRepository = await _authService.SignIn(authSignIn);
             var authToken = new AuthTokenResponse()
             {
                 Token = authRepository.Token,
@@ -34,16 +34,16 @@ namespace DotNetService.Http.API.Version1.Auth
         [HttpPost("register")]
         [Consumes("application/json")]
         [AllowAnonymous]
-        public ApiResponse Register(AuthRegisterRequest authRegister)
+        public async Task<ApiResponse> Register(AuthRegisterRequest authRegister)
         {
-            _authService.Register(authRegister);
+           await _authService.Register(authRegister);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpGet("account")]
-        public ApiResponse Account()
+        public async Task<ApiResponse> Account()
         {
-            var data = _authService.Account();
+            var data = await _authService.Account();
             return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
         }
     }

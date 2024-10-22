@@ -13,48 +13,40 @@ namespace DotNetService.Domain.Role.Services
         RoleQueryRepository roleQueryRepository,
         RolePermissionStoreRepository rolePermissionStoreRepository,
         RolePermissionQueryRepository rolePermissionQueryRepository
-        )
+    )
     {
         private readonly RoleStoreRepository _roleStoreRepository = roleStoreRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
         private readonly RolePermissionStoreRepository _rolePermissionStoreRepository = rolePermissionStoreRepository;
         private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
 
-        public ApiResponse Index(RoleQueryRequest query = null)
+        public async Task<ApiResponse> Index(RoleQueryRequest query = null)
         {
-            if (query.Pagination)
+            var data = await this.Pagination(query);
+            int count = await _roleQueryRepository.Count(query);
+            decimal pageInCount = ((decimal)count) / query.PerPage;
+            PaginationModel paginate = new()
             {
-                var data = this.Pagination(query);
-                int count = _roleQueryRepository.Count(query);
-                decimal pageInCount = ((decimal)count) / query.PerPage;
-                PaginationModel paginate = new()
-                {
-                    TotalPage = (int)Math.Ceiling(pageInCount),
-                    Page = query.Page,
-                    PerPage = query.PerPage,
-                    Data = RoleResponse.MapRepo(data),
-                    Total = count
-                };
+                TotalPage = (int)Math.Ceiling(pageInCount),
+                Page = query.Page,
+                PerPage = query.PerPage,
+                Data = RoleResponse.MapRepo(data),
+                Total = count
+            };
 
-                return new ApiResponsePagination(HttpStatusCode.OK, paginate);
-            }
-            else
-            {
-                var data = Pagination(query);
-                return new ApiResponseDataList(HttpStatusCode.OK, data, data.Count);
-            }
+            return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }
 
-        public List<Models.Role> Pagination(RoleQueryRequest query = null)
+        public async Task<List<Models.Role>> Pagination(RoleQueryRequest query = null)
         {
-            return _roleQueryRepository.Pagination(query);
+            return await _roleQueryRepository.Pagination(query);
         }
 
-        public Models.Role Create(RoleCreateRequest dataCreate)
+        public async Task<Models.Role> Create(RoleCreateRequest dataCreate)
         {
             var data = RoleCreateRequest.Assign(dataCreate);
 
-            var roleCreated = _roleStoreRepository.Create(data);
+            var roleCreated = await _roleStoreRepository.Create(data);
             if (dataCreate.PermissionIds?.Count > 0)
             {
                 var rolePermissions = new List<Models.RolePermission>();
@@ -67,36 +59,36 @@ namespace DotNetService.Domain.Role.Services
                     };
                     rolePermissions.Add(rolePermission);
                 }
-                _rolePermissionStoreRepository.BulkSave(rolePermissions.ToArray());
+                await _rolePermissionStoreRepository.BulkSave(rolePermissions.ToArray());
             }
 
-            return this.DetailById(roleCreated.Id);
-
+            return await this.DetailById(roleCreated.Id);
         }
 
-        public Models.Role DetailById(Guid id)
+        public async Task<Models.Role> DetailById(Guid id)
         {
-            return _roleQueryRepository.FindOneById(id);
+            return await _roleQueryRepository.FindOneById(id);
         }
 
-        public List<Models.Role> GetList(string search, int page, int perPage)
+        public async Task<List<Models.Role>> GetList(string search, int page, int perPage)
         {
-            return _roleQueryRepository.Get(search, page, perPage);
+            return await _roleQueryRepository.Get(search, page, perPage);
         }
-        public int Count(string search)
+        public async Task<int> Count(string search)
         {
-            return _roleQueryRepository.CountAll(search);
+            return await _roleQueryRepository.CountAll(search);
         }
 
-        public Models.Role Update(Guid id, RoleUpdateRequest dataUpdate)
+        public async Task<Models.Role> Update(Guid id, RoleUpdateRequest dataUpdate)
         {
             var data = RoleUpdateRequest.Assign(dataUpdate);
-            _roleStoreRepository.Update(id, data);
-            var role = this.DetailById(id);
-            if (role.RolePermissions?.Count > 0)
+            await _roleStoreRepository.Update(id, data);
+            var role = await this.DetailById(id);
+            var rolePermissions = role.RolePermissions;
+            if (rolePermissions?.Count > 0)
             {
-                var rolePermissionsToDelete = _rolePermissionQueryRepository.FindByRoleId(id);
-                _rolePermissionStoreRepository.DeleteBulk(rolePermissionsToDelete);
+                var rolePermissionsToDelete = await _rolePermissionQueryRepository.FindByRoleId(id);
+                await _rolePermissionStoreRepository.DeleteBulk(rolePermissionsToDelete);
             }
             if (dataUpdate.PermissionIds?.Count > 0)
             {
@@ -111,14 +103,14 @@ namespace DotNetService.Domain.Role.Services
 
                     newRolePermissions.Add(rolePermission);
                 }
-                _rolePermissionStoreRepository.BulkSave(newRolePermissions.ToArray());
+                await _rolePermissionStoreRepository.BulkSave(newRolePermissions.ToArray());
             }
-            return this.DetailById(id);
+            return await this.DetailById(id);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _roleStoreRepository.Delete(id);
+            await _roleStoreRepository.Delete(id);
         }
     }
 }

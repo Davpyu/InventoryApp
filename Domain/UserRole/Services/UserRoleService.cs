@@ -11,7 +11,7 @@ namespace DotNetService.Domain.UserRole.Services
         private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
         private readonly UserRoleStoreRepository _userRoleStoreRepository = userRoleStoreRepository;
 
-        public void Update(Guid id, UserRoleUpdateRequest userUpdate)
+        public async Task Update(Guid id, UserRoleUpdateRequest userUpdate)
         {
             var updateUserRole = new Models.UserRole
             {
@@ -19,10 +19,10 @@ namespace DotNetService.Domain.UserRole.Services
                 UserId = userUpdate.UserId
             };
 
-            _userRoleStoreRepository.Update(id, updateUserRole);
+            await _userRoleStoreRepository.Update(id, updateUserRole);
         }
 
-        public void Create(UserRoleCreateRequest userUpdate)
+        public async Task Create(UserRoleCreateRequest userUpdate)
         {
             var newUserRole = new Models.UserRole
             {
@@ -30,32 +30,32 @@ namespace DotNetService.Domain.UserRole.Services
                 UserId = userUpdate.UserId
             };
 
-            _userRoleStoreRepository.Create(newUserRole);
+            await _userRoleStoreRepository.Create(newUserRole);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _userRoleStoreRepository.Delete(id);
+            await _userRoleStoreRepository.Delete(id);
         }
 
-        public Models.UserRole DetailById(Guid id)
+        public async Task<Models.UserRole> DetailById(Guid id)
         {
-            return _userRoleQueryRepository.FindById(id);
+            return await _userRoleQueryRepository.FindById(id);
         }
 
-        public List<Models.UserRole> FindByUserId(Guid userId)
+        public async Task<List<Models.UserRole>> FindByUserId(Guid userId)
         {
-            return _userRoleQueryRepository.FindByUserId(userId);
+            return await _userRoleQueryRepository.FindByUserId(userId);
         }
 
-        public List<Models.UserRole> GetList(int page, int perPage)
+        public async Task<List<Models.UserRole>> GetList(int page, int perPage)
         {
-            return _userRoleQueryRepository.Get(page, perPage);
+            return await _userRoleQueryRepository.Get(page, perPage);
         }
 
-        public int Count(string search)
+        public async Task<int> Count(string search)
         {
-            return _userRoleQueryRepository.Count(search);
+            return await _userRoleQueryRepository.Count(search);
         }
     }
 }

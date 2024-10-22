@@ -3,12 +3,17 @@ using DotNetService.Domain.RolePermission.Repositories;
 
 namespace DotNetService.Applications.RolePermission.Service
 {
-    public class RolePermissionService
+    public class RolePermissionService(
+        RolePermissionStoreRepository rolePermissionStoreRepository,
+        RolePermissionQueryRepository rolePermissionQueryRepository
+    )
     {
-        private readonly RolePermissionStoreRepository _rolePermissionStoreRepository;
-        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository;
+        private readonly RolePermissionStoreRepository _rolePermissionStoreRepository =
+            rolePermissionStoreRepository;
+        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository =
+            rolePermissionQueryRepository;
 
-        public void Create(RolePermissionCreateRequest rolePermissionCreate)
+        public async Task Create(RolePermissionCreateRequest rolePermissionCreate)
         {
             var rolePermissionRepository = new Models.RolePermission
             {
@@ -16,30 +21,30 @@ namespace DotNetService.Applications.RolePermission.Service
                 PermissionId = rolePermissionCreate.PermissionId
             };
 
-            _rolePermissionStoreRepository.Create(rolePermissionRepository);
+            await _rolePermissionStoreRepository.Create(rolePermissionRepository);
         }
 
-        public Models.RolePermission DetailById(Guid id)
+        public async Task<Models.RolePermission> DetailById(Guid id)
         {
-            return _rolePermissionQueryRepository.FindById(id);
+            return await _rolePermissionQueryRepository.FindById(id);
         }
 
-        public Models.RolePermission DetailByRolePermission(Guid roleid, Guid permissionid)
+        public async Task<Models.RolePermission> DetailByRolePermission(Guid roleid, Guid permissionid)
         {
-            return _rolePermissionQueryRepository.FindByRoleAndPermission(roleid, permissionid);
+            return await _rolePermissionQueryRepository.FindByRoleAndPermission(roleid, permissionid);
         }
 
-        public List<Models.RolePermission> GetList(int page, int perPage)
+        public async Task<List<Models.RolePermission>> GetList(int page, int perPage)
         {
-            return _rolePermissionQueryRepository.Get(page, perPage);
+            return await _rolePermissionQueryRepository.Get(page, perPage);
         }
 
-        public int Count()
+        public async Task<int> Count()
         {
-            return _rolePermissionQueryRepository.CountAll();
+            return await _rolePermissionQueryRepository.CountAll();
         }
 
-        public void Update(Guid id, RolePermissionUpdateRequest rolePermissionUpdate)
+        public async Task Update(Guid id, RolePermissionUpdateRequest rolePermissionUpdate)
         {
             Models.RolePermission rolePermissionRepository = new Models.RolePermission
             {
@@ -47,12 +52,12 @@ namespace DotNetService.Applications.RolePermission.Service
                 PermissionId = rolePermissionUpdate.PermissionId
             };
 
-            _rolePermissionStoreRepository.Update(id, rolePermissionRepository);
+            await _rolePermissionStoreRepository.Update(id, rolePermissionRepository);
         }
 
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
-            _rolePermissionStoreRepository.Delete(id);
+            await _rolePermissionStoreRepository.Delete(id);
         }
     }
 }
