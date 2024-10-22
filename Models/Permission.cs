@@ -7,7 +7,6 @@ namespace DotNetService.Models
     public class Permission : Base
     {
         [Column("name")]
-        // [MaxLength(50)]
         [Index(IsUnique = true)]
         public string Name { get; set; }
 

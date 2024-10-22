@@ -7,12 +7,10 @@ namespace DotNetService.Models
     public class User : Base
     {
         [Column("name")]
-        // [MaxLength(50)]
         public string Name { get; set; }
 
         [Column("email")]
         [Index(IsUnique = true)]
-        // [MaxLength(50)]
         public string Email { get; set; }
 
         [Column("password")]
