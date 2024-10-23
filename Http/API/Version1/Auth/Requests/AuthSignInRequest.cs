@@ -1,16 +1,20 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using DotNetService.Infrastructure.Regexs;
 
 namespace DotNetService.Http.API.Version1.Auth
 {
     public class AuthSignInRequest
     {
         [Required]
-        [JsonPropertyName("email")]
+        [EmailAddress]
+        [MinLength(5)]
+        [MaxLength(50)]
         public string Email { get; set; }
-        
+
         [Required]
-        [JsonPropertyName("password")]
+        [MinLength(8)]
+        [MaxLength(30)]
+        [RegularExpression(AuthRegex.PASSWORD)]
         public string Password { get; set; }
     }
 }
