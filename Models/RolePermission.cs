@@ -6,8 +6,6 @@ namespace DotNetService.Models
     [Table("role_permission")]
     public class RolePermission : Base
     {
-        private readonly ILazyLoader _lazyLoader;
-
         [Column("role_id")]
         public Guid RoleId { get; set; }
 

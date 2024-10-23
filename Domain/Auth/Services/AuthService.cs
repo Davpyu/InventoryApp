@@ -33,12 +33,12 @@ namespace DotNetService.Domain.Auth.Services
 
         public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
         {
-            var user = await _userQueryRepository.FindOneByEmail(authSignIn.Email);
+            var user = await _userQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException();
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
-            if (user == null || !isPasswordVerified)
+            if (!isPasswordVerified)
             {
-                throw new DataNotFoundException();
+                throw new UnauthenticatedException();
             }
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
