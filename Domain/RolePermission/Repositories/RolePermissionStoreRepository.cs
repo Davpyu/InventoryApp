@@ -13,7 +13,7 @@ namespace DotNetService.Domain.RolePermission.Repositories
 
         public async Task Create(Models.RolePermission rolePermission)
         {
-            await this.Save(rolePermission);
+            await Save(rolePermission);
         }
 
         public async Task Update(Guid id, Models.RolePermission rolePermission)
@@ -24,7 +24,7 @@ namespace DotNetService.Domain.RolePermission.Repositories
                 return;
             }
 
-            await this.Save(rolePermission, true);
+            await Save(rolePermission, true);
         }
 
         public async Task Delete(Guid id)

@@ -8,9 +8,9 @@ namespace DotNetService.Http.API.Version1.RolePermission
     public class RolePermissionDetail
     {
         public Guid Id { get; set; }
-        public Guid Roleid { get; set; }
+        public Guid RoleId { get; set; }
         public RoleItem Role { get; set; }
-        public Guid Permissionid { get; set; }
+        public Guid PermissionId { get; set; }
         public PermissionItem Permission { get; set; }
 
         public RolePermissionDetail()
@@ -19,18 +19,18 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         public RolePermissionDetail(Models.RolePermission rolePermissionRepository)
         {
-            this.Id = rolePermissionRepository.Id;
-            this.Roleid = rolePermissionRepository.Roleid;
-            this.Permissionid = rolePermissionRepository.Permissionid;
-            this.Permission = (new PermissionItem(rolePermissionRepository.Permission));
-            this.Role = (new RoleItem(rolePermissionRepository.Role));
+            Id = rolePermissionRepository.Id;
+            RoleId = rolePermissionRepository.RoleId;
+            PermissionId = rolePermissionRepository.PermissionId;
+            Permission = (new PermissionItem(rolePermissionRepository.Permission));
+            Role = (new RoleItem(rolePermissionRepository.Role));
         }
     }
     public class RolePermissionItem
     {
         public Guid Id { get; set; }
-        public Guid Roleid { get; set; }
-        public Guid Permissionid { get; set; }
+        public Guid RoleId { get; set; }
+        public Guid PermissionId { get; set; }
 
         public RolePermissionItem()
         {
@@ -38,9 +38,9 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         public RolePermissionItem(Models.RolePermission rolePermissionRepository)
         {
-            this.Id = rolePermissionRepository.Id;
-            this.Roleid = rolePermissionRepository.Roleid;
-            this.Permissionid = rolePermissionRepository.Permissionid;
+            Id = rolePermissionRepository.Id;
+            RoleId = rolePermissionRepository.RoleId;
+            PermissionId = rolePermissionRepository.PermissionId;
         }
 
         public static List<RolePermissionItem> MapRepo(List<Models.RolePermission> rolePermissions)

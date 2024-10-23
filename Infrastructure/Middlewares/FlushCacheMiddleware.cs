@@ -29,10 +29,11 @@ namespace DotNetService.Infrastructure.Middlewares
         )
         {
             var method = context.Request.Method.ToLower();
-            var methodToChecks = new List<string>{"post", "put", "patch", "delete"};
-            if (methodToChecks.Exists(methodToCheck => method == methodToCheck)) {
+            var methodToChecks = new List<string> { "post", "put", "patch", "delete" };
+            if (methodToChecks.Exists(methodToCheck => method == methodToCheck))
+            {
                 _logger.LogInformation("[CACHE] - Cleaing Processing");
-                Utils.BackgroundProcessThreadAsync(() => this.CleanCache(config, distributedCache));
+                Utils.BackgroundProcessThreadAsync(() => CleanCache(config, distributedCache));
             }
 
             await _next(context);
@@ -41,11 +42,14 @@ namespace DotNetService.Infrastructure.Middlewares
         private async Task CleanCache(
             IConfiguration config,
             IDistributedCache distributedCache
-        ) {
-            try {
+        )
+        {
+            try
+            {
                 var isRedisEnable = bool.Parse(config["Redis:IsEnable"]);
                 var keys = new List<string>();
-                if(isRedisEnable) {
+                if (isRedisEnable)
+                {
                     var redis = ConnectionMultiplexer.Connect(new ConfigurationOptions
                     {
                         AllowAdmin = true,
@@ -61,7 +65,9 @@ namespace DotNetService.Infrastructure.Middlewares
                     }
 
                     await redis.CloseAsync();
-                } else {
+                }
+                else
+                {
                     keys = Cache.Keys;
                 }
 
@@ -69,7 +75,9 @@ namespace DotNetService.Infrastructure.Middlewares
                 {
                     await distributedCache.RemoveAsync(key);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 _logger.LogError(e.StackTrace);
             }
         }

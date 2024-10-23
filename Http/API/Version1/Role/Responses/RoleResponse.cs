@@ -12,9 +12,9 @@ namespace DotNetService.Http.API.Version1.Role
 
         public RoleResponse(Models.Role role)
         {
-            this.Id = role.Id;
-            this.Name = role.Name;
-            this.Permissions = role.RolePermissions?.Count > 0 ? PermissionResponse.MapRepo(role.RolePermissions?.Select(data => data.Permission).ToList()) : null;
+            Id = role.Id;
+            Name = role.Name;
+            Permissions = role.RolePermissions?.Count > 0 ? PermissionResponse.MapRepo(role.RolePermissions?.Select(data => data.Permission).ToList()) : null;
         }
 
         public static List<RoleResponse> MapRepo(List<Models.Role> data)
@@ -34,8 +34,8 @@ namespace DotNetService.Http.API.Version1.Role
 
         public RoleItem(Models.Role roleRepository)
         {
-            this.Id = roleRepository.Id;
-            this.Name = roleRepository.Name;
+            Id = roleRepository.Id;
+            Name = roleRepository.Name;
         }
         public static List<RoleItem> MapRepo(List<Models.Role> roles)
         {

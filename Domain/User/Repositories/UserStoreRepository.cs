@@ -13,13 +13,13 @@ namespace DotNetService.Domain.User.Repositories
 
         public async Task<Models.User> Create(Models.User data)
         {
-            return await this.Save(data);
+            return await Save(data);
         }
 
         public async Task<Models.User> Update(Guid id, Models.User newData)
         {
             newData.Id = id;
-            return await this.Save(newData, true);
+            return await Save(newData, true);
         }
 
         public async Task Delete(Guid id)

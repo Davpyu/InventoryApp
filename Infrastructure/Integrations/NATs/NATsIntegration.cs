@@ -83,8 +83,13 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             }
             catch (NatsException e)
             {
-                _logger.LogError("Error StackTrace: {StackTrace}", e.StackTrace);
-                throw new ServiceUnavailableException("Error on PublishAndGetReply: " + e.Message);
+                _logger.LogError("NATS Exception: {message}", e.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error StackTrace: {StackTrace}", e.Message);
+                throw;
             }
         }
 

@@ -18,7 +18,7 @@ namespace DotNetService.Domain.Permission.Repositories
                 Name = permissionRepository.Name
             };
 
-            return await this.Save(newPermission);
+            return await Save(newPermission);
         }
 
         public async Task Update(Guid id, Models.Permission permissionRepository)
@@ -30,7 +30,7 @@ namespace DotNetService.Domain.Permission.Repositories
             }
 
             oldPermission.Name = permissionRepository.Name;
-            await this.Save(oldPermission, true);
+            await Save(oldPermission, true);
         }
 
         public async Task Delete(Guid id)

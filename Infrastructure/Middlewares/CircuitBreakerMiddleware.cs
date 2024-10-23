@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Infrastructure.Middlewares
 {
-    
+
     public class CircuitBreakerMiddleware
     {
         private readonly RequestDelegate _next;
@@ -36,31 +36,36 @@ namespace DotNetService.Infrastructure.Middlewares
             HttpContext context
         )
         {
-            try {
+            try
+            {
                 await _next(context);
             }
             catch (Exception error)
             {
                 // Circuit Breaker Handling for Fault Tolerant Type
-                var isCheckDone = await this.CheckFaultTolerant(context, error);
-                if (isCheckDone) {
+                var isCheckDone = await CheckFaultTolerant(context, error);
+                if (isCheckDone)
+                {
                     return;
                 }
 
                 // Re-throw to Exception Handler
                 throw;
-            }        
+            }
         }
 
-        private async Task<bool> CheckFaultTolerant(HttpContext context, Exception error) {
+        private async Task<bool> CheckFaultTolerant(HttpContext context, Exception error)
+        {
             var isActive = bool.Parse(_config["CircuitBreaker:internal:IsActive"] ?? "false");
-            if (!isActive) {
+            if (!isActive)
+            {
                 await _next(context);
                 return true;
             }
 
             var typeOfError = error.GetType().Name;
-            if (ignoreError.Contains(typeOfError)) {
+            if (ignoreError.Contains(typeOfError))
+            {
                 await _next(context);
                 return true;
             }

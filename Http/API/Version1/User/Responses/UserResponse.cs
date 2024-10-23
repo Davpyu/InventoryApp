@@ -11,10 +11,10 @@ namespace DotNetService.Http.API.Version1.User
 
         public UserResponse(Models.User user)
         {
-            this.Id = user.Id;
-            this.Name = user.Name;
-            this.Email = user.Email;
-            this.Roles = RoleResponse.MapRepo(user.UserRoles?.Select(data => data.Role).ToList());
+            Id = user.Id;
+            Name = user.Name;
+            Email = user.Email;
+            Roles = RoleResponse.MapRepo(user.UserRoles?.Select(data => data.Role).ToList());
         }
 
         public static List<UserResponse> MapRepo(List<Models.User> data)

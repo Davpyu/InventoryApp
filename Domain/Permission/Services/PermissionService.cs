@@ -16,17 +16,17 @@ namespace DotNetService.Domain.Permission.Services
 
         public async Task<ApiResponse> Index(PermissionQueryRequest query = null)
         {
-            var data = await this.Pagination(query);
+            var data = await Pagination(query);
             int count = await _permissionQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
-                PaginationModel paginate = new()
-                {
-                    TotalPage = (int)Math.Ceiling(pageInCount),
-                    Page = query.Page,
-                    PerPage = query.PerPage,
-                    Data = PermissionResponse.MapRepo(data),
-                    Total = count
-                };
+            PaginationModel paginate = new()
+            {
+                TotalPage = (int)Math.Ceiling(pageInCount),
+                Page = query.Page,
+                PerPage = query.PerPage,
+                Data = PermissionResponse.MapRepo(data),
+                Total = count
+            };
 
             return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }

@@ -22,17 +22,17 @@ namespace DotNetService.Domain.Role.Services
 
         public async Task<ApiResponse> Index(RoleQueryRequest query = null)
         {
-            var data = await this.Pagination(query);
+            var data = await Pagination(query);
             int count = await _roleQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
-                PaginationModel paginate = new()
-                {
-                    TotalPage = (int)Math.Ceiling(pageInCount),
-                    Page = query.Page,
-                    PerPage = query.PerPage,
-                    Data = RoleResponse.MapRepo(data),
-                    Total = count
-                };
+            PaginationModel paginate = new()
+            {
+                TotalPage = (int)Math.Ceiling(pageInCount),
+                Page = query.Page,
+                PerPage = query.PerPage,
+                Data = RoleResponse.MapRepo(data),
+                Total = count
+            };
 
             return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }
@@ -54,16 +54,15 @@ namespace DotNetService.Domain.Role.Services
                 {
                     var rolePermission = new Models.RolePermission
                     {
-                        Roleid = roleCreated.Id,
-                        Permissionid = permissionId
+                        RoleId = roleCreated.Id,
+                        PermissionId = permissionId
                     };
                     rolePermissions.Add(rolePermission);
                 }
                 await _rolePermissionStoreRepository.BulkSave(rolePermissions.ToArray());
             }
 
-            return await this.DetailById(roleCreated.Id);
-            
+            return await DetailById(roleCreated.Id);
         }
 
         public async Task<Models.Role> DetailById(Guid id)
@@ -84,9 +83,10 @@ namespace DotNetService.Domain.Role.Services
         {
             var data = RoleUpdateRequest.Assign(dataUpdate);
             await _roleStoreRepository.Update(id, data);
-            var role = await this.DetailById(id);
+            var role = await DetailById(id);
             var rolePermissions = role.RolePermissions;
-            if(rolePermissions?.Count > 0){
+            if (rolePermissions?.Count > 0)
+            {
                 var rolePermissionsToDelete = await _rolePermissionQueryRepository.FindByRoleId(id);
                 await _rolePermissionStoreRepository.DeleteBulk(rolePermissionsToDelete);
             }
@@ -97,20 +97,20 @@ namespace DotNetService.Domain.Role.Services
                 {
                     var rolePermission = new Models.RolePermission
                     {
-                        Roleid = id,
-                        Permissionid = permissionId
+                        RoleId = id,
+                        PermissionId = permissionId
                     };
 
                     newRolePermissions.Add(rolePermission);
                 }
                 await _rolePermissionStoreRepository.BulkSave(newRolePermissions.ToArray());
             }
-            return await this.DetailById(id);
+            return await DetailById(id);
         }
 
         public async Task Delete(Guid id)
         {
-           await _roleStoreRepository.Delete(id);
+            await _roleStoreRepository.Delete(id);
         }
     }
 }

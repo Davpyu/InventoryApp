@@ -9,14 +9,14 @@ namespace DotNetService.Domain.UserRole.Repositories
     {
         private readonly Models.IamDBContext _context = context;
 
-        internal async Task<Models.UserRole>  Find(Guid id = default)
+        internal async Task<Models.UserRole> Find(Guid id = default)
         {
             return await _context.UserRoles.Include("User").Include("Role").Where(userRole => userRole.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<Models.UserRole> FindById(Guid id = default)
         {
-            var userRole = await this.Find(id);
+            var userRole = await Find(id);
             if (userRole == null)
             {
                 return null;
@@ -25,9 +25,9 @@ namespace DotNetService.Domain.UserRole.Repositories
             return userRole;
         }
 
-        public async Task<Models.UserRole> FindByUserAndRole(Guid userid, Guid roleid)
+        public async Task<Models.UserRole> FindByUserAndRole(Guid userId, Guid roleId)
         {
-            Models.UserRole userRole = await _context.UserRoles.Where(userRole => userRole.Userid == userid && userRole.Roleid == roleid).FirstOrDefaultAsync();
+            Models.UserRole userRole = await _context.UserRoles.Where(userRole => userRole.UserId == userId && userRole.RoleId == roleId).FirstOrDefaultAsync();
             if (userRole == null)
             {
                 return null;
@@ -38,11 +38,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public async Task<List<Models.UserRole>> FindByUserId(Guid userId = default)
         {
-            var userRoles = await _context.UserRoles.Where(userRole => userRole.Userid == userId).ToListAsync();
-            if (userRoles.Count < 1)
-            {
-                return [];
-            }
+            var userRoles = await _context.UserRoles.Where(userRole => userRole.UserId == userId).ToListAsync();
 
             return userRoles;
         }
@@ -68,7 +64,7 @@ namespace DotNetService.Domain.UserRole.Repositories
             return await query.CountAsync();
         }
 
-        private static  IQueryable<Models.UserRole> QuerySearch(
+        private static IQueryable<Models.UserRole> QuerySearch(
             IQueryable<Models.UserRole> query,
             Query queryParams
         )

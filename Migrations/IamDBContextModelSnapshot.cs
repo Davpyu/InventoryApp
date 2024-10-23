@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNetService.Migrations
 {
     [DbContext(typeof(IamDBContext))]
-    partial class DBContext1ModelSnapshot : ModelSnapshot
+    partial class IamDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -34,41 +34,19 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("CreatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by_username");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<string>("DeletedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("deleted_by_username");
+                    b.Property<string>("Key")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("key");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("name");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("UpdatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by_username");
 
                     b.HasKey("Id");
 
@@ -89,41 +67,19 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("CreatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by_username");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<string>("DeletedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("deleted_by_username");
+                    b.Property<string>("Key")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("key");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("name");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("UpdatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by_username");
 
                     b.HasKey("Id");
 
@@ -144,53 +100,25 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid?>("CreatedBy")
+                    b.Property<Guid>("PermissionId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
+                        .HasColumnName("permission_id");
 
-                    b.Property<string>("CreatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by_username");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid?>("DeletedBy")
+                    b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<string>("DeletedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("deleted_by_username");
-
-                    b.Property<Guid>("Permissionid")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("permissionid");
-
-                    b.Property<Guid>("Roleid")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("roleid");
+                        .HasColumnName("role_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("UpdatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by_username");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Id");
 
-                    b.HasIndex("Permissionid");
+                    b.HasIndex("PermissionId");
 
-                    b.HasIndex("Roleid");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("role_permission");
                 });
@@ -207,49 +135,24 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("CreatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by_username");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<string>("DeletedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("deleted_by_username");
-
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("email");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("name");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
                         .HasColumnName("password");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("UpdatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by_username");
 
                     b.HasKey("Id");
 
@@ -274,53 +177,25 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
-                    b.Property<Guid?>("CreatedBy")
+                    b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("CreatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("created_by_username");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<string>("DeletedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("deleted_by_username");
-
-                    b.Property<Guid>("Roleid")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("roleid");
+                        .HasColumnName("role_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
 
-                    b.Property<Guid?>("UpdatedBy")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("UpdatedByUsername")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("updated_by_username");
-
-                    b.Property<Guid>("Userid")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("userid");
+                        .HasColumnName("user_id");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Id");
 
-                    b.HasIndex("Roleid");
+                    b.HasIndex("RoleId");
 
-                    b.HasIndex("Userid");
+                    b.HasIndex("UserId");
 
                     b.ToTable("user_role");
                 });
@@ -329,13 +204,13 @@ namespace DotNetService.Migrations
                 {
                     b.HasOne("DotNetService.Models.Permission", "Permission")
                         .WithMany("RolePermissions")
-                        .HasForeignKey("Permissionid")
+                        .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DotNetService.Models.Role", "Role")
                         .WithMany("RolePermissions")
-                        .HasForeignKey("Roleid")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -348,13 +223,13 @@ namespace DotNetService.Migrations
                 {
                     b.HasOne("DotNetService.Models.Role", "Role")
                         .WithMany("UserRoles")
-                        .HasForeignKey("Roleid")
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DotNetService.Models.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("Userid")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

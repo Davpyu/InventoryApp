@@ -7,20 +7,16 @@ namespace DotNetService.Models
     [Table("user_role")]
     public class UserRole : Base
     {
+        [Column("user_id")]
+        public Guid UserId { get; set; }
 
-        [Column("id")]
-        public Guid Id { get; set; }
-
-        [Column("userid")]
-        public Guid Userid { get; set; }
-
-        [ForeignKey(nameof(Userid))]
+        [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
 
-        [Column("roleid")]
-        public Guid Roleid { get; set; }
+        [Column("role_id")]
+        public Guid RoleId { get; set; }
 
-        [ForeignKey(nameof(Roleid))]
+        [ForeignKey(nameof(RoleId))]
         public virtual Role Role { get; set; }
     }
 }

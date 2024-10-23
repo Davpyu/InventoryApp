@@ -5,10 +5,10 @@ namespace DotNetService.Http.API.Version1.RolePermission
     public class RolePermissionCreateRequest
     {
         [Required]
-        public Guid Permissionid { get; set; }
+        public Guid PermissionId { get; set; }
 
         [Required]
-        public Guid Roleid { get; set; }
+        public Guid RoleId { get; set; }
     }
 
 }

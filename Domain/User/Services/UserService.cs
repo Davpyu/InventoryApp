@@ -25,14 +25,14 @@ namespace DotNetService.Domain.User.Services
             var data = await _userQueryRepository.Pagination(query);
             int count = await _userQueryRepository.Count(query);
             decimal pageInCount = ((decimal)count) / query.PerPage;
-                PaginationModel paginate = new()
-                {
-                    TotalPage = (int)Math.Ceiling(pageInCount),
-                    Page = query.Page,
-                    PerPage = query.PerPage,
-                    Data = UserResponse.MapRepo(data),
-                    Total = count
-                };
+            PaginationModel paginate = new()
+            {
+                TotalPage = (int)Math.Ceiling(pageInCount),
+                Page = query.Page,
+                PerPage = query.PerPage,
+                Data = UserResponse.MapRepo(data),
+                Total = count
+            };
 
             return new ApiResponsePagination(HttpStatusCode.OK, paginate);
         }
@@ -48,15 +48,15 @@ namespace DotNetService.Domain.User.Services
                 {
                     var userRole = new Models.UserRole
                     {
-                        Userid = user.Id,
-                        Roleid = roleId
+                        UserId = user.Id,
+                        RoleId = roleId
                     };
 
                     userRoles.Add(userRole);
                 }
                 await _userRoleStoreRepository.BulkSave(userRoles.ToArray());
             }
-            return await this.Detail(user.Id);
+            return await Detail(user.Id);
         }
 
         public async Task<Models.User> Detail(Guid id)
@@ -68,9 +68,10 @@ namespace DotNetService.Domain.User.Services
         {
             var data = UserUpdateRequest.Assign(dataUpdate);
             var updatedData = await _userStoreRepository.Update(id, data);
-            var user = await this.Detail(id);
+            var user = await Detail(id);
             var userRoles = user?.UserRoles;
-            if(userRoles?.Count > 0){
+            if (userRoles?.Count > 0)
+            {
                 var userRolesToDelete = await _userRoleQueryRepository.FindByUserId(id);
                 await _userRoleStoreRepository.DeleteBulk(userRolesToDelete);
             }
@@ -81,15 +82,15 @@ namespace DotNetService.Domain.User.Services
                 {
                     var userRole = new Models.UserRole
                     {
-                        Userid = updatedData.Id,
-                        Roleid = roleId
+                        UserId = updatedData.Id,
+                        RoleId = roleId
                     };
 
                     newUserRoles.Add(userRole);
                 }
                 await _userRoleStoreRepository.BulkSave(newUserRoles.ToArray());
             }
-            return await this.Detail(updatedData.Id);
+            return await Detail(updatedData.Id);
 
         }
 

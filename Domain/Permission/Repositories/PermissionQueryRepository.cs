@@ -19,16 +19,16 @@ namespace DotNetService.Domain.Permission.Repositories
                 .Include(data => data.RolePermissions)
                 .AsQueryable();
 
-            query = this.QuerySearch(query, queryParams);
-            query = this.QueryFilter(query, queryParams);
-            query = this.QuerySort(query, queryParams);
+            query = QuerySearch(query, queryParams);
+            query = QueryFilter(query, queryParams);
+            query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
 
             return data;
         }
 
-        private IQueryable<Models.Permission> QuerySearch(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
+        private static IQueryable<Models.Permission> QuerySearch(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
         {
             if (queryParams.Search != null)
             {
@@ -76,8 +76,8 @@ namespace DotNetService.Domain.Permission.Repositories
         {
             IQueryable<Models.Permission> query = _context.Permissions;
 
-            query = this.QuerySearch(query, queryParams);
-            query = this.QueryFilter(query, queryParams);
+            query = QuerySearch(query, queryParams);
+            query = QueryFilter(query, queryParams);
 
             return await query.CountAsync();
         }
@@ -133,7 +133,7 @@ namespace DotNetService.Domain.Permission.Repositories
             {
                 permissionQuery = permissionQuery.Where(permission => permission.Name.Contains(search));
             }
-            
+
             return await permissionQuery.CountAsync();
         }
     }

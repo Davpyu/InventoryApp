@@ -20,7 +20,7 @@ namespace DotNetService.Domain.RolePermission.Repositories
 
         public async Task<Models.RolePermission> FindById(Guid id = default)
         {
-            var rolePermission = await this.Find(id);
+            var rolePermission = await Find(id);
             if (rolePermission == null)
             {
                 return null;
@@ -29,10 +29,10 @@ namespace DotNetService.Domain.RolePermission.Repositories
             return rolePermission;
         }
 
-        public async Task<Models.RolePermission> FindByRoleAndPermission(Guid roleid, Guid permission)
+        public async Task<Models.RolePermission> FindByRoleAndPermission(Guid roleId, Guid permission)
         {
             var rolePermission = await _context.RolePermissions
-                .Where(rolePermission => rolePermission.Roleid == roleid && rolePermission.Permissionid == permission)
+                .Where(rolePermission => rolePermission.RoleId == roleId && rolePermission.PermissionId == permission)
                 .FirstAsync();
 
             if (rolePermission == null)
@@ -46,17 +46,12 @@ namespace DotNetService.Domain.RolePermission.Repositories
         public async Task<List<Models.RolePermission>> FindByRoleId(Guid roleId)
         {
             var rolePermissions = await _context.RolePermissions
-                .Where(rolePermission => rolePermission.Roleid == roleId)
+                .Where(rolePermission => rolePermission.RoleId == roleId)
                 .ToListAsync();
-
-            if (rolePermissions.Count < 1)
-            {
-                return [];
-            }
 
             return rolePermissions;
         }
-        
+
         public async Task<List<Models.RolePermission>> Get(int page, int perPage)
         {
             int skip = (1 - page) * perPage;
