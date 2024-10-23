@@ -104,15 +104,6 @@ namespace DotNetService.Models
                 .HasDefaultValueSql("NEWID()");
         }
 
-
-        private static void SetUniqueColumn<T>(ModelBuilder modelBuilder, string column) where T : class
-        {
-            modelBuilder.Entity<T>()
-                 .HasIndex(CreateExpression<T>(column))
-                .IsUnique();
-
-        }
-
         private static void SoftDelete<T>(ModelBuilder modelBuilder) where T : class
         {
             modelBuilder.Entity<T>()
