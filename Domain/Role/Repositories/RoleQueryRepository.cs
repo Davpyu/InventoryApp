@@ -25,9 +25,9 @@ namespace DotNetService.Domain.Role.Repositories
                 .ThenInclude(data => data.Permission)
                 .AsQueryable();
 
-            query = this.QuerySearch(query, queryParams);
-            query = this.QueryFilter(query, queryParams);
-            query = this.QuerySort(query, queryParams);
+            query = QuerySearch(query, queryParams);
+            query = QueryFilter(query, queryParams);
+            query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
 
@@ -82,8 +82,8 @@ namespace DotNetService.Domain.Role.Repositories
         {
             IQueryable<Models.Role> query = _context.Roles;
 
-            query = this.QuerySearch(query, queryParams);
-            query = this.QueryFilter(query, queryParams);
+            query = QuerySearch(query, queryParams);
+            query = QueryFilter(query, queryParams);
 
             return await query.CountAsync();
         }
@@ -114,7 +114,7 @@ namespace DotNetService.Domain.Role.Repositories
             Models.Role role = await _context.Roles.Where(role => role.Name == name).FirstOrDefaultAsync();
             if (role == null)
             {
-                return (new Models.Role());
+                return new Models.Role();
             }
 
             return role;

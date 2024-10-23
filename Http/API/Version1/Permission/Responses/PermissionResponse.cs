@@ -8,8 +8,8 @@ namespace DotNetService.Http.API.Version1.Permission
 
         public PermissionResponse(Models.Permission permission)
         {
-            this.Id = permission.Id;
-            this.Name = permission.Name;
+            Id = permission.Id;
+            Name = permission.Name;
         }
 
         public static List<PermissionResponse> MapRepo(List<Models.Permission> data)
@@ -17,7 +17,7 @@ namespace DotNetService.Http.API.Version1.Permission
             return data?.Select(data => new PermissionResponse(data)).ToList();
         }
     }
-    
+
     public class PermissionItem
     {
         public Guid Id { get; set; }
@@ -29,10 +29,10 @@ namespace DotNetService.Http.API.Version1.Permission
 
         public PermissionItem(Models.Permission permissionRepository)
         {
-            this.Id = permissionRepository.Id;
-            this.Name = permissionRepository.Name;
+            Id = permissionRepository.Id;
+            Name = permissionRepository.Name;
         }
-        
+
         public static List<PermissionItem> MapRepo(List<Models.Permission> permissions)
         {
             var permissionMapped = new List<PermissionItem>();

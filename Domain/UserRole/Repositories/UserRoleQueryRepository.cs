@@ -16,7 +16,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public async Task<Models.UserRole> FindById(Guid id = default)
         {
-            var userRole = await this.Find(id);
+            var userRole = await Find(id);
             if (userRole == null)
             {
                 return null;
@@ -25,9 +25,9 @@ namespace DotNetService.Domain.UserRole.Repositories
             return userRole;
         }
 
-        public async Task<Models.UserRole> FindByUserAndRole(Guid userid, Guid roleid)
+        public async Task<Models.UserRole> FindByUserAndRole(Guid userId, Guid roleId)
         {
-            Models.UserRole userRole = _context.UserRoles.Where(userRole => userRole.UserId == userid && userRole.RoleId == roleid).FirstOrDefaultAsync();
+            Models.UserRole userRole = await _context.UserRoles.Where(userRole => userRole.UserId == userId && userRole.RoleId == roleId).FirstOrDefaultAsync();
             if (userRole == null)
             {
                 return null;
@@ -38,11 +38,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public async Task<List<Models.UserRole>> FindByUserId(Guid userId = default)
         {
-            var userRoles = await _context.UserRoles.Where(userRole => userRole.Userid == userId).ToListAsync();
-            if (userRoles.Count < 1)
-            {
-                return [];
-            }
+            var userRoles = await _context.UserRoles.Where(userRole => userRole.UserId == userId).ToListAsync();
 
             return userRoles;
         }

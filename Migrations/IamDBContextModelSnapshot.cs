@@ -34,6 +34,11 @@ namespace DotNetService.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("Key")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("key");
+
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)")
@@ -61,6 +66,11 @@ namespace DotNetService.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("created_at");
+
+                    b.Property<string>("Key")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("key");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)

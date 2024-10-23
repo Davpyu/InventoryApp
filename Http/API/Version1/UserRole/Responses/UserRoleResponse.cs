@@ -17,11 +17,11 @@ namespace DotNetService.Http.API.Version1.UserRole
 
         public UserRoleDetail(Models.UserRole userRole)
         {
-            this.Id = userRole.Id;
-            this.RoleId = userRole.RoleId;
-            this.UserId = userRole.UserId;
-            this.User = new UserResponse(userRole.User);
-            this.Role = new RoleItem(userRole.Role);
+            Id = userRole.Id;
+            RoleId = userRole.RoleId;
+            UserId = userRole.UserId;
+            User = new UserResponse(userRole.User);
+            Role = new RoleItem(userRole.Role);
         }
     }
 
@@ -37,9 +37,9 @@ namespace DotNetService.Http.API.Version1.UserRole
 
         public UserRoleItem(Models.UserRole role)
         {
-            this.Id = role.Id;
-            this.RoleId = role.RoleId;
-            this.UserId = role.UserId;
+            Id = role.Id;
+            RoleId = role.RoleId;
+            UserId = role.UserId;
         }
 
         public static List<UserRoleItem> MapRepo(List<Models.UserRole> userRoles)

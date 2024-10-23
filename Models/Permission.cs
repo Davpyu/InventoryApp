@@ -7,8 +7,11 @@ namespace DotNetService.Models
     public class Permission : Base
     {
         [Column("name")]
-        [Index(IsUnique = true)]
         public string Name { get; set; }
+
+        [Column("key")]
+        [Index(IsUnique = true)]
+        public string Key { get; set; }
 
         public virtual ICollection<RolePermission> RolePermissions { get; set; }
     }

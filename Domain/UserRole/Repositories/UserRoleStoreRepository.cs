@@ -13,7 +13,7 @@ namespace DotNetService.Domain.UserRole.Repositories
 
         public async Task Create(Models.UserRole userRole)
         {
-            await this.Save(userRole);
+            await Save(userRole);
         }
 
         public async Task Update(Guid id, Models.UserRole userRole)
@@ -24,7 +24,7 @@ namespace DotNetService.Domain.UserRole.Repositories
                 return;
             }
 
-           await this.Save(userRole, true);
+            await Save(userRole, true);
         }
 
         public async Task Delete(Guid id)
@@ -34,7 +34,7 @@ namespace DotNetService.Domain.UserRole.Repositories
                 Models.UserRole data = new Models.UserRole { Id = id };
                 _context.UserRoles.Attach(data);
                 _context.UserRoles.Remove(data);
-               await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             catch (DbDeleteConcurrencyException)
             {
@@ -71,7 +71,7 @@ namespace DotNetService.Domain.UserRole.Repositories
         public async Task BulkSave(Models.UserRole[] data)
         {
             _context.UserRoles.AddRange(data);
-           await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -24,7 +24,7 @@ namespace DotNetService.Domain.Role.Repositories
                 Name = role.Name
             };
 
-            return await this.Save(newRole);
+            return await Save(newRole);
         }
 
         public async Task Update(Guid id, Models.Role roleRepository)
@@ -36,7 +36,7 @@ namespace DotNetService.Domain.Role.Repositories
             }
 
             oldRole.Name = roleRepository.Name;
-            await this.Save(oldRole, true);
+            await Save(oldRole, true);
         }
 
         public async Task Delete(Guid id)

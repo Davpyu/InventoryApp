@@ -56,7 +56,7 @@ namespace DotNetService.Domain.User.Services
                 }
                 await _userRoleStoreRepository.BulkSave(userRoles.ToArray());
             }
-            return await this.Detail(user.Id);
+            return await Detail(user.Id);
         }
 
         public async Task<Models.User> Detail(Guid id)
@@ -68,7 +68,7 @@ namespace DotNetService.Domain.User.Services
         {
             var data = UserUpdateRequest.Assign(dataUpdate);
             var updatedData = await _userStoreRepository.Update(id, data);
-            var user = await this.Detail(id);
+            var user = await Detail(id);
             var userRoles = user?.UserRoles;
             if (userRoles?.Count > 0)
             {
@@ -90,7 +90,7 @@ namespace DotNetService.Domain.User.Services
                 }
                 await _userRoleStoreRepository.BulkSave(newUserRoles.ToArray());
             }
-            return await this.Detail(updatedData.Id);
+            return await Detail(updatedData.Id);
 
         }
 

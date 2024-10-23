@@ -7,8 +7,11 @@ namespace DotNetService.Models
     public class Role : Base
     {
         [Column("name")]
-        [Index(IsUnique = true)]
         public string Name { get; set; }
+
+        [Column("key")]
+        [Index(IsUnique = true)]
+        public string Key { get; set; }
 
         public virtual ICollection<UserRole> UserRoles { get; set; }
 
