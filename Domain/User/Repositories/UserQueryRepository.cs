@@ -109,20 +109,9 @@ namespace DotNetService.Domain.User.Repositories
             return data;
         }
 
-        public async Task<Models.User> FindOneByEmail(string email, bool isValidateExist = false)
+        public async Task<Models.User> FindOneByEmail(string email)
         {
-            var data = await _context.Users.Where(data => data.Email == email).FirstOrDefaultAsync();
-            if (data == null)
-            {
-                return null;
-            }
-
-            if (isValidateExist && data != null)
-            {
-                throw new UnprocessableEntityException("email " + email + " has been used.");
-            }
-
-            return data;
+            return await _context.Users.Where(data => data.Email == email).SingleAsync();
         }
     }
 }

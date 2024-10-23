@@ -18,7 +18,7 @@ namespace DotNetService.Http.API.Version1.Auth
         [Required]
         [MinLength(8)]
         [MaxLength(30)]
-        [RegularExpression(AuthRegex.PASSWORD)]
+        [RegularExpression(AuthRegex.PASSWORD, ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.")]
         public string Password { get; set; }
     }
 }
