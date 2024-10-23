@@ -36,7 +36,7 @@ namespace DotNetService.Domain.Auth.Services
             var user = await _userQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException();
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
-            if (isPasswordVerified == false)
+            if (!isPasswordVerified)
             {
                 throw new UnauthenticatedException();
             }
