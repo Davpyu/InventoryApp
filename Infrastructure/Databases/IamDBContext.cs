@@ -94,7 +94,7 @@ namespace DotNetService.Models
 
         /*=================================== Service Support ===========================================*/
 
-        private void GenerateUuid<T>(ModelBuilder modelBuilder, string column) where T : class
+        private static void GenerateUuid<T>(ModelBuilder modelBuilder, string column) where T : class
         {
             modelBuilder.Entity<T>()
                 .HasIndex(CreateExpression<T>(column));
@@ -105,7 +105,7 @@ namespace DotNetService.Models
         }
 
 
-        private void SetUniqueColumn<T>(ModelBuilder modelBuilder, string column) where T : class
+        private static void SetUniqueColumn<T>(ModelBuilder modelBuilder, string column) where T : class
         {
             modelBuilder.Entity<T>()
                  .HasIndex(CreateExpression<T>(column))
@@ -113,7 +113,7 @@ namespace DotNetService.Models
 
         }
 
-        private void SoftDelete<T>(ModelBuilder modelBuilder) where T : class
+        private static void SoftDelete<T>(ModelBuilder modelBuilder) where T : class
         {
             modelBuilder.Entity<T>()
                 .HasQueryFilter(u => EF.Property<DateTime?>(u, "DeletedAt") == null);
