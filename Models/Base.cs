@@ -13,5 +13,8 @@ namespace DotNetService.Models
 
         [Column(name: "updated_at")]
         public DateTime? UpdatedAt { get; set; }
+
+        [Column(name: "deleted_at")]
+        public DateTime? DeletedAt { get; set; }
     }
 }

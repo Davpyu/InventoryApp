@@ -17,7 +17,8 @@ namespace DotNetService.Migrations
                     name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     key = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    deleted_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,7 +33,8 @@ namespace DotNetService.Migrations
                     name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     key = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    deleted_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -48,7 +50,8 @@ namespace DotNetService.Migrations
                     email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     password = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    deleted_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,7 +66,8 @@ namespace DotNetService.Migrations
                     role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     permission_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    deleted_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -90,7 +94,8 @@ namespace DotNetService.Migrations
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     role_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    deleted_at = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
