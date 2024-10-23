@@ -22,9 +22,6 @@ namespace DotNetService.Infrastructure.Seeders
 
         foreach (var permission in permissions)
         {
-          permission.Name = permission.Name;
-          permission.Key = permission.Key;
-
           newPermissions.Add(permission);
         }
         await dbContext.Permissions.AddRangeAsync(newPermissions);

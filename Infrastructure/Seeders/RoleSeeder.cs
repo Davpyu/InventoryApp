@@ -20,12 +20,8 @@ namespace DotNetService.Infrastructure.Seeders
             {
                 await dbContext.Database.BeginTransactionAsync();
 
-
                 foreach (var role in roles)
                 {
-                    role.Name = role.Name;
-                    role.Key = role.Key;
-
                     newRoles.Add(role);
                 }
                 await dbContext.Roles.AddRangeAsync(newRoles);
