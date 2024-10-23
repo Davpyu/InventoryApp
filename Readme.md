@@ -1,29 +1,37 @@
-# API DOCS : 
+# API DOCS :
+
 - https://documenter.getpostman.com/view/4473147/TzJoDKvC
 
 # Pre Requirement :
--   .Net sdk 8.0
--   .Net Entity Framework
--   MSSQL 2019
--   NATs
--   Redis
+
+- .Net sdk 8.0
+- .Net Entity Framework
+- MSSQL 2019
+- NATs
+- Redis
 
 # Manual Quick Start API:
--   Run DB MSSQL 2019 : (by docker : `docker run --name mssqldock -e "ACCEPT_EULA=Y" -v sqldata:./mssqldata -e "MSSQL_SA_PASSWORD=Administrat@r123" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest`)
--   Run Redis (by docker : `docker run --name redisdock -p6379:6379 -d redis`)
--   Run NATs (by docker : `docker run --name natsdock -p 4222:4222 -p 6222:6222 -p 8222:8222 -d nats`)
--   Install .Net Entity Framework : https://learn.microsoft.com/en-us/ef/core/get-started/overview/install
--   Copy file `appsettings.example.json` ubah ke `appsettings.json` kemudian setting konfigurasinya
--   Run `dotnet ef database update` untuk migrate database
--   Run `dotnet run`
+
+- Run DB MSSQL 2019 : (by docker : `docker run --name mssqldock -e "ACCEPT_EULA=Y" -v sqldata:./mssqldata -e "MSSQL_SA_PASSWORD=Administrat@r123" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest`)
+- Run Redis (by docker : `docker run --name redisdock -p6379:6379 -d redis`)
+- Run NATs (by docker : `docker run --name natsdock -p 4222:4222 -p 6222:6222 -p 8222:8222 -d nats`)
+- Install .Net Entity Framework : https://learn.microsoft.com/en-us/ef/core/get-started/overview/install
+- Copy file `appsettings.example.json` ubah ke `appsettings.json` kemudian setting konfigurasinya
+- Run `dotnet ef database update` untuk migrate database
+- Run `dotnet run`
 
 # Migration
--   Run `dotnet run command --command seed` untuk migrate semua tabel dari database
--   Run `dotnet run command --command seed --args <module>Seeder` untuk migrate satu tabel/module dari database
-    -   Example seeding User: `dotnet run command --command seed --args UserSeeder`
 
+- Run `dotnet run command --command seed` untuk migrate semua tabel dari database
+- Run `dotnet run command --command seed --args <module>Seeder` untuk migrate satu tabel/module dari database
+  - Example seeding User: `dotnet run command --command seed --args UserSeeder`
+
+# Database
+
+- ERD https://dbdocs.io/devops.dot/dotnet-service-boilerplate
 
 # Directory structure :
+
 ```
 ├── Commands
 ├── Constants
@@ -87,7 +95,7 @@
 │   │   └── NATs
 │   ├── Middlewares
 │   ├── Queues
-|   ├── Seeders 
+|   ├── Seeders
 │   ├── Shareds
 │   └── Subsribtions
 ├── Log
