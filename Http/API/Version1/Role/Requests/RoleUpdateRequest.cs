@@ -10,7 +10,6 @@ namespace DotNetService.Http.API.Version1.Role
         [MaxLength(50)]
         public string Name { get; set; }
 
-        [Required]
         [JsonPropertyName("permission_ids")]
         public List<Guid> PermissionIds { get; set; }
 
