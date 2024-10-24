@@ -113,5 +113,10 @@ namespace DotNetService.Domain.User.Repositories
         {
             return await _context.Users.Where(data => data.Email == email).SingleAsync();
         }
+
+        public async Task<bool> IsEmailExists(string email)
+        {
+            return await _context.Users.AnyAsync(data => data.Email == email);
+        }
     }
 }

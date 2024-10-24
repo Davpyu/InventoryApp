@@ -56,6 +56,13 @@ namespace DotNetService.Domain.Auth.Services
 
         public async Task Register(AuthRegisterRequest authRegister)
         {
+            var isEmailExists = await _userQueryRepository.IsEmailExists(authRegister.Email);
+
+            if (isEmailExists)
+            {
+                throw new UnprocessableEntityException("Email already registered");
+            }
+
             Models.User data = new()
             {
                 Name = authRegister.Name,

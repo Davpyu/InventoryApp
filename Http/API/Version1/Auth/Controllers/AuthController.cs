@@ -36,7 +36,7 @@ namespace DotNetService.Http.API.Version1.Auth
         [AllowAnonymous]
         public async Task<ApiResponse> Register(AuthRegisterRequest authRegister)
         {
-           await _authService.Register(authRegister);
+            await _authService.Register(authRegister);
             return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
