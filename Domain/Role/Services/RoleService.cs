@@ -44,23 +44,16 @@ namespace DotNetService.Domain.Role.Services
 
         public async Task<Models.Role> Create(RoleCreateRequest dataCreate)
         {
+            var isRoleExist = await _roleQueryRepository.IsExistByKey(dataCreate.Key);
+
+            if (isRoleExist)
+            {
+                throw new UnprocessableEntityException("Role key already exist");
+            }
+
             var data = RoleCreateRequest.Assign(dataCreate);
 
-            var roleCreated = await _roleStoreRepository.Create(data);
-            if (dataCreate.PermissionIds?.Count > 0)
-            {
-                var rolePermissions = new List<Models.RolePermission>();
-                foreach (var permissionId in dataCreate.PermissionIds)
-                {
-                    var rolePermission = new Models.RolePermission
-                    {
-                        RoleId = roleCreated.Id,
-                        PermissionId = permissionId
-                    };
-                    rolePermissions.Add(rolePermission);
-                }
-                await _rolePermissionStoreRepository.BulkSave(rolePermissions.ToArray());
-            }
+            var roleCreated = await _roleStoreRepository.Create(data, dataCreate.PermissionIds);
 
             return await DetailById(roleCreated.Id);
         }

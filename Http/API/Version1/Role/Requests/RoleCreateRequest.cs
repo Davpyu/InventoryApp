@@ -1,10 +1,19 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 namespace DotNetService.Http.API.Version1.Role
 {
     public class RoleCreateRequest
     {
         [Required]
+        [MinLength(3)]
+        [MaxLength(50)]
         public string Name { get; set; }
+
+        [Required]
+        [MinLength(3)]
+        [MaxLength(50)]
+        public string Key { get; set; }
 
         public List<Guid> PermissionIds { get; set; }
 
@@ -13,7 +22,7 @@ namespace DotNetService.Http.API.Version1.Role
             Models.Role res = new()
             {
                 Name = data.Name,
-
+                Key = data.Key
             };
 
             return res;

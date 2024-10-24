@@ -5,7 +5,6 @@ namespace DotNetService.Domain.Role.Repositories
 {
     public class RoleStoreRepository
     {
-        private readonly RoleQueryRepository _roleQueryRepository;
         private readonly Models.IamDBContext _context;
 
         public RoleStoreRepository(
@@ -14,29 +13,60 @@ namespace DotNetService.Domain.Role.Repositories
         )
         {
             _context = context;
-            _roleQueryRepository = roleQueryRepository;
         }
 
-        public async Task<Models.Role> Create(Models.Role role)
+        public async Task<Models.Role> Create(Models.Role role, List<Guid> permissionIds)
         {
-            Models.Role newRole = new()
+            // Start transaction
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                Name = role.Name
-            };
+                var newRole = _context.Roles.Add(role);
+                // await _context.SaveChangesAsync();
+                var createdRole = newRole.Entity;
 
-            return await Save(newRole);
+                if (permissionIds?.Count > 0)
+                {
+                    var rolePermissions = new List<Models.RolePermission>();
+                    foreach (var permissionId in permissionIds)
+                    {
+                        var rolePermission = new Models.RolePermission
+                        {
+                            RoleId = createdRole.Id,
+                            PermissionId = permissionId
+                        };
+                        rolePermissions.Add(rolePermission);
+                    }
+                    await _context.RolePermissions.AddRangeAsync(rolePermissions);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return createdRole;
+            }
+            catch (Exception)
+            {
+                await _context.Database.RollbackTransactionAsync();
+                throw new UnprocessableEntityException("Failed to create role.");
+            }
+
+
         }
 
         public async Task Update(Guid id, Models.Role roleRepository)
         {
-            Models.Role oldRole = await _roleQueryRepository.Find(id);
-            if (oldRole == null)
+            try
             {
-                return;
+                Models.Role data = new Models.Role { Id = id };
+                _context.Roles.Attach(data);
+                _context.Roles.Update(roleRepository);
+                await _context.SaveChangesAsync();
             }
-
-            oldRole.Name = roleRepository.Name;
-            await Save(oldRole, true);
+            catch (DbDeleteConcurrencyException)
+            {
+                throw new UnprocessableEntityException("No data was updated.");
+            }
         }
 
         public async Task Delete(Guid id)
@@ -51,29 +81,6 @@ namespace DotNetService.Domain.Role.Repositories
             catch (DbDeleteConcurrencyException)
             {
                 throw new UnprocessableEntityException("No data was deleted.");
-            }
-        }
-
-        private async Task<Models.Role> Save(Models.Role data, bool isUpdate = false)
-        {
-            if (!isUpdate)
-            {
-
-                var dataCreated = _context.Roles.Add(data);
-                await _context.SaveChangesAsync();
-                return dataCreated.Entity;
-            }
-
-            try
-            {
-                var dataUpdated = _context.Roles.Update(data);
-                await _context.SaveChangesAsync();
-
-                return dataUpdated.Entity;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new UnprocessableEntityException("No data was updated.");
             }
         }
     }
