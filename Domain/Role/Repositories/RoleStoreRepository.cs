@@ -1,4 +1,5 @@
 using System.Data.Entity.Infrastructure;
+using Newtonsoft.Json;
 using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
 namespace DotNetService.Domain.Role.Repositories
@@ -17,12 +18,15 @@ namespace DotNetService.Domain.Role.Repositories
 
         public async Task<Models.Role> Create(Models.Role role, List<Guid> permissionIds)
         {
-            // Start transaction
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                var newRole = _context.Roles.Add(role);
-                // await _context.SaveChangesAsync();
+                var newRole = await _context.Roles.AddAsync(new Models.Role
+                {
+                    Id = Guid.NewGuid(),
+                    Name = role.Name,
+                    Key = role.Key
+                });
                 var createdRole = newRole.Entity;
 
                 if (permissionIds?.Count > 0)
@@ -48,10 +52,8 @@ namespace DotNetService.Domain.Role.Repositories
             catch (Exception)
             {
                 await _context.Database.RollbackTransactionAsync();
-                throw new UnprocessableEntityException("Failed to create role.");
+                throw;
             }
-
-
         }
 
         public async Task Update(Guid id, Models.Role roleRepository)
