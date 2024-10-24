@@ -4,54 +4,24 @@ using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcu
 namespace DotNetService.Domain.User.Repositories
 {
     public class UserStoreRepository(
-        Models.IamDBContext context,
-        UserQueryRepository userQueryRepository
+        Models.IamDBContext context
     )
     {
         private readonly Models.IamDBContext _context = context;
-        private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
 
         public async Task<Models.User> Create(Models.User data)
         {
-            return await Save(data);
+            var dataCreated = _context.Users.Add(data);
+            await _context.SaveChangesAsync();
+            return dataCreated.Entity;
         }
 
         public async Task<Models.User> Update(Guid id, Models.User newData)
         {
             newData.Id = id;
-            return await Save(newData, true);
-        }
-
-        public async Task Delete(Guid id)
-        {
             try
             {
-                Models.User data = new Models.User { Id = id };
-                _context.Users.Attach(data);
-                _context.Users.Remove(data);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbDeleteConcurrencyException)
-            {
-                throw new UnprocessableEntityException("No data was deleted.");
-            }
-        }
-
-        private async Task<Models.User> Save(Models.User data, bool isUpdate = false)
-        {
-
-            if (!isUpdate)
-            {
-                await _userQueryRepository.FindOneByEmail(data.Email);
-
-                var dataCreated = _context.Users.Add(data);
-                await _context.SaveChangesAsync();
-                return dataCreated.Entity;
-            }
-
-            try
-            {
-                var dataUpdated = _context.Users.Update(data);
+                var dataUpdated = _context.Users.Update(newData);
                 await _context.SaveChangesAsync();
 
                 return dataUpdated.Entity;
@@ -59,6 +29,21 @@ namespace DotNetService.Domain.User.Repositories
             catch (DbUpdateConcurrencyException)
             {
                 throw new UnprocessableEntityException("No data was updated.");
+            }
+        }
+
+        public async Task Delete(Guid id)
+        {
+            try
+            {
+                Models.User data = new() { Id = id };
+                _context.Users.Attach(data);
+                _context.Users.Remove(data);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbDeleteConcurrencyException)
+            {
+                throw new UnprocessableEntityException("No data was deleted.");
             }
         }
     }

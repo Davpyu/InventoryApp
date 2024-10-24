@@ -15,6 +15,7 @@ namespace DotNetService.Http.API.Version1.Auth
         [MinLength(5)]
         [MaxLength(50)]
         public string Email { get; set; }
+
         [Required]
         [MinLength(8)]
         [MaxLength(30)]
