@@ -7,7 +7,7 @@ namespace DotNetService.Domain.Role.Repositories
         private readonly Models.IamDBContext _context;
 
         public RoleStoreRepository(
-            Models.IamDBContext context,
+            Models.IamDBContext context
         )
         {
             _context = context;
