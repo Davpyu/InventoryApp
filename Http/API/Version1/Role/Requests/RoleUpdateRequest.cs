@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-namespace DotNetService.Http.API.Version1.Role
+
+namespace DotNetService.Http.API.Version1.Role.Requests
 {
     public class RoleUpdateRequest
     {

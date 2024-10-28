@@ -1,24 +1,19 @@
 using System.Net;
-using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Domain.Role.Repositories;
-using DotNetService.Domain.RolePermission.Repositories;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Role;
+using DotNetService.Http.API.Version1.Role.Requests;
 using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Role.Services
 {
     public class RoleService(
         RoleStoreRepository roleStoreRepository,
-        RoleQueryRepository roleQueryRepository,
-        RolePermissionStoreRepository rolePermissionStoreRepository,
-        RolePermissionQueryRepository rolePermissionQueryRepository
+        RoleQueryRepository roleQueryRepository
     )
     {
         private readonly RoleStoreRepository _roleStoreRepository = roleStoreRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
-        private readonly RolePermissionStoreRepository _rolePermissionStoreRepository = rolePermissionStoreRepository;
-        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
 
         public async Task<ApiResponse> Index(RoleQueryRequest query = null)
         {

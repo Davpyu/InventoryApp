@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetService.Domain.Role.Services;
 using System.Net;
 using DotNetService.Infrastructure.Shareds;
-using Newtonsoft.Json;
+using DotNetService.Http.API.Version1.Role.Requests;
 
 namespace DotNetService.Http.API.Version1.Role
 {
