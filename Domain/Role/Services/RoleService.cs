@@ -72,33 +72,10 @@ namespace DotNetService.Domain.Role.Services
             return await _roleQueryRepository.CountAll(search);
         }
 
-        public async Task<Models.Role> Update(Guid id, RoleUpdateRequest dataUpdate)
+        public async Task Update(Guid id, RoleUpdateRequest dataUpdate)
         {
             var data = RoleUpdateRequest.Assign(dataUpdate);
-            await _roleStoreRepository.Update(id, data);
-            var role = await DetailById(id);
-            var rolePermissions = role.RolePermissions;
-            if (rolePermissions?.Count > 0)
-            {
-                var rolePermissionsToDelete = await _rolePermissionQueryRepository.FindByRoleId(id);
-                await _rolePermissionStoreRepository.DeleteBulk(rolePermissionsToDelete);
-            }
-            if (dataUpdate.PermissionIds?.Count > 0)
-            {
-                var newRolePermissions = new List<Models.RolePermission>();
-                foreach (var permissionId in dataUpdate.PermissionIds)
-                {
-                    var rolePermission = new Models.RolePermission
-                    {
-                        RoleId = id,
-                        PermissionId = permissionId
-                    };
-
-                    newRolePermissions.Add(rolePermission);
-                }
-                await _rolePermissionStoreRepository.BulkSave(newRolePermissions.ToArray());
-            }
-            return await DetailById(id);
+            await _roleStoreRepository.Update(id, data, dataUpdate.PermissionIds);
         }
 
         public async Task Delete(Guid id)
