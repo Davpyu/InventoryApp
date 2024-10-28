@@ -125,6 +125,11 @@ namespace DotNetService.Domain.Role.Repositories
             return await _context.Roles.Where(role => role.Name == nameRole).Where(role => roleIds.Contains(role.Id)).AnyAsync();
         }
 
+        public async Task<bool> IsExistByKey(string key)
+        {
+            return await _context.Roles.Where(role => role.Key == key).AnyAsync();
+        }
+
         public async Task<List<Models.Role>> Get(string search, int page, int perPage)
         {
             int skip = (1 - page) * perPage;

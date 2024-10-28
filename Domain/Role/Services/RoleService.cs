@@ -1,24 +1,19 @@
 using System.Net;
-using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Domain.Role.Repositories;
-using DotNetService.Domain.RolePermission.Repositories;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Role;
+using DotNetService.Http.API.Version1.Role.Requests;
 using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Role.Services
 {
     public class RoleService(
         RoleStoreRepository roleStoreRepository,
-        RoleQueryRepository roleQueryRepository,
-        RolePermissionStoreRepository rolePermissionStoreRepository,
-        RolePermissionQueryRepository rolePermissionQueryRepository
+        RoleQueryRepository roleQueryRepository
     )
     {
         private readonly RoleStoreRepository _roleStoreRepository = roleStoreRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
-        private readonly RolePermissionStoreRepository _rolePermissionStoreRepository = rolePermissionStoreRepository;
-        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
 
         public async Task<ApiResponse> Index(RoleQueryRequest query = null)
         {
@@ -44,23 +39,16 @@ namespace DotNetService.Domain.Role.Services
 
         public async Task<Models.Role> Create(RoleCreateRequest dataCreate)
         {
+            var isRoleExist = await _roleQueryRepository.IsExistByKey(dataCreate.Key);
+
+            if (isRoleExist)
+            {
+                throw new UnprocessableEntityException("Role key already exist");
+            }
+
             var data = RoleCreateRequest.Assign(dataCreate);
 
-            var roleCreated = await _roleStoreRepository.Create(data);
-            if (dataCreate.PermissionIds?.Count > 0)
-            {
-                var rolePermissions = new List<Models.RolePermission>();
-                foreach (var permissionId in dataCreate.PermissionIds)
-                {
-                    var rolePermission = new Models.RolePermission
-                    {
-                        RoleId = roleCreated.Id,
-                        PermissionId = permissionId
-                    };
-                    rolePermissions.Add(rolePermission);
-                }
-                await _rolePermissionStoreRepository.BulkSave(rolePermissions.ToArray());
-            }
+            var roleCreated = await _roleStoreRepository.Create(data, dataCreate.PermissionIds);
 
             return await DetailById(roleCreated.Id);
         }
@@ -79,33 +67,10 @@ namespace DotNetService.Domain.Role.Services
             return await _roleQueryRepository.CountAll(search);
         }
 
-        public async Task<Models.Role> Update(Guid id, RoleUpdateRequest dataUpdate)
+        public async Task Update(Guid id, RoleUpdateRequest dataUpdate)
         {
             var data = RoleUpdateRequest.Assign(dataUpdate);
-            await _roleStoreRepository.Update(id, data);
-            var role = await DetailById(id);
-            var rolePermissions = role.RolePermissions;
-            if (rolePermissions?.Count > 0)
-            {
-                var rolePermissionsToDelete = await _rolePermissionQueryRepository.FindByRoleId(id);
-                await _rolePermissionStoreRepository.DeleteBulk(rolePermissionsToDelete);
-            }
-            if (dataUpdate.PermissionIds?.Count > 0)
-            {
-                var newRolePermissions = new List<Models.RolePermission>();
-                foreach (var permissionId in dataUpdate.PermissionIds)
-                {
-                    var rolePermission = new Models.RolePermission
-                    {
-                        RoleId = id,
-                        PermissionId = permissionId
-                    };
-
-                    newRolePermissions.Add(rolePermission);
-                }
-                await _rolePermissionStoreRepository.BulkSave(newRolePermissions.ToArray());
-            }
-            return await DetailById(id);
+            await _roleStoreRepository.Update(id, data, dataUpdate.PermissionIds);
         }
 
         public async Task Delete(Guid id)

@@ -15,7 +15,6 @@ namespace DotNetService.Http.API.Version1.Auth
     {
         private readonly AuthService _authService = authService;
 
-        // GET: api/Book
         [AllowAnonymous]
         [HttpPost("sign-in")]
         [Consumes("application/json")]

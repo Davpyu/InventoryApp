@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using DotNetService.Domain.Role.Services;
 using System.Net;
 using DotNetService.Infrastructure.Shareds;
-using Newtonsoft.Json;
+using DotNetService.Http.API.Version1.Role.Requests;
 
 namespace DotNetService.Http.API.Version1.Role
 {
@@ -14,14 +14,12 @@ namespace DotNetService.Http.API.Version1.Role
     {
         private readonly RoleService _roleService = roleService;
 
-        // GET: api/Role
         [HttpGet()]
         public async Task<ApiResponse> Index([FromQuery] RoleQueryRequest query)
         {
             return await _roleService.Index(query);
         }
 
-        // GET: api/Role/5
         [HttpGet("{id}")]
         public async Task<ApiResponse> Show(Guid id)
         {
@@ -39,8 +37,8 @@ namespace DotNetService.Http.API.Version1.Role
         [HttpPut("{id}")]
         public async Task<ApiResponse> Update(Guid id, RoleUpdateRequest dataUpdate)
         {
-            var data = await _roleService.Update(id, dataUpdate);
-            return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(data));
+            await _roleService.Update(id, dataUpdate);
+            return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpDelete("{id}")]

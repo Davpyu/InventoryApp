@@ -14,6 +14,7 @@ namespace DotNetService.Http.API.Version1.Role
         {
             Id = role.Id;
             Name = role.Name;
+            Key = role.Key;
             Permissions = role.RolePermissions?.Count > 0 ? PermissionResponse.MapRepo(role.RolePermissions?.Select(data => data.Permission).ToList()) : null;
         }
 
@@ -27,11 +28,6 @@ namespace DotNetService.Http.API.Version1.Role
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-
-        public RoleItem()
-        {
-        }
-
         public RoleItem(Models.Role roleRepository)
         {
             Id = roleRepository.Id;
