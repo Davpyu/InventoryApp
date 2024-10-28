@@ -38,7 +38,7 @@ namespace DotNetService.Http.API.Version1.Role
         public async Task<ApiResponse> Update(Guid id, RoleUpdateRequest dataUpdate)
         {
             await _roleService.Update(id, dataUpdate);
-            return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(null));
+            return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpDelete("{id}")]
