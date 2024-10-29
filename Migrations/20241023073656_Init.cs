@@ -13,7 +13,7 @@ namespace DotNetService.Migrations
                 name: "permissions",
                 columns: table => new
                 {
-                    // id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     // name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     // key = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     // created_at = table.Column<DateTime>(type: "datetime2", nullable: true),
