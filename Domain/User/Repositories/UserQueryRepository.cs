@@ -111,7 +111,7 @@ namespace DotNetService.Domain.User.Repositories
 
         public async Task<Models.User> FindOneByEmail(string email)
         {
-            return await _context.Users.Where(data => data.Email == email).SingleAsync();
+            return await _context.Users.Where(data => data.Email == email).SingleOrDefaultAsync();
         }
 
         public async Task<bool> IsEmailExists(string email)
