@@ -8,7 +8,7 @@ namespace DotNetService.Http.API.Version1.User
     public class UserCreateRequest
     {
         [Required]
-        [MinLength(6)]
+        [MinLength(3)]
         [MaxLength(50)]
         public string Name { get; set; }
 
