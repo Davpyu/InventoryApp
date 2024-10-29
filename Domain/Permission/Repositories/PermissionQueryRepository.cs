@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Permission;
+using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Permission.Repositories

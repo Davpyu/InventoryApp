@@ -1,9 +1,9 @@
 using DotNetService.Http.API.Version1.Auth;
-using DotNetService.Exceptions;
 using BC = BCrypt.Net.BCrypt;
 using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
 using DotNetService.Domain.Auth.Repositories;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -21,12 +21,12 @@ namespace DotNetService.Domain.Auth.Services
 
         public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
         {
-            var user = await _authQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException();
+            var user = await authQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException("Email or password is invalid");
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
             {
-                throw new UnauthenticatedException();
+                throw new UnauthenticatedException("Email or password is invalid");
             }
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");

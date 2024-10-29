@@ -7,7 +7,7 @@ namespace DotNetService.Http.API.Version1.User
 {
     [Route("api/v1/users")]
     [ApiController]
-    
+
     public class UserController(
         UserService userService
         ) : ControllerBase
@@ -30,15 +30,15 @@ namespace DotNetService.Http.API.Version1.User
         [HttpPost()]
         public async Task<ApiResponse> Store(UserCreateRequest dataCreate)
         {
-            var data = await _userService.Create(dataCreate);
-            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
+            await _userService.Create(dataCreate);
+            return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpPut("{id}")]
         public async Task<ApiResponse> Update(Guid id, UserUpdateRequest dataUpdate)
         {
-            var data = await _userService.Update(id, dataUpdate);
-            return new ApiResponseData(HttpStatusCode.OK, new UserResponse(data));
+            await _userService.Update(id, dataUpdate);
+            return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpDelete("{id}")]

@@ -1,4 +1,4 @@
-namespace DotNetService.Exceptions
+namespace DotNetService.Infrastructure.Exceptions
 {
     public class DataNotFoundException : Exception
     {
