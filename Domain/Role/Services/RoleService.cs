@@ -3,6 +3,7 @@ using DotNetService.Domain.Role.Repositories;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Role;
 using DotNetService.Http.API.Version1.Role.Requests;
+using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Role.Services

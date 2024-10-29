@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Diagnostics;
-using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace DotNetService.Exceptions
+namespace DotNetService.Infrastructure.Exceptions
 {
     public class ValidationException : Exception
     {

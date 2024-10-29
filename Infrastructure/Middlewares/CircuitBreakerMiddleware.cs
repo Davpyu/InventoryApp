@@ -1,8 +1,8 @@
 
 using DotNetService.Immutables;
 using DotNetService.Constants.CircuitBreaker;
-using DotNetService.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Infrastructure.Middlewares
 {
@@ -13,7 +13,7 @@ namespace DotNetService.Infrastructure.Middlewares
         private readonly IConfiguration _config;
 
         private readonly List<string> ignoreError = new() {
-            typeof(ValidationException).Name,
+            nameof(ValidationException),
             typeof(BusinessException).Name,
             typeof(BadHttpRequestException).Name,
             typeof(DbUpdateException).Name,

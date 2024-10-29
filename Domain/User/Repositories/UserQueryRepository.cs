@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.User;
+using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.User.Repositories

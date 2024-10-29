@@ -1,5 +1,7 @@
 using System.Data.Entity.Infrastructure;
+using DotNetService.Infrastructure.Exceptions;
 using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
+
 
 namespace DotNetService.Domain.Permission.Repositories
 {

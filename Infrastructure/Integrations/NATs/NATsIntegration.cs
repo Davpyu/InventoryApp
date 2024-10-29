@@ -1,11 +1,11 @@
 using DotNetService.Constants.Logger;
-using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Shareds;
 using NATS.Client.Core;
 using DotNetService.Constants.Event;
 using DotNetService.Infrastructure.Subscriptions;
 using NATS.Client.JetStream;
 using NATS.Client.JetStream.Models;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Infrastructure.Integrations.NATs
 {

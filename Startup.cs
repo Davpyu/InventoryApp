@@ -9,16 +9,15 @@ using Microsoft.EntityFrameworkCore;
 using DotNetService.Infrastructure.Integrations.Http;
 using DotNetService.Constants.Logger;
 using Microsoft.AspNetCore.DataProtection;
-using DotNetService.Exceptions;
 using DotNetService.Infrastructure.Middlewares;
 using DotNetService.Infrastructure.Filters;
 using Microsoft.AspNetCore.Mvc;
 using NATS.Client.Hosting;
 using NATS.Client.Core;
-using DotNetService.Infrastructure.Events;
 using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.BackgroundHosted;
 using System.Net;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService
 {

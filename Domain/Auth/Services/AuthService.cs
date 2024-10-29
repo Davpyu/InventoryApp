@@ -4,10 +4,10 @@ using DotNetService.Domain.Role.Repositories;
 using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Domain.RolePermission.Repositories;
 using DotNetService.Domain.UserRole.Repositories;
-using DotNetService.Exceptions;
 using BC = BCrypt.Net.BCrypt;
 using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -33,12 +33,12 @@ namespace DotNetService.Domain.Auth.Services
 
         public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
         {
-            var user = await _userQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException();
+            var user = await _userQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException("Email or password is invalid");
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
             {
-                throw new UnauthenticatedException();
+                throw new UnauthenticatedException("Email or password is invalid");
             }
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
