@@ -30,8 +30,8 @@ namespace DotNetService.Http.API.Version1.Role
         [HttpPost()]
         public async Task<ApiResponse> Store(RoleCreateRequest dataCreate)
         {
-            var data = await _roleService.Create(dataCreate);
-            return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(data));
+            await _roleService.Create(dataCreate);
+            return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpPut("{id}")]

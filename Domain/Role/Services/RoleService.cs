@@ -37,7 +37,7 @@ namespace DotNetService.Domain.Role.Services
             return await _roleQueryRepository.Pagination(query);
         }
 
-        public async Task<Models.Role> Create(RoleCreateRequest dataCreate)
+        public async Task Create(RoleCreateRequest dataCreate)
         {
             var isRoleExist = await _roleQueryRepository.IsExistByKey(dataCreate.Key);
 
@@ -48,9 +48,7 @@ namespace DotNetService.Domain.Role.Services
 
             var data = RoleCreateRequest.Assign(dataCreate);
 
-            var roleCreated = await _roleStoreRepository.Create(data, dataCreate.PermissionIds);
-
-            return await DetailById(roleCreated.Id);
+            await _roleStoreRepository.Create(data, dataCreate.PermissionIds);
         }
 
         public async Task<Models.Role> DetailById(Guid id)

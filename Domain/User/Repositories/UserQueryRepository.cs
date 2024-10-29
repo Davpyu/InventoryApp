@@ -118,5 +118,10 @@ namespace DotNetService.Domain.User.Repositories
         {
             return await _context.Users.AnyAsync(data => data.Email == email);
         }
+
+        public async Task<bool> IsEmailExistsExceptId(string email, Guid id)
+        {
+            return await _context.Users.AnyAsync(data => data.Email == email && data.Id != id);
+        }
     }
 }

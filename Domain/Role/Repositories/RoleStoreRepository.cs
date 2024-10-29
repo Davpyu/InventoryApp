@@ -13,7 +13,7 @@ namespace DotNetService.Domain.Role.Repositories
             _context = context;
         }
 
-        public async Task<Models.Role> Create(Models.Role role, List<Guid> permissionIds)
+        public async Task Create(Models.Role role, List<Guid> permissionIds)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -43,8 +43,6 @@ namespace DotNetService.Domain.Role.Repositories
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
-                return createdRole;
             }
             catch (Exception)
             {
@@ -103,7 +101,7 @@ namespace DotNetService.Domain.Role.Repositories
         {
             try
             {
-                Models.Role data = new Models.Role { Id = id };
+                Models.Role data = new() { Id = id };
                 _context.Roles.Attach(data);
                 _context.Roles.Remove(data);
                 await _context.SaveChangesAsync();
