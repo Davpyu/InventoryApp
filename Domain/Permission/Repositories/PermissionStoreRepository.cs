@@ -5,11 +5,9 @@ using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcu
 namespace DotNetService.Domain.Permission.Repositories
 {
     public class PermissionStoreRepository(
-        PermissionQueryRepository permissionQueryRepository,
         Models.IamDBContext context
     )
     {
-        private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly Models.IamDBContext _context = context;
 
         public async Task Create(Models.Permission permissionRepository)
