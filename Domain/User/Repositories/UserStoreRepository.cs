@@ -1,3 +1,4 @@
+using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 

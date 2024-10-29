@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.User;
+using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.User.Repositories
@@ -111,7 +111,7 @@ namespace DotNetService.Domain.User.Repositories
 
         public async Task<Models.User> FindOneByEmail(string email)
         {
-            return await _context.Users.Where(data => data.Email == email).SingleAsync();
+            return await _context.Users.Where(data => data.Email == email).SingleOrDefaultAsync();
         }
 
         public async Task<bool> IsEmailExists(string email)

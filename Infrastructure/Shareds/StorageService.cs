@@ -1,8 +1,7 @@
 
 
 using DotNetService.Constants.Storage;
-using DotNetService.Exceptions;
-using DotNetService.Infrastructure.Integrations.Http;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Infrastructure.Shareds
 {
