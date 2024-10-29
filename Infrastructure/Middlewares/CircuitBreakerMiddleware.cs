@@ -13,7 +13,7 @@ namespace DotNetService.Infrastructure.Middlewares
         private readonly IConfiguration _config;
 
         private readonly List<string> ignoreError = new() {
-            nameof(ValidationException),
+            typeof(ValidationException).Name,
             typeof(BusinessException).Name,
             typeof(BadHttpRequestException).Name,
             typeof(DbUpdateException).Name,
