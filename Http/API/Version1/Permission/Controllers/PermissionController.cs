@@ -13,14 +13,12 @@ namespace DotNetService.Http.API.Version1.Permission
     {
         private readonly PermissionService _permissionService = permissionService;
 
-        // GET: api/Permission
         [HttpGet()]
         public async Task<ApiResponse> Index([FromQuery] PermissionQueryRequest query)
         {
             return await _permissionService.Index(query);
         }
 
-        // GET: api/Permission/5
         [HttpGet("{id}")]
         public async Task<ApiResponse> Show(Guid id)
         {
@@ -31,8 +29,8 @@ namespace DotNetService.Http.API.Version1.Permission
         [HttpPost()]
         public async Task<ApiResponse> Store(PermissionCreateRequest dataCreate)
         {
-            var data = await _permissionService.Create(dataCreate);
-            return new ApiResponseData(HttpStatusCode.OK, new PermissionResponse(data));
+            await _permissionService.Create(dataCreate);
+            return new ApiResponseData(HttpStatusCode.OK, null);
         }
 
         [HttpPut("{id}")]

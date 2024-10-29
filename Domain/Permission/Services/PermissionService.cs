@@ -36,11 +36,11 @@ namespace DotNetService.Domain.Permission.Services
             return await _permissionQueryRepository.Pagination(query);
         }
 
-        public async Task<Models.Permission> Create(PermissionCreateRequest dataCreate)
+        public async Task Create(PermissionCreateRequest dataCreate)
         {
             var data = PermissionCreateRequest.Assign(dataCreate);
 
-            return await _permissionStoreRepository.Create(data);
+            await _permissionStoreRepository.Create(data);
         }
 
         public async Task<Models.Permission> DetailById(Guid id)
