@@ -13,7 +13,7 @@ namespace DotNetService.Http.API.Version1.User
         public string Name { get; set; }
 
         [Required]
-        [MinLength(6)]
+        [MinLength(5)]
         [MaxLength(50)]
         [EmailAddress]
         public string Email { get; set; }
