@@ -1,4 +1,4 @@
-using DotNetService.Exceptions;
+using DotNetService.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Sentry.Extensibility;
 

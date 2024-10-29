@@ -6,7 +6,7 @@ using System.Net;
 using DotNetService.Http.API.Version1;
 using System.Net.Mime;
 
-namespace DotNetService.Exceptions
+namespace DotNetService.Infrastructure.Exceptions
 {
     public class HandlerException(
         RequestDelegate next,

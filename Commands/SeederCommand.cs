@@ -1,5 +1,5 @@
 
-using DotNetService.Exceptions;
+using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Seeders;
 using DotNetService.Models;
 using RuangDeveloper.AspNetCore.Command;

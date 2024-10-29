@@ -1,11 +1,7 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Diagnostics;
-using System;
-
-namespace DotNetService.Exceptions
+namespace DotNetService.Infrastructure.Exceptions
 {
     public class NotAllowedException : Exception
     {
-        
+
     }
 }
