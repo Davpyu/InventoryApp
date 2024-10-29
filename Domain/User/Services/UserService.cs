@@ -3,6 +3,7 @@ using DotNetService.Domain.User.Repositories;
 using DotNetService.Http.API.Version1;
 using DotNetService.Infrastructure.Shareds;
 using System.Net;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Domain.User.Services
 {
