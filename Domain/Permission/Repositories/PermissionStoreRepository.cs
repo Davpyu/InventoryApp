@@ -43,7 +43,7 @@ namespace DotNetService.Domain.Permission.Repositories
         {
             try
             {
-                Models.Permission data = new Models.Permission { Id = id };
+                Models.Permission data = new() { Id = id };
                 _context.Permissions.Attach(data);
                 _context.Permissions.Remove(data);
                 await _context.SaveChangesAsync();
