@@ -3,6 +3,7 @@ using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Infrastructure.Shareds;
 using DotNetService.Http.API.Version1;
 using System.Net;
+using DotNetService.Exceptions;
 
 namespace DotNetService.Domain.Permission.Services
 {
@@ -45,7 +46,7 @@ namespace DotNetService.Domain.Permission.Services
 
         public async Task<Models.Permission> DetailById(Guid id)
         {
-            return await _permissionQueryRepository.FindOneById(id);
+            return await _permissionQueryRepository.FindOneById(id) ?? throw new DataNotFoundException("Permission not found");
         }
 
         public async Task<List<Models.Permission>> GetList(string search, int page, int perPage)
