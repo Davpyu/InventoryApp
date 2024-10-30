@@ -5,3 +5,20 @@ include:
       run-on: /^master$/i
       sonar-project-name: dot-boilerplate-dotnet-service
       sonar-project-key: playground_boilerplates_dotnet-service-boilerplate_AZDIzjb_EVsGbpNK3KAg
+
+build:docker_image:
+  stage: build
+  image: docker:20.10
+  tags: [dot]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build
+      --progress plain
+      --tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}${CI_COMMIT_SHORT_SHA}
+      --tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}
+      .
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}${CI_COMMIT_SHORT_SHA}
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}
