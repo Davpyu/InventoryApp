@@ -22,9 +22,7 @@ namespace DotNetService.Commands
 
     public async Task ExecuteAsync(string[] args)
     {
-
       var fileNames = args.ToList();
-
       using (var scope = _serviceProvider.CreateScope())
       {
         var inventDBContext = scope.ServiceProvider.GetRequiredService<IamDBContext>();
@@ -38,6 +36,8 @@ namespace DotNetService.Commands
           {
             /* -------------------------- Insert seed data here ------------------------- */
             var type = Type.GetType("DotNetService.Infrastructure.Seeders." + fileNames[i]);
+
+            Console.WriteLine(fileNames[i]);
             if (type != null)
             {
               var seederType = Activator.CreateInstance(type) as ISeeder;
@@ -56,7 +56,11 @@ namespace DotNetService.Commands
         else
         {
           /* -------------------------- Insert seed data here ------------------------- */
+          await new RoleSeeder().Seed(inventDBContext, logger);
+          await new PermissionSeeder().Seed(inventDBContext, logger);
+          await new RolePermissionSeeder().Seed(inventDBContext, logger);
           await new UserSeeder().Seed(inventDBContext, logger);
+          await new UserRoleSeeder().Seed(inventDBContext, logger);
         }
 
         Console.WriteLine("-------------------------- Seed Finish --------------------------");
