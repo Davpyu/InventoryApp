@@ -102,19 +102,17 @@ namespace DotNetService.Domain.Permission.Repositories
 
         public async Task<List<string>> FindPermissionByUserId(Guid userId)
         {
-            var query = from ur in _context.UserRoles
-                        join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
-                        join p in _context.Permissions on rp.PermissionId equals p.Id
-                        where ur.UserId == userId
-                        select p.Key;
-            var permissions = await query.Distinct().ToListAsync();
+            var permissions = await (
+                from ur in _context.UserRoles
+                join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
+                join p in _context.Permissions on rp.PermissionId equals p.Id
+                where ur.UserId == userId
+                select p.Key
+            ).Distinct().ToListAsync();
 
-            if (permissions.ToArray().Length < 1) {
-                return [];
-            }
-
-            return permissions;
+            return permissions.Count == 0 ? new List<string>() : permissions;
         }
+
 
         public async Task<List<Models.Permission>> Get(string search, int page, int perPage)
         {

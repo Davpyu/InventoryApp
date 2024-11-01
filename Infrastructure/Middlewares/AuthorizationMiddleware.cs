@@ -42,15 +42,24 @@ namespace DotNetService.Infrastructure.Middlewares
 
             context.User = AuthUtility.ClaimPrincipalWithJson(user);
 
-            // Validate Permissions
-            if (endpoint?.Metadata?.GetMetadata<PermissionsAttribute>() is object)
+            // Validate user permissions against the required permissions for the endpoint
+            if (endpoint?.Metadata?.GetMetadata<PermissionsAttribute>() is PermissionsAttribute permissionAttr)
             {
-                var requiredPermissions = endpoint.Metadata.GetMetadata<PermissionsAttribute>()?.Permissions;
-                var permissionsString = context.User.Claims.FirstOrDefault(claim => string.Equals(claim.Type, "permissions"))?.Value;
-                var permissions = string.IsNullOrEmpty(permissionsString)
-                    ? [] : JsonSerializer.Deserialize<string[]>(permissionsString);
-                PermissionUtil.ValidatePermission(permissions, requiredPermissions);
+                // Extract required permissions from the attribute
+                var requiredPermissions = permissionAttr.Permissions;
+
+                // Retrieve the permissions claim from the user context
+                var permissionsClaim = context.User.Claims.FirstOrDefault(claim => claim.Type == "permissions")?.Value;
+
+                // Deserialize permissions or use an empty array if none are provided
+                var userPermissions = string.IsNullOrEmpty(permissionsClaim)
+                    ? Array.Empty<string>()
+                    : JsonSerializer.Deserialize<string[]>(permissionsClaim) ?? Array.Empty<string>();
+
+                // Validate that the user has the required permissions
+                PermissionUtil.ValidatePermission(userPermissions, requiredPermissions);
             }
+
 
             await _next(context);
         }
