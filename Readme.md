@@ -1,7 +1,3 @@
-# API DOCS :
-
-- https://documenter.getpostman.com/view/4473147/TzJoDKvC
-
 # Pre Requirement :
 
 - .Net sdk 8.0
@@ -30,6 +26,14 @@
 # Database
 
 - ERD https://dbdocs.io/devops.dot/dotnet-service-boilerplate
+
+# Important Note
+
+After clonning this boilerplate for project, don't forget to change this according your project name:
+
+- DB Context Name
+- `.csproj` Name
+- `.sln` Name
 
 # Directory structure :
 
