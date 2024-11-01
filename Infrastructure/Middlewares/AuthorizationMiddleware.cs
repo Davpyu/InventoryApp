@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using DotNetService.Domain.Auth.Util;
+using DotNetService.Infrastructure.Attributes;
+using System.Text.Json;
+using DotNetService.Domain.Permission.Util;
 
 namespace DotNetService.Infrastructure.Middlewares
 {
@@ -38,6 +41,16 @@ namespace DotNetService.Infrastructure.Middlewares
             var user = AuthUtility.GetUserLogged(token);
 
             context.User = AuthUtility.ClaimPrincipalWithJson(user);
+
+            // Validate Permissions
+            if (endpoint?.Metadata?.GetMetadata<PermissionsAttribute>() is object)
+            {
+                var requiredPermissions = endpoint.Metadata.GetMetadata<PermissionsAttribute>()?.Permissions;
+                var permissionsString = context.User.Claims.FirstOrDefault(claim => string.Equals(claim.Type, "permissions"))?.Value;
+                var permissions = string.IsNullOrEmpty(permissionsString)
+                    ? [] : JsonSerializer.Deserialize<string[]>(permissionsString);
+                PermissionUtil.ValidatePermission(permissions, requiredPermissions);
+            }
 
             await _next(context);
         }

@@ -3,6 +3,8 @@ using DotNetService.Http.API.Version1.RolePermission;
 using System.Net;
 using DotNetService.Applications.RolePermission.Service;
 using DotNetService.Infrastructure.Shareds;
+using DotNetService.Infrastructure.Attributes;
+using DotNetService.Constants.Permission;
 
 namespace DotNetService.Http.API.Version1.RolePermission
 {
@@ -15,6 +17,7 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         // GET: api/RolePermission
         [HttpGet()]
+        [Permissions(PermissionConstant.ROLE_VIEW, PermissionConstant.PERMISSION_VIEW)]
         public async Task<ApiResponse> Index([FromQuery] Query query, [FromHeader] Header header)
         {
             var rolePermissionsRepo = await _rolePermissionService.GetList(query.Page, query.PerPage);
@@ -34,6 +37,7 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         // GET: api/RolePermission/5
         [HttpGet("{id}")]
+        [Permissions(PermissionConstant.ROLE_VIEW, PermissionConstant.PERMISSION_VIEW)]
         public async Task<ApiResponse> Show(Guid id)
         {
             var rolePermissionRepository = await _rolePermissionService.DetailById(id);
@@ -43,6 +47,7 @@ namespace DotNetService.Http.API.Version1.RolePermission
         // POST: api/RolePermission
         [HttpPost()]
         [Consumes("application/json")]
+        [Permissions(PermissionConstant.ROLE_CREATE, PermissionConstant.PERMISSION_CREATE)]
         public async Task<ApiResponse> Store(RolePermissionCreateRequest rolePermissionCreate)
         {
             await _rolePermissionService.Create(rolePermissionCreate);
@@ -51,6 +56,7 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         // PUT: api/RolePermission/5
         [HttpPut("{id}")]
+        [Permissions(PermissionConstant.ROLE_UPDATE, PermissionConstant.PERMISSION_UPDATE)]
         public async Task<ApiResponse> Update(Guid id, RolePermissionUpdateRequest rolePermissionUpdate)
         {
             await _rolePermissionService.Update(id, rolePermissionUpdate);
@@ -59,6 +65,7 @@ namespace DotNetService.Http.API.Version1.RolePermission
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
+        [Permissions(PermissionConstant.ROLE_DELETE, PermissionConstant.PERMISSION_DELETE)]
         public async Task<ApiResponse> Delete(Guid id)
         {
             await _rolePermissionService.Delete(id);

@@ -3,7 +3,7 @@ using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Infrastructure.Shareds;
 using DotNetService.Http.API.Version1;
 using System.Net;
-using DotNetService.Exceptions;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Domain.Permission.Services
 {
