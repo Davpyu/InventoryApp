@@ -1,7 +1,60 @@
+stages:
+  - test
+  - build
+  - migrate
+  - deploy
+
 include:
   # sonarqube scanner
   - component: gitlab.dot.co.id/cicd-components/sonarqube/dotnet@main
     inputs:
-      run-on: /^master$/i
+      run-on: /^develop$|^staging$|^main$/i
       sonar-project-name: dot-boilerplate-dotnet-service
       sonar-project-key: playground_boilerplates_dotnet-service-boilerplate_AZDIzjb_EVsGbpNK3KAg
+
+build:docker_image:
+  stage: build
+  image: docker:20.10
+  tags: [dot]
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^develop$|^staging$|^main$/i'
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build
+      --progress plain
+      --tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}${CI_COMMIT_SHORT_SHA}
+      --tag ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}
+      .
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}${CI_COMMIT_SHORT_SHA}
+    - docker push ${CI_REGISTRY_IMAGE}:${CI_COMMIT_BRANCH}
+
+.ansible_playbook:base:
+  image: asia.gcr.io/dot-gitlab-runner/ansible:2.9.21
+  tags: [dot]
+  before_script:
+    - chmod 600 $ANSIBLE_KEY_FILE
+    - ansible-galaxy collection install community.docker:==3.4.0
+  script:
+    - ansible-playbook --private-key $ANSIBLE_KEY_FILE -i deploy/ansible/hosts -v deploy/ansible/${PLAYBOOK_FILE_NAME}.yaml
+
+migrate_develop:docker:
+  extends: .ansible_playbook:base
+  stage: migrate
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+      changes:
+        - Migrations/*
+  variables:
+    PLAYBOOK_FILE_NAME: "develop-migrate"
+
+deploy_develop:docker:
+  extends: .ansible_playbook:base
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+  environment:
+    name: develop
+    url: https://dotnet-service-blrplt.dot.co.id
+  variables:
+    PLAYBOOK_FILE_NAME: ${CI_COMMIT_BRANCH}
