@@ -100,6 +100,20 @@ namespace DotNetService.Domain.Permission.Repositories
             return permission;
         }
 
+        public async Task<List<string>> FindPermissionByUserId(Guid userId)
+        {
+            var permissions = await (
+                from ur in _context.UserRoles
+                join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
+                join p in _context.Permissions on rp.PermissionId equals p.Id
+                where ur.UserId == userId
+                select p.Key
+            ).Distinct().ToListAsync();
+
+            return permissions.Count == 0 ? new List<string>() : permissions;
+        }
+
+
         public async Task<List<Models.Permission>> Get(string search, int page, int perPage)
         {
             int skip = (1 - page) * perPage;

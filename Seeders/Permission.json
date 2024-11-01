@@ -1,5 +1,9 @@
 [
 	{
+		"name": "All",
+		"key": "all"
+	},
+	{
 		"name": "View User",
 		"key": "view-user"
 	},

@@ -4,36 +4,51 @@ using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
 using DotNetService.Domain.Auth.Repositories;
 using DotNetService.Infrastructure.Exceptions;
+using DotNetService.Domain.Permission.Repositories;
 
 namespace DotNetService.Domain.Auth.Services
 {
     public class AuthService(
         AuthStoreRepository authStoreRepository,
         AuthQueryRepository authQueryRepository,
+        PermissionQueryRepository permissionQueryRepository,
         IConfiguration config,
         IHttpContextAccessor httpContextAccessor
         )
     {
         private readonly AuthStoreRepository _authStoreRepository = authStoreRepository;
         private readonly AuthQueryRepository _authQueryRepository = authQueryRepository;
+        private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly IConfiguration _config = config;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
         {
-            var user = await authQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException("Email or password is invalid");
+            var user = await _authQueryRepository.FindOneByEmail(authSignIn.Email);
+            if (user == null)
+            {
+                throw new UnauthenticatedException("Email or password is incorrect.");
+            }
+            
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
             {
-                throw new UnauthenticatedException("Email or password is invalid");
+                throw new UnauthenticatedException("Email or password is incorrect.");
             }
+            
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
             var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
 
             user.Password = null;
-            var userString = JsonConvert.SerializeObject(user);
+            var permissions = await _permissionQueryRepository.FindPermissionByUserId(user.Id);
+            var userString = JsonConvert.SerializeObject(new {
+                user.Id,
+                user.Name,
+                user.Email,
+                permissions
+            });
 
             return new()
             {
@@ -64,6 +79,7 @@ namespace DotNetService.Domain.Auth.Services
         public async Task<Models.User> Account()
         {
             _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
+            
             return await _authQueryRepository.FindOneById(userId);
         }
     }
