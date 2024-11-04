@@ -2,20 +2,17 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using DotNetService.Infrastructure.Helpers;
 using DotNetService.Models;
-using BC = BCrypt.Net.BCrypt;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Infrastructure.Seeders
 {
-
-  class RolePermissionJson {
-
-
+  class RolePermissionJson
+  {
     [JsonPropertyName("permissionKey")]
     public string PermissionKey { get; set; }
 
     [JsonPropertyName("roleKey")]
     public string RoleKey { get; set; }
-    
   }
 
   public class RolePermissionSeeder : ISeeder
@@ -26,39 +23,59 @@ namespace DotNetService.Infrastructure.Seeders
       var jsonPath = "Seeders/RolePermission.json";
 
       var jsonString = await File.ReadAllTextAsync(jsonPath);
-
       var datas = JsonSerializer.Deserialize<List<RolePermissionJson>>(jsonString, JsonSerializeSeeder.options);
-      var formatedData = new List<RolePermission>();
 
-      foreach (var data in datas)
+      if (datas == null || datas.Count == 0)
       {
-        var permission = dbContext.Permissions.Where(x => x.Key == data.PermissionKey).FirstOrDefault();
-        var role = dbContext.Roles.Where(x => x.Key == data.RoleKey).FirstOrDefault();
+        logger.LogInformation("No role permissions to seed.");
+        return;
+      }
 
-        var newRolePermission = new RolePermission
+      await using var transaction = await dbContext.Database.BeginTransactionAsync();
+
+      try
+      {
+        var newRolePermissions = new List<RolePermission>();
+
+        foreach (var data in datas)
         {
+          var permission = await dbContext.Permissions.FirstOrDefaultAsync(x => x.Key == data.PermissionKey);
+          var role = await dbContext.Roles.FirstOrDefaultAsync(x => x.Key == data.RoleKey);
+
+          if (permission == null || role == null)
+          {
+            logger.LogWarning($"Permission or Role not found for PermissionKey: {data.PermissionKey}, RoleKey: {data.RoleKey}");
+            continue;
+          }
+
+          var newRolePermission = new RolePermission
+          {
             Id = Guid.NewGuid(),
             PermissionId = permission.Id,
             RoleId = role.Id,
             CreatedAt = DateTime.Now
-        };
-        formatedData.Add(newRolePermission);
-      }
+          };
+          newRolePermissions.Add(newRolePermission);
+        }
 
-      try
-      {
-        await dbContext.Database.BeginTransactionAsync();
-        await dbContext.RolePermissions.AddRangeAsync(formatedData);
-        await dbContext.SaveChangesAsync();
-        await dbContext.Database.CommitTransactionAsync();
+        if (newRolePermissions.Any())
+        {
+          await dbContext.RolePermissions.AddRangeAsync(newRolePermissions);
+          await dbContext.SaveChangesAsync();
+          await transaction.CommitAsync();
+        }
+        else
+        {
+          logger.LogInformation("No valid role permissions to seed.");
+        }
       }
       catch (Exception e)
       {
-        logger.LogError(e, "Error while seeding Users");
-        await dbContext.Database.RollbackTransactionAsync();
+        logger.LogError(e, "Error while seeding Role Permissions");
+        await transaction.RollbackAsync();
       }
 
-      logger.LogInformation("Seeding Users complete");
+      logger.LogInformation("Seeding Role Permissions complete");
     }
   }
 }
