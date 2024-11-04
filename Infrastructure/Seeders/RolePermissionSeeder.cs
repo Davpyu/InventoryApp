@@ -44,7 +44,7 @@ namespace DotNetService.Infrastructure.Seeders
 
           if (permission == null || role == null)
           {
-            logger.LogWarning($"Permission or Role not found for PermissionKey: {data.PermissionKey}, RoleKey: {data.RoleKey}");
+            logger.LogWarning("Permission or Role not found for PermissionKey: {PermissionKey}, RoleKey: {RoleKey}", data.PermissionKey, data.RoleKey);
             continue;
           }
 
@@ -58,7 +58,7 @@ namespace DotNetService.Infrastructure.Seeders
           newRolePermissions.Add(newRolePermission);
         }
 
-        if (newRolePermissions.Any())
+        if (newRolePermissions.Count != 0)
         {
           await dbContext.RolePermissions.AddRangeAsync(newRolePermissions);
           await dbContext.SaveChangesAsync();
