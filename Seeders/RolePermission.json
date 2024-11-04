@@ -1,0 +1,100 @@
+[
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "view-user"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "create-user"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "update-user"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "delete-user"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "view-role"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "create-role"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "update-role"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "delete-role"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "view-permission"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "create-permission"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "update-permission"
+	},
+	{
+		"roleKey": "super-admin",
+		"permissionKey": "delete-permission"
+	},
+
+	
+	{
+		"roleKey": "admin",
+		"permissionKey": "view-user"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "create-user"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "update-user"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "delete-user"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "view-role"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "create-role"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "update-role"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "delete-role"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "view-permission"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "create-permission"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "update-permission"
+	},
+	{
+		"roleKey": "admin",
+		"permissionKey": "delete-permission"
+	}
+]

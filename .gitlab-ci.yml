@@ -46,7 +46,7 @@ migrate_develop:docker:
       changes:
         - Migrations/*
   variables:
-    PLAYBOOK_FILE_NAME: "develop-migrate"
+    PLAYBOOK_FILE_NAME: 'develop-migrate'
 
 deploy_develop:docker:
   extends: .ansible_playbook:base

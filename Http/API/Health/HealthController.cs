@@ -12,7 +12,7 @@ namespace DotNetService.Http
         [HttpGet]
         public ApiResponseData Get()
         {
-            return new ApiResponseData(System.Net.HttpStatusCode.OK, new { message = "Service is running" });
+            return new ApiResponseData(System.Net.HttpStatusCode.OK, new { message = "Service is running, and Healty" });
         }
     }
 }

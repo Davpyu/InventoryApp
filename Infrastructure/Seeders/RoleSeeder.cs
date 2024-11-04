@@ -11,9 +11,8 @@ namespace DotNetService.Infrastructure.Seeders
             logger.LogInformation("Seeding Roles...");
             var jsonPath = "Seeders/Role.json";
 
-            var jsonString = await File.ReadAllTextAsync(jsonPath);
-
-            var roles = JsonSerializer.Deserialize<List<Role>>(jsonString, JsonSerializeSeeder.options);
+            using var stream = File.OpenRead(jsonPath);
+            var roles = await JsonSerializer.DeserializeAsync<List<Role>>(stream, JsonSerializeSeeder.options);
             var newRoles = new List<Role>();
 
             try
