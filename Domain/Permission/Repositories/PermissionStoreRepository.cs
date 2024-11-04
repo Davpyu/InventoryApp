@@ -1,43 +1,49 @@
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using DotNetService.Infrastructure.Exceptions;
 using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
+
 
 namespace DotNetService.Domain.Permission.Repositories
 {
     public class PermissionStoreRepository(
-        PermissionQueryRepository permissionQueryRepository,
         Models.IamDBContext context
     )
     {
-        private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly Models.IamDBContext _context = context;
 
-        public async Task<Models.Permission> Create(Models.Permission permissionRepository)
+        public async Task Create(Models.Permission permissionRepository)
         {
             Models.Permission newPermission = new()
             {
-                Name = permissionRepository.Name
+                Name = permissionRepository.Name,
+                Key = permissionRepository.Key
             };
 
-            return await Save(newPermission);
+            await _context.Permissions.AddAsync(newPermission);
+            await _context.SaveChangesAsync();
         }
 
         public async Task Update(Guid id, Models.Permission permissionRepository)
         {
-            Models.Permission oldPermission = await _permissionQueryRepository.Find(id);
-            if (oldPermission == null)
+            try
             {
-                return;
+                Models.Permission data = new() { Id = id };
+                _context.Permissions.Attach(data);
+                _context.Permissions.Update(permissionRepository);
+                await _context.SaveChangesAsync();
             }
-
-            oldPermission.Name = permissionRepository.Name;
-            await Save(oldPermission, true);
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new UnprocessableEntityException("No data was updated.");
+            }
         }
 
         public async Task Delete(Guid id)
         {
             try
             {
-                Models.Permission data = new Models.Permission { Id = id };
+                Models.Permission data = new() { Id = id };
                 _context.Permissions.Attach(data);
                 _context.Permissions.Remove(data);
                 await _context.SaveChangesAsync();
@@ -48,35 +54,15 @@ namespace DotNetService.Domain.Permission.Repositories
             }
         }
 
-        private async Task<Models.Permission> Save(Models.Permission data, bool isUpdate = false)
-        {
-            if (!isUpdate)
-            {
-
-                var dataCreated = _context.Permissions.Add(data);
-                await _context.SaveChangesAsync();
-                return dataCreated.Entity;
-            }
-
-            try
-            {
-                var dataUpdated = _context.Permissions.Update(data);
-                await _context.SaveChangesAsync();
-
-                return dataUpdated.Entity;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new UnprocessableEntityException(
-                    "No data was updated."
-                );
-            }
-        }
-
         public async Task BulkSave(Models.Permission[] data)
         {
             _context.Permissions.AddRange(data);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsExistByKey(string key)
+        {
+            return await _context.Permissions.AnyAsync(x => x.Key == key);
         }
     }
 }

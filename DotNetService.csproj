@@ -25,6 +25,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <SonarQubeSetting Include="sonar.exclusions">
+      <Value>obj/**/*,bin/**/*,Migrations/*,Log/*,.gitlab/**/*,.vscode/*,Seeders/*</Value>
+    </SonarQubeSetting>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.300" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.304.2" />

@@ -1,5 +1,5 @@
 
-using DotNetService.Exceptions;
+using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Seeders;
 using DotNetService.Models;
 using RuangDeveloper.AspNetCore.Command;
@@ -57,6 +57,8 @@ namespace DotNetService.Commands
         {
           /* -------------------------- Insert seed data here ------------------------- */
           await new UserSeeder().Seed(inventDBContext, logger);
+          await new RoleSeeder().Seed(inventDBContext, logger);
+          await new PermissionSeeder().Seed(inventDBContext, logger);
         }
 
         Console.WriteLine("-------------------------- Seed Finish --------------------------");

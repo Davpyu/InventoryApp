@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using DotNetService.Exceptions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Permission;
 using Microsoft.EntityFrameworkCore;
@@ -82,23 +81,11 @@ namespace DotNetService.Domain.Permission.Repositories
             return await query.CountAsync();
         }
 
-        internal async Task<Models.Permission> Find(Guid id = default)
+        public async Task<Models.Permission> FindOneById(Guid id = default)
         {
-            return await _context.Permissions.Where(permission => permission.Id == id).FirstOrDefaultAsync();
-        }
-
-        public async Task<Models.Permission> FindOneById(Guid id = default, bool isThrowException = false)
-        {
-            var data = await _context.Permissions
+            return await _context.Permissions
                 .Where(data => data.Id == id)
-                .FirstOrDefaultAsync();
-
-            if (data == null && isThrowException)
-            {
-                throw new DataNotFoundException("Role with id " + id + " not found.");
-            };
-
-            return data;
+                .SingleOrDefaultAsync();
         }
 
         public async Task<Models.Permission> FindByName(string name)
@@ -111,6 +98,20 @@ namespace DotNetService.Domain.Permission.Repositories
 
             return permission;
         }
+
+        public async Task<List<string>> FindPermissionByUserId(Guid userId)
+        {
+            var permissions = await (
+                from ur in _context.UserRoles
+                join rp in _context.RolePermissions on ur.RoleId equals rp.RoleId
+                join p in _context.Permissions on rp.PermissionId equals p.Id
+                where ur.UserId == userId
+                select p.Key
+            ).Distinct().ToListAsync();
+
+            return permissions.Count == 0 ? new List<string>() : permissions;
+        }
+
 
         public async Task<List<Models.Permission>> Get(string search, int page, int perPage)
         {

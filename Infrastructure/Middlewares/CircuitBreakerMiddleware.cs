@@ -1,8 +1,8 @@
 
 using DotNetService.Immutables;
 using DotNetService.Constants.CircuitBreaker;
-using DotNetService.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Infrastructure.Middlewares
 {

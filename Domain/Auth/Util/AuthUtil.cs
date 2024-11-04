@@ -2,8 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using DotNetService.Exceptions;
 using System.Text.Json;
+using DotNetService.Infrastructure.Exceptions;
 
 namespace DotNetService.Domain.Auth.Util
 {
