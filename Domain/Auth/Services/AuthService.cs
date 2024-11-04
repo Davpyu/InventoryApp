@@ -1,51 +1,54 @@
 using DotNetService.Http.API.Version1.Auth;
-using DotNetService.Domain.User.Repositories;
-using DotNetService.Domain.Role.Repositories;
-using DotNetService.Domain.Permission.Repositories;
-using DotNetService.Domain.RolePermission.Repositories;
-using DotNetService.Domain.UserRole.Repositories;
-using DotNetService.Exceptions;
 using BC = BCrypt.Net.BCrypt;
 using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
+using DotNetService.Domain.Auth.Repositories;
+using DotNetService.Infrastructure.Exceptions;
+using DotNetService.Domain.Permission.Repositories;
 
 namespace DotNetService.Domain.Auth.Services
 {
     public class AuthService(
-        UserRoleQueryRepository userRoleQueryRepository,
-        UserQueryRepository userQueryRepository,
-        UserStoreRepository userStoreRepository,
+        AuthStoreRepository authStoreRepository,
+        AuthQueryRepository authQueryRepository,
         PermissionQueryRepository permissionQueryRepository,
-        RoleQueryRepository roleQueryRepository,
-        RolePermissionQueryRepository rolePermissionQueryRepository,
         IConfiguration config,
         IHttpContextAccessor httpContextAccessor
         )
     {
-        private readonly UserRoleQueryRepository _userRoleQueryRepository = userRoleQueryRepository;
-        private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
-        private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
+        private readonly AuthStoreRepository _authStoreRepository = authStoreRepository;
+        private readonly AuthQueryRepository _authQueryRepository = authQueryRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
-        private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
-        private readonly RolePermissionQueryRepository _rolePermissionQueryRepository = rolePermissionQueryRepository;
         private readonly IConfiguration _config = config;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
         {
-            var user = await _userQueryRepository.FindOneByEmail(authSignIn.Email) ?? throw new UnauthenticatedException();
+            var user = await _authQueryRepository.FindOneByEmail(authSignIn.Email);
+            if (user == null)
+            {
+                throw new UnauthenticatedException("Email or password is incorrect.");
+            }
+            
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
             {
-                throw new UnauthenticatedException();
+                throw new UnauthenticatedException("Email or password is incorrect.");
             }
+            
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
             var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
 
             user.Password = null;
-            var userString = JsonConvert.SerializeObject(user);
+            var permissions = await _permissionQueryRepository.FindPermissionByUserId(user.Id);
+            var userString = JsonConvert.SerializeObject(new {
+                user.Id,
+                user.Name,
+                user.Email,
+                permissions
+            });
 
             return new()
             {
@@ -56,7 +59,7 @@ namespace DotNetService.Domain.Auth.Services
 
         public async Task Register(AuthRegisterRequest authRegister)
         {
-            var isEmailExists = await _userQueryRepository.IsEmailExists(authRegister.Email);
+            var isEmailExists = await _authQueryRepository.IsEmailExist(authRegister.Email);
 
             if (isEmailExists)
             {
@@ -70,31 +73,14 @@ namespace DotNetService.Domain.Auth.Services
                 Password = BC.HashPassword(authRegister.Password)
             };
 
-            await _userStoreRepository.Create(data);
+            await _authStoreRepository.Create(data);
         }
 
         public async Task<Models.User> Account()
         {
             _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
-            return await _userQueryRepository.FindOneById(userId);
-        }
-
-        public async Task<bool> IsUserHaveRole(Guid userId, string role)
-        {
-            var userRoles = await _userRoleQueryRepository.FindByUserId(userId);
-            var roleIds = userRoles.Select(userRole => userRole.Id).ToArray();
-            return await _roleQueryRepository.IsExistsByNameAndIds(role, roleIds);
-        }
-
-        public async Task<bool> IsRoleHavePermission(string role, string permission)
-        {
-            var roleRepository = await _roleQueryRepository.FindByName(role);
-            var permissionRepository = await _permissionQueryRepository.FindByName(permission);
-            Guid roleId = roleRepository.Id;
-            Guid permissionId = permissionRepository.Id;
-
-            var rolePermission = await _rolePermissionQueryRepository.FindByRoleAndPermission(roleId, permissionId);
-            return rolePermission != null;
+            
+            return await _authQueryRepository.FindOneById(userId);
         }
     }
 }

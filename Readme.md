@@ -1,7 +1,3 @@
-# API DOCS :
-
-- https://documenter.getpostman.com/view/4473147/TzJoDKvC
-
 # Pre Requirement :
 
 - .Net sdk 8.0
@@ -20,15 +16,25 @@
 - Run `dotnet ef database update` untuk migrate database
 - Run `dotnet run`
 
-# Migration
+# Seeding
 
 - Run `dotnet run command --command seed` untuk migrate semua tabel dari database
 - Run `dotnet run command --command seed --args <module>Seeder` untuk migrate satu tabel/module dari database
   - Example seeding All Data: `dotnet run command --command seed --args RoleSeeder PermissionSeeder RolePermissionSeeder UserSeeder UserRoleSeeder`
+  - Example seeding User: `dotnet run command --command seed --args UserSeeder`
+- Jika membuat seeder baru pastikan masukkan juga ke `/Commands/SeederCommand.cs` agar bisa melakukan seeding all table nantinya. Pastikan juga urutannya sesuai.
 
 # Database
 
 - ERD https://dbdocs.io/devops.dot/dotnet-service-boilerplate
+
+# Important Note
+
+After clonning this boilerplate for project, don't forget to change this according your project name:
+
+- DB Context Name
+- `.csproj` Name
+- `.sln` Name
 
 # Directory structure :
 
