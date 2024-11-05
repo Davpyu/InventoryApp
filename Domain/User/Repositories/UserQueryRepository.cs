@@ -18,6 +18,7 @@ namespace DotNetService.Domain.User.Repositories
             var query = _context.Users
             .Include(data => data.UserRoles)
             .ThenInclude(data => data.Role)
+            .AsNoTracking()
             .AsQueryable();
 
             query = QuerySearch(query, queryParams);
