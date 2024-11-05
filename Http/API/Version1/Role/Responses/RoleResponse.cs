@@ -1,13 +1,9 @@
-using DotNetService.Domain.Role;
 using DotNetService.Http.API.Version1.Permission;
-using DotNetService.Http.API.Version1.UserRole;
-using System.Collections.Generic;
 
 namespace DotNetService.Http.API.Version1.Role
 {
     public class RoleResponse : Models.Role
     {
-        public new List<UserRoleItem> UserRoles { get; set; }
         public List<PermissionResponse> Permissions { get; set; }
 
         public RoleResponse(Models.Role role)
@@ -24,15 +20,11 @@ namespace DotNetService.Http.API.Version1.Role
         }
     }
 
-    public class RoleItem
+    public class RoleItem(Models.Role roleRepository)
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public RoleItem(Models.Role roleRepository)
-        {
-            Id = roleRepository.Id;
-            Name = roleRepository.Name;
-        }
+        public Guid Id { get; set; } = roleRepository.Id;
+        public string Name { get; set; } = roleRepository.Name;
+
         public static List<RoleItem> MapRepo(List<Models.Role> roles)
         {
             var roleMapped = new List<RoleItem>();
