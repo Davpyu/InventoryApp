@@ -18,6 +18,7 @@ namespace DotNetService.Domain.User.Repositories
             var query = _context.Users
             .Include(data => data.UserRoles)
             .ThenInclude(data => data.Role)
+            .AsNoTracking()
             .AsQueryable();
 
             query = QuerySearch(query, queryParams);
@@ -44,7 +45,6 @@ namespace DotNetService.Domain.User.Repositories
 
         private static IQueryable<Models.User> QueryFilter(IQueryable<Models.User> query, UserQueryRequest queryParams)
         {
-            // EXAMPLE: filter by email
             if (queryParams.Email != null)
             {
                 query = query.Where(data => data.Email.Equals(queryParams.Email));
@@ -79,12 +79,12 @@ namespace DotNetService.Domain.User.Repositories
 
         public async Task<int> Count(UserQueryRequest queryParams)
         {
-            IQueryable<Models.User> query = _context.Users;
+            IQueryable<Models.User> query = _context.Users.AsNoTracking();
 
             query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams);
 
-            return await query.CountAsync();
+            return await query.Select(x => x.Id).CountAsync();
         }
     }
 
