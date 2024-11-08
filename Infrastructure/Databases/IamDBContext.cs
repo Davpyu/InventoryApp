@@ -15,12 +15,15 @@ namespace DotNetService.Models
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
-        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-        {
-            base.ConfigureConventions(configurationBuilder);
-            configurationBuilder.Properties<string>()
-            .HaveMaxLength(256);
-        }
+        // protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        // {
+        //     base.ConfigureConventions(configurationBuilder);
+        //     configurationBuilder.Properties<string>()
+        //     .HaveMaxLength(256);
+        // }
+
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
+        // .UseSqlServer(@"<CONNECTION STRING>", o => o.UseCompatibilityLevel(120));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
