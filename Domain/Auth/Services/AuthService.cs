@@ -5,6 +5,7 @@ using DotNetService.Domain.Auth.Util;
 using DotNetService.Domain.Auth.Repositories;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Domain.Permission.Repositories;
+using DotNetService.Domain.Auth.Dtos;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -22,38 +23,38 @@ namespace DotNetService.Domain.Auth.Services
         private readonly IConfiguration _config = config;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
+        public async Task<AuthTokenResultDto> SignIn(AuthSignInDto authSignIn)
         {
             var user = await _authQueryRepository.FindOneByEmail(authSignIn.Email);
             if (user == null)
             {
                 throw new UnauthenticatedException("Email or password is incorrect.");
             }
-            
+
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
             {
                 throw new UnauthenticatedException("Email or password is incorrect.");
             }
-            
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
             var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
 
             user.Password = null;
             var permissions = await _permissionQueryRepository.FindPermissionByUserId(user.Id);
-            var userString = JsonConvert.SerializeObject(new {
+            var userString = JsonConvert.SerializeObject(new
+            {
                 user.Id,
                 user.Name,
                 user.Email,
                 permissions
             });
 
-            return new()
+            return new AuthTokenResultDto
             {
                 ExpiredAt = expiredAt,
-                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt)
+                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt),
             };
         }
 
@@ -76,11 +77,17 @@ namespace DotNetService.Domain.Auth.Services
             await _authStoreRepository.Create(data);
         }
 
-        public async Task<Models.User> Account()
+        public async Task<AccountResultDto> Account()
         {
             _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
-            
-            return await _authQueryRepository.FindOneById(userId);
+
+            var user = await _authQueryRepository.FindOneById(userId);
+            if (user == null)
+            {
+                throw new DataNotFoundException("User not found");
+            }
+
+            return new AccountResultDto(user);
         }
     }
 }
