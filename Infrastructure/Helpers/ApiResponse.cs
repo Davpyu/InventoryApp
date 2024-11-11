@@ -1,8 +1,8 @@
 using System.Net;
-using DotNetService.Http.API.Version1;
 using System.Runtime.Serialization;
+using DotNetService.Infrastructure.Dtos;
 
-namespace DotNetService.Infrastructure.Shareds
+namespace DotNetService.Infrastructure.Helpers
 {
     public class ErrorUtility
     {
@@ -31,43 +31,49 @@ namespace DotNetService.Infrastructure.Shareds
         public string Version { get { return "1.0.0"; } }
     }
 
-    public class ApiResponseData(HttpStatusCode statusCode, object data = null) : ApiResponse
+    public class ApiResponseData<T>(HttpStatusCode statusCode, T data) : ApiResponse
     {
         [DataMember]
         public int StatusCode { get; set; } = (int)statusCode;
 
         [DataMember(EmitDefaultValue = true)]
-        public object Data { get; set; } = data;
+        public T Data { get; set; } = data;
     }
 
-    public class ApiResponseDataList(HttpStatusCode statusCode, object items, int count) : ApiResponse
+    public class ResponseDataList<T>(List<T> items, int count)
     {
-        [DataMember]
-        public int StatusCode { get; set; } = (int)statusCode;
-
         [DataMember(EmitDefaultValue = true)]
-        public object Items { get; set; } = items;
+        public List<T> Items { get; set; } = items;
 
         [DataMember(EmitDefaultValue = true)]
         public int Count { get; set; } = count;
     }
 
-    public class ApiResponsePagination(HttpStatusCode statusCode, PaginationModel paginationModel) : ApiResponse
+    public class ApiResponseDataList<T>(HttpStatusCode statusCode, List<T> items, int count) : ApiResponse
     {
         [DataMember]
         public int StatusCode { get; set; } = (int)statusCode;
 
         [DataMember(EmitDefaultValue = true)]
-        public object Items { get; set; } = paginationModel.Data;
+        public ResponseDataList<T> Items { get; set; } = new ResponseDataList<T>(items, count);
+    }
+
+    public class ResponsePagination<T>(PaginationModel<T> paginationModel)
+    {
+        [DataMember(EmitDefaultValue = true)]
+        public List<T> Items { get; set; } = paginationModel.Data;
 
         [DataMember(EmitDefaultValue = true)]
-        public PaginationMeta Meta { get; set; } = new()
-        {
-            TotalPage = paginationModel.TotalPage,
-            Total = paginationModel.Total,
-            Page = paginationModel.Page,
-            PerPage = paginationModel.PerPage
-        };
+        public PaginationMeta Meta { get; set; } = paginationModel.Meta;
+    }
+
+    public class ApiResponsePagination<T>(HttpStatusCode statusCode, PaginationModel<T> paginationModel) : ApiResponse
+    {
+        [DataMember]
+        public int StatusCode { get; set; } = (int)statusCode;
+
+        [DataMember(EmitDefaultValue = true)]
+        public ResponsePagination<T> Data { get; set; } = new ResponsePagination<T>(paginationModel);
     }
 
     public class ApiResponseError(HttpStatusCode statusCode, string errorMessage, object errors = null, string stackTrace = null) : ApiResponse

@@ -1,9 +1,9 @@
 using DotNetService.Http.API.Version1.Permission;
 using DotNetService.Domain.Permission.Repositories;
-using DotNetService.Infrastructure.Shareds;
 using DotNetService.Http.API.Version1;
 using System.Net;
 using DotNetService.Infrastructure.Exceptions;
+using DotNetService.Infrastructure.Helpers;
 
 namespace DotNetService.Domain.Permission.Services
 {
