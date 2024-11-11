@@ -2,7 +2,6 @@
 using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Seeders;
-using DotNetService.Models;
 using RuangDeveloper.AspNetCore.Command;
 
 namespace DotNetService.Commands

@@ -2,23 +2,17 @@ using Microsoft.AspNetCore.Authorization;
 using DotNetService.Domain.Auth.Util;
 using DotNetService.Infrastructure.Attributes;
 using System.Text.Json;
-using DotNetService.Domain.Permission.Util;
+using DotNetService.Infrastructure.Helpers;
 
 namespace DotNetService.Infrastructure.Middlewares
 {
-    public class AuthorizationMiddleware
-    {
-        private readonly RequestDelegate _next;
-        private readonly IConfiguration _config;
-
-        public AuthorizationMiddleware(
-            RequestDelegate next,
-            IConfiguration config
+    public class AuthorizationMiddleware(
+        RequestDelegate next,
+        IConfiguration config
         )
-        {
-            _next = next;
-            _config = config;
-        }
+    {
+        private readonly RequestDelegate _next = next;
+        private readonly IConfiguration _config = config;
 
         public async Task Invoke(HttpContext context)
         {
@@ -53,7 +47,7 @@ namespace DotNetService.Infrastructure.Middlewares
 
                 // Deserialize permissions or use an empty array if none are provided
                 var userPermissions = string.IsNullOrEmpty(permissionsClaim)
-                    ? Array.Empty<string>()
+                    ? []
                     : JsonSerializer.Deserialize<string[]>(permissionsClaim) ?? Array.Empty<string>();
 
                 // Validate that the user has the required permissions

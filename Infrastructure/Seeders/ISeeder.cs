@@ -1,5 +1,4 @@
 using DotNetService.Infrastructure.Databases;
-using DotNetService.Models;
 
 namespace DotNetService.Infrastructure.Seeders
 {

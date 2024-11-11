@@ -8,19 +8,13 @@ using StackExchange.Redis;
 
 namespace DotNetService.Infrastructure.Middlewares
 {
-    public class FlushCacheMiddleware
-    {
-        private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
-
-        public FlushCacheMiddleware(
-            ILoggerFactory logger,
-            RequestDelegate next
+    public class FlushCacheMiddleware(
+        ILoggerFactory logger,
+        RequestDelegate next
         )
-        {
-            _next = next;
-            _logger = logger.CreateLogger(LoggerConstant.ERROR);
-        }
+    {
+        private readonly RequestDelegate _next = next;
+        private readonly ILogger _logger = logger.CreateLogger(LoggerConstant.ERROR);
 
         public async Task Invoke(
             HttpContext context,

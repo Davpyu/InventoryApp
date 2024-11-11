@@ -1,11 +1,6 @@
 namespace DotNetService.Infrastructure.Exceptions;
 
-public class UnprocessableEntityException : Exception
+public class UnprocessableEntityException(string message = "Unprocessable Entity") : Exception(message)
 {
-    public int StatusCode { get; }
-
-    public UnprocessableEntityException(string message = "Unprocessable Entity") : base(message)
-    {
-        StatusCode = 422;
-    }
+    public int StatusCode { get; } = 422;
 }
