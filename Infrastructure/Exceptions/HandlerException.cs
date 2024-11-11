@@ -2,9 +2,9 @@ using DotNetService.Infrastructure.Shareds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using System.Net;
-using DotNetService.Http.API.Version1;
 using System.Net.Mime;
 using DotNetService.Infrastructure.Helpers;
+using DotNetService.Infrastructure.Dtos;
 
 namespace DotNetService.Infrastructure.Exceptions
 {
