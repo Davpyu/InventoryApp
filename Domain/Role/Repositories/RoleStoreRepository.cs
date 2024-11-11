@@ -1,18 +1,14 @@
+using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
 using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
 namespace DotNetService.Domain.Role.Repositories
 {
-    public class RoleStoreRepository
-    {
-        private readonly Models.IamDBContext _context;
-
-        public RoleStoreRepository(
-            Models.IamDBContext context
+    public class RoleStoreRepository(
+        IamDBContext context
         )
-        {
-            _context = context;
-        }
+    {
+        private readonly IamDBContext _context = context;
 
         public async Task Create(Models.Role role, List<Guid> permissionIds)
         {

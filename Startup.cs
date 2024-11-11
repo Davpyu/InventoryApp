@@ -4,7 +4,6 @@ using Polly;
 using Polly.Extensions.Http;
 using FluentValidation.AspNetCore;
 using StackExchange.Redis;
-using DotNetService.Models;
 using Microsoft.EntityFrameworkCore;
 using DotNetService.Infrastructure.Integrations.Http;
 using DotNetService.Constants.Logger;
@@ -18,6 +17,7 @@ using DotNetService.Infrastructure.Queues;
 using DotNetService.Infrastructure.BackgroundHosted;
 using System.Net;
 using DotNetService.Infrastructure.Exceptions;
+using DotNetService.Infrastructure.Databases;
 
 namespace DotNetService
 {

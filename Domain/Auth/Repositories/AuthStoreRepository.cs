@@ -1,15 +1,12 @@
+using DotNetService.Infrastructure.Databases;
+
 namespace DotNetService.Domain.Auth.Repositories
 {
-    public class AuthStoreRepository
-    {
-        private readonly Models.IamDBContext _context;
-
-        public AuthStoreRepository(
-            Models.IamDBContext context
+    public class AuthStoreRepository(
+        IamDBContext context
         )
-        {
-            _context = context;
-        }
+    {
+        private readonly IamDBContext _context = context;
 
         public async Task Create(Models.User data)
         {

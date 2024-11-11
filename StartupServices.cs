@@ -1,4 +1,3 @@
-using DotNetService.Applications.RolePermission.Service;
 using DotNetService.Domain.Auth.Services;
 using DotNetService.Domain.Logging.Services;
 using DotNetService.Domain.Permission.Services;
@@ -14,9 +13,7 @@ namespace DotNetService
             services.AddScoped<AuthService>();
             services.AddScoped<UserService>();
             services.AddScoped<PermissionService>();
-            services.AddScoped<RolePermissionService>();
             services.AddScoped<RoleService>();
-
             services.AddScoped<LoggingService>();
         }
     }

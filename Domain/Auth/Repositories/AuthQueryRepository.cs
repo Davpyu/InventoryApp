@@ -1,12 +1,13 @@
+using DotNetService.Infrastructure.Databases;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Auth.Repositories
 {
     public class AuthQueryRepository(
-        Models.IamDBContext context
+        IamDBContext context
         )
     {
-        private readonly Models.IamDBContext _context = context;
+        private readonly IamDBContext _context = context;
 
         public async Task<Models.User> FindOneById(Guid id)
         {

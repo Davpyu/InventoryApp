@@ -1,7 +1,6 @@
 using DotNetService.Domain.Auth.Repositories;
 using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Domain.Role.Repositories;
-using DotNetService.Domain.RolePermission.Repositories;
 using DotNetService.Domain.User.Repositories;
 
 namespace DotNetService
@@ -16,8 +15,6 @@ namespace DotNetService
             services.AddScoped<UserStoreRepository>();
             services.AddScoped<RoleQueryRepository>();
             services.AddScoped<RoleStoreRepository>();
-            services.AddScoped<RolePermissionQueryRepository>();
-            services.AddScoped<RolePermissionStoreRepository>();
             services.AddScoped<PermissionQueryRepository>();
             services.AddScoped<PermissionStoreRepository>();
         }

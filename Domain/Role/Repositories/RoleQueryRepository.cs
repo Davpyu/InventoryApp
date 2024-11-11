@@ -1,21 +1,17 @@
 using System.Linq.Expressions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Role;
+using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Role.Repositories
 {
-    public class RoleQueryRepository
-    {
-        private readonly Models.IamDBContext _context;
-
-        public RoleQueryRepository(
-            Models.IamDBContext context
+    public class RoleQueryRepository(
+        IamDBContext context
         )
-        {
-            _context = context;
-        }
+    {
+        private readonly IamDBContext _context = context;
 
         public async Task<List<Models.Role>> Pagination(RoleQueryRequest queryParams)
         {
@@ -34,7 +30,7 @@ namespace DotNetService.Domain.Role.Repositories
             return data;
         }
 
-        private IQueryable<Models.Role> QuerySearch(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QuerySearch(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
         {
             if (queryParams.Search != null)
             {
@@ -45,7 +41,7 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        private IQueryable<Models.Role> QueryFilter(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QueryFilter(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
         {
             if (queryParams.Name != null)
             {
@@ -55,7 +51,7 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        private IQueryable<Models.Role> QuerySort(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QuerySort(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 
