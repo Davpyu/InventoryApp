@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using DotNetService.Infrastructure.Helpers;
 using DotNetService.Domain.Auth.Dtos;
 
-namespace DotNetService.Http.API.Version1.Auth
+namespace DotNetService.Http.API.Version1.Auth.Controllers
 {
     [ApiController]
     [Route("api/v1/auth")]

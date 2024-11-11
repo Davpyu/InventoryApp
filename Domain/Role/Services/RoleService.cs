@@ -1,10 +1,8 @@
 using System.Net;
+using DotNetService.Domain.Role.Dtos;
 using DotNetService.Domain.Role.Repositories;
-using DotNetService.Http.API.Version1;
-using DotNetService.Http.API.Version1.Role;
-using DotNetService.Http.API.Version1.Role.Requests;
+using DotNetService.Infrastructure.Dtos;
 using DotNetService.Infrastructure.Exceptions;
-using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Role.Services
 {
@@ -16,29 +14,15 @@ namespace DotNetService.Domain.Role.Services
         private readonly RoleStoreRepository _roleStoreRepository = roleStoreRepository;
         private readonly RoleQueryRepository _roleQueryRepository = roleQueryRepository;
 
-        public async Task<ApiResponse> Index(RoleQueryRequest query = null)
+        public async Task<PaginationModel<RoleResultDto>> Index(RoleQueryDto query = null)
         {
-            var data = await Pagination(query);
-            int count = await _roleQueryRepository.Count(query);
-            decimal pageInCount = ((decimal)count) / query.PerPage;
-            PaginationModel paginate = new()
-            {
-                TotalPage = (int)Math.Ceiling(pageInCount),
-                Page = query.Page,
-                PerPage = query.PerPage,
-                Data = RoleResponse.MapRepo(data),
-                Total = count
-            };
-
-            return new ApiResponsePagination(HttpStatusCode.OK, paginate);
+            var data = await _roleQueryRepository.Pagination(query);
+            var formatedData = RoleResultDto.MapRepo(data.Data);
+            var paginate = PaginationModel<RoleResultDto>.Parse(formatedData, data.Count, query);
+            return paginate;
         }
 
-        public async Task<List<Models.Role>> Pagination(RoleQueryRequest query = null)
-        {
-            return await _roleQueryRepository.Pagination(query);
-        }
-
-        public async Task Create(RoleCreateRequest dataCreate)
+        public async Task Create(RoleCreateDto dataCreate)
         {
             var isRoleExist = await _roleQueryRepository.IsExistByKey(dataCreate.Key);
 
@@ -47,14 +31,20 @@ namespace DotNetService.Domain.Role.Services
                 throw new UnprocessableEntityException("Role key already exist");
             }
 
-            var data = RoleCreateRequest.Assign(dataCreate);
+            var data = RoleCreateDto.Assign(dataCreate);
 
             await _roleStoreRepository.Create(data, dataCreate.PermissionIds);
         }
 
-        public async Task<Models.Role> DetailById(Guid id)
+        public async Task<RoleResultDto> DetailById(Guid id)
         {
-            return await _roleQueryRepository.FindOneById(id);
+            var role = await _roleQueryRepository.FindOneById(id);
+            if (role == null)
+            {
+                throw new DataNotFoundException("Role not found");
+            }
+
+            return new RoleResultDto(role);
         }
 
         public async Task<List<Models.Role>> GetList(string search, int page, int perPage)
@@ -66,9 +56,9 @@ namespace DotNetService.Domain.Role.Services
             return await _roleQueryRepository.CountAll(search);
         }
 
-        public async Task Update(Guid id, RoleUpdateRequest dataUpdate)
+        public async Task Update(Guid id, RoleUpdateDto dataUpdate)
         {
-            var data = RoleUpdateRequest.Assign(dataUpdate);
+            var data = RoleUpdateDto.Assign(dataUpdate);
             await _roleStoreRepository.Update(id, data, dataUpdate.PermissionIds);
         }
 

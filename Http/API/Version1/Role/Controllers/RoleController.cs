@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetService.Domain.Role.Services;
 using System.Net;
-using DotNetService.Infrastructure.Shareds;
-using DotNetService.Http.API.Version1.Role.Requests;
 using DotNetService.Infrastructure.Attributes;
 using DotNetService.Constants.Permission;
+using DotNetService.Domain.Role.Dtos;
+using DotNetService.Infrastructure.Helpers;
 
-namespace DotNetService.Http.API.Version1.Role
+namespace DotNetService.Http.API.Version1.Role.Controllers
 {
     [Route("api/v1/roles")]
     [ApiController]
@@ -18,9 +18,10 @@ namespace DotNetService.Http.API.Version1.Role
 
         [HttpGet()]
         [Permissions(PermissionConstant.ROLE_VIEW)]
-        public async Task<ApiResponse> Index([FromQuery] RoleQueryRequest query)
+        public async Task<ApiResponse> Index([FromQuery] RoleQueryDto query)
         {
-            return await _roleService.Index(query);
+            var paginationResult = await _roleService.Index(query);
+            return new ApiResponsePagination<RoleResultDto>(HttpStatusCode.OK, paginationResult);
         }
 
         [HttpGet("{id}")]
@@ -28,23 +29,23 @@ namespace DotNetService.Http.API.Version1.Role
         public async Task<ApiResponse> Show(Guid id)
         {
             var role = await _roleService.DetailById(id);
-            return new ApiResponseData(HttpStatusCode.OK, new RoleResponse(role));
+            return new ApiResponseData<RoleResultDto>(HttpStatusCode.OK, role);
         }
 
         [HttpPost()]
         [Permissions(PermissionConstant.ROLE_CREATE)]
-        public async Task<ApiResponse> Store(RoleCreateRequest dataCreate)
+        public async Task<ApiResponse> Store(RoleCreateDto dataCreate)
         {
             await _roleService.Create(dataCreate);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            return new ApiResponseData<RoleResultDto>(HttpStatusCode.OK, null);
         }
 
         [HttpPut("{id}")]
         [Permissions(PermissionConstant.ROLE_UPDATE)]
-        public async Task<ApiResponse> Update(Guid id, RoleUpdateRequest dataUpdate)
+        public async Task<ApiResponse> Update(Guid id, RoleUpdateDto dataUpdate)
         {
             await _roleService.Update(id, dataUpdate);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            return new ApiResponseData<RoleResultDto>(HttpStatusCode.OK, null);
         }
 
         [HttpDelete("{id}")]
@@ -52,7 +53,7 @@ namespace DotNetService.Http.API.Version1.Role
         public async Task<ApiResponse> Delete(Guid id)
         {
             await _roleService.Delete(id);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            return new ApiResponseData<RoleResultDto>(HttpStatusCode.OK, null);
         }
     }
 }
