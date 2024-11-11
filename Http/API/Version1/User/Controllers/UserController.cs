@@ -30,7 +30,7 @@ namespace DotNetService.Http.API.Version1.User.Controllers
         public async Task<ApiResponse> Show(Guid id)
         {
             Models.User data = await _userService.Detail(id);
-            return new ApiResponseData<Models.User>(HttpStatusCode.OK, new UserResponse(data));
+            return new ApiResponseData<Models.User>(HttpStatusCode.OK, data);
         }
 
         [HttpPost()]

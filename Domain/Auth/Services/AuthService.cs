@@ -1,4 +1,3 @@
-using DotNetService.Http.API.Version1.Auth;
 using BC = BCrypt.Net.BCrypt;
 using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
@@ -58,7 +57,7 @@ namespace DotNetService.Domain.Auth.Services
             };
         }
 
-        public async Task Register(AuthRegisterRequest authRegister)
+        public async Task Register(AuthRegisterDto authRegister)
         {
             var isEmailExists = await _authQueryRepository.IsEmailExist(authRegister.Email);
 
