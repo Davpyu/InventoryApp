@@ -1,7 +1,8 @@
 ﻿﻿using System.Linq.Expressions;
+using DotNetService.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DotNetService.Models
+namespace DotNetService.Infrastructure.Databases
 {
     public partial class IamDBContext(DbContextOptions<IamDBContext> options) : DbContext(options)
     {

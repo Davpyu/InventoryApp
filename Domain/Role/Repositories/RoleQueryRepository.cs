@@ -1,16 +1,17 @@
 using System.Linq.Expressions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Role;
+using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Role.Repositories
 {
     public class RoleQueryRepository(
-        Models.IamDBContext context
+        IamDBContext context
         )
     {
-        private readonly Models.IamDBContext _context = context;
+        private readonly IamDBContext _context = context;
 
         public async Task<List<Models.Role>> Pagination(RoleQueryRequest queryParams)
         {

@@ -14,7 +14,6 @@ namespace DotNetService
             services.AddScoped<UserService>();
             services.AddScoped<PermissionService>();
             services.AddScoped<RoleService>();
-
             services.AddScoped<LoggingService>();
         }
     }
