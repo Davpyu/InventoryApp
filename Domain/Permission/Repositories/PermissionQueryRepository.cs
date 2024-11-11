@@ -17,6 +17,7 @@ namespace DotNetService.Domain.Permission.Repositories
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Permissions
                 .Include(data => data.RolePermissions)
+                .AsNoTracking()
                 .AsQueryable();
 
             query = QuerySearch(query, queryParams);
@@ -39,7 +40,7 @@ namespace DotNetService.Domain.Permission.Repositories
             return query;
         }
 
-        private IQueryable<Models.Permission> QueryFilter(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
+        private static IQueryable<Models.Permission> QueryFilter(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
         {
             if (queryParams.Name != null)
             {
@@ -49,7 +50,7 @@ namespace DotNetService.Domain.Permission.Repositories
             return query;
         }
 
-        private IQueryable<Models.Permission> QuerySort(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
+        private static IQueryable<Models.Permission> QuerySort(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 
@@ -74,12 +75,12 @@ namespace DotNetService.Domain.Permission.Repositories
 
         public async Task<int> Count(PermissionQueryRequest queryParams)
         {
-            IQueryable<Models.Permission> query = _context.Permissions;
+            IQueryable<Models.Permission> query = _context.Permissions.AsNoTracking();
 
             query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams);
 
-            return await query.CountAsync();
+            return await query.Select(x => x.Id).CountAsync();
         }
 
         public async Task<Models.Permission> FindOneById(Guid id = default)
@@ -87,17 +88,6 @@ namespace DotNetService.Domain.Permission.Repositories
             return await _context.Permissions
                 .Where(data => data.Id == id)
                 .SingleOrDefaultAsync();
-        }
-
-        public async Task<Models.Permission> FindByName(string name)
-        {
-            Models.Permission permission = await _context.Permissions.Where(permission => permission.Name == name).FirstOrDefaultAsync();
-            if (permission == null)
-            {
-                return null;
-            }
-
-            return permission;
         }
 
         public async Task<List<string>> FindPermissionByUserId(Guid userId)
@@ -110,33 +100,7 @@ namespace DotNetService.Domain.Permission.Repositories
                 select p.Key
             ).Distinct().ToListAsync();
 
-            return permissions.Count == 0 ? new List<string>() : permissions;
-        }
-
-
-        public async Task<List<Models.Permission>> Get(string search, int page, int perPage)
-        {
-            int skip = (1 - page) * perPage;
-            List<Models.Permission> permissions;
-            IQueryable<Models.Permission> permissionQuery = _context.Permissions;
-            if (search != null)
-            {
-                permissionQuery = permissionQuery.Where(permission => permission.Name.Contains(search));
-            }
-            permissions = await permissionQuery.Skip(skip).Take(perPage).ToListAsync();
-
-            return permissions;
-        }
-
-        public async Task<int> CountAll(string search)
-        {
-            IQueryable<Models.Permission> permissionQuery = _context.Permissions;
-            if (search != null)
-            {
-                permissionQuery = permissionQuery.Where(permission => permission.Name.Contains(search));
-            }
-
-            return await permissionQuery.CountAsync();
+            return permissions.Count == 0 ? [] : permissions;
         }
     }
 }
