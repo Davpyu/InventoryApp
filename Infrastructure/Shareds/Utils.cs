@@ -148,8 +148,6 @@ namespace DotNetService.Infrastructure.Shareds
         public static int CountPage(int totalData, int take)
         {
             var totalDataDec = decimal.Parse(string.Concat(totalData));
-            var takeDec = decimal.Parse(string.Concat(take));
-
 
             return (int)Math.Ceiling(totalDataDec / take);
         }

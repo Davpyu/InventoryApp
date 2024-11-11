@@ -1,7 +1,7 @@
 
 namespace DotNetService.Infrastructure.Subscriptions
 {
-    public interface ISubscriptionActionAsync<T>
+    public interface ISubscriptionActionAsync<in T>
     {
         Task HandleAsync(T data);
     }
@@ -11,12 +11,12 @@ namespace DotNetService.Infrastructure.Subscriptions
         Task<R> ReplyAsync(T data);
     }
 
-    public interface ISubscriptionAction<T>
+    public interface ISubscriptionAction<in T>
     {
         void Handle(T data);
     }
 
-    public interface IReplyAction<T, R>
+    public interface IReplyAction<in T, R>
     {
         R Reply(T data);
     }
