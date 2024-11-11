@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using DotNetService.Domain.Permission.Services;
 using System.Net;
-using DotNetService.Infrastructure.Shareds;
 using DotNetService.Infrastructure.Attributes;
 using DotNetService.Constants.Permission;
+using DotNetService.Domain.Permission.Dtos;
+using DotNetService.Infrastructure.Helpers;
 
-namespace DotNetService.Http.API.Version1.Permission
+namespace DotNetService.Http.API.Version1.Permission.Controllers
 {
     [Route("api/v1/permissions")]
     [ApiController]
@@ -17,33 +18,34 @@ namespace DotNetService.Http.API.Version1.Permission
 
         [HttpGet()]
         [Permissions(PermissionConstant.PERMISSION_VIEW)]
-        public async Task<ApiResponse> Index([FromQuery] PermissionQueryRequest query)
+        public async Task<ApiResponse> Index([FromQuery] PermissionQueryDto query)
         {
-            return await _permissionService.Index(query);
+            var paginationResult = await _permissionService.Index(query);
+            return new ApiResponsePagination<PermissionResultDto>(HttpStatusCode.OK, paginationResult);
         }
 
         [HttpGet("{id}")]
         [Permissions(PermissionConstant.PERMISSION_VIEW)]
         public async Task<ApiResponse> Show(Guid id)
         {
-            var permissionRepository = await _permissionService.DetailById(id);
-            return new ApiResponseData(HttpStatusCode.OK, new PermissionResponse(permissionRepository));
+            var data = await _permissionService.DetailById(id);
+            return new ApiResponseData<PermissionResultDto>(HttpStatusCode.OK, data);
         }
 
         [HttpPost()]
         [Permissions(PermissionConstant.PERMISSION_CREATE)]
-        public async Task<ApiResponse> Store(PermissionCreateRequest dataCreate)
+        public async Task<ApiResponse> Store(PermissionCreateDto dataCreate)
         {
             await _permissionService.Create(dataCreate);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            return new ApiResponseData<PermissionResultDto>(HttpStatusCode.OK, null);
         }
 
         [HttpPut("{id}")]
         [Permissions(PermissionConstant.PERMISSION_UPDATE)]
-        public async Task<ApiResponse> Update(Guid id, PermissionUpdateRequest dataUpdate)
+        public async Task<ApiResponse> Update(Guid id, PermissionUpdateDto dataUpdate)
         {
             await _permissionService.Update(id, dataUpdate);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            return new ApiResponseData<PermissionResultDto>(HttpStatusCode.OK, null);
         }
 
         [HttpDelete("{id}")]
@@ -51,7 +53,7 @@ namespace DotNetService.Http.API.Version1.Permission
         public async Task<ApiResponse> Delete(Guid id)
         {
             await _permissionService.Delete(id);
-            return new ApiResponseData(HttpStatusCode.OK, null);
+            return new ApiResponseData<PermissionResultDto>(HttpStatusCode.OK, null);
         }
     }
 }

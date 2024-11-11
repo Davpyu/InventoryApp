@@ -11,6 +11,7 @@ namespace DotNetService.Domain.Role.Dtos
         {
             Id = role.Id;
             Name = role.Name;
+            Key = role.Key;
             Permissions = role.RolePermissions?.Count > 0
               ? PermissionResultDto.MapRepo(role.RolePermissions?.Select(data => data.Permission).ToList())
               : null;

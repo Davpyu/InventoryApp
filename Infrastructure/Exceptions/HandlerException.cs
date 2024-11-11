@@ -1,22 +1,20 @@
 using DotNetService.Infrastructure.Shareds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
-using DotNetService.Constants.Logger;
 using System.Net;
 using DotNetService.Http.API.Version1;
 using System.Net.Mime;
+using DotNetService.Infrastructure.Helpers;
 
 namespace DotNetService.Infrastructure.Exceptions
 {
     public class HandlerException(
         RequestDelegate next,
-        IConfiguration config,
-        ILoggerFactory loggerFactory
+        IConfiguration config
     )
     {
         private readonly RequestDelegate _next = next;
         private readonly IConfiguration _config = config;
-        private readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.ERROR);
 
 
         public async Task Invoke(HttpContext context)

@@ -1,9 +1,7 @@
-using DotNetService.Http.API.Version1.Permission;
 using DotNetService.Domain.Permission.Repositories;
-using DotNetService.Http.API.Version1;
-using System.Net;
 using DotNetService.Infrastructure.Exceptions;
-using DotNetService.Infrastructure.Helpers;
+using DotNetService.Infrastructure.Dtos;
+using DotNetService.Domain.Permission.Dtos;
 
 namespace DotNetService.Domain.Permission.Services
 {
@@ -15,38 +13,31 @@ namespace DotNetService.Domain.Permission.Services
         private readonly PermissionStoreRepository _permissionStoreRepository = permissionStoreRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
 
-        public async Task<ApiResponse> Index(PermissionQueryRequest query = null)
+        public async Task<PaginationModel<PermissionResultDto>> Index(PermissionQueryDto query)
         {
-            var data = await Pagination(query);
-            int count = await _permissionQueryRepository.Count(query);
-            decimal pageInCount = ((decimal)count) / query.PerPage;
-            PaginationModel paginate = new()
-            {
-                TotalPage = (int)Math.Ceiling(pageInCount),
-                Page = query.Page,
-                PerPage = query.PerPage,
-                Data = PermissionResponse.MapRepo(data),
-                Total = count
-            };
-
-            return new ApiResponsePagination(HttpStatusCode.OK, paginate);
+            var result = await _permissionQueryRepository.Pagination(query);
+            var formattedResult = PermissionResultDto.MapRepo(result.Data);
+            var paginate = PaginationModel<PermissionResultDto>.Parse(formattedResult, result.Count, query);
+            return paginate;
         }
 
-        public async Task<List<Models.Permission>> Pagination(PermissionQueryRequest query = null)
+        public async Task Create(PermissionCreateDto dataCreate)
         {
-            return await _permissionQueryRepository.Pagination(query);
-        }
-
-        public async Task Create(PermissionCreateRequest dataCreate)
-        {
-            var data = PermissionCreateRequest.Assign(dataCreate);
+            var data = PermissionCreateDto.Assign(dataCreate);
 
             await _permissionStoreRepository.Create(data);
         }
 
-        public async Task<Models.Permission> DetailById(Guid id)
+        public async Task<PermissionResultDto> DetailById(Guid id)
         {
-            return await _permissionQueryRepository.FindOneById(id) ?? throw new DataNotFoundException("Permission not found");
+            var permission = await _permissionQueryRepository.FindOneById(id);
+
+            if (permission == null)
+            {
+                throw new DataNotFoundException("Permission not found");
+            }
+
+            return new PermissionResultDto(permission);
         }
 
         public async Task<List<Models.Permission>> GetList(string search, int page, int perPage)
@@ -58,9 +49,9 @@ namespace DotNetService.Domain.Permission.Services
             return await _permissionQueryRepository.CountAll(search);
         }
 
-        public async Task Update(Guid id, PermissionUpdateRequest dataUpdate)
+        public async Task Update(Guid id, PermissionUpdateDto dataUpdate)
         {
-            var data = PermissionUpdateRequest.Assign(dataUpdate);
+            var data = PermissionUpdateDto.Assign(dataUpdate);
             await _permissionStoreRepository.Update(id, data);
         }
 

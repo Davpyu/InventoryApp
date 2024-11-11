@@ -6,6 +6,7 @@ namespace DotNetService.Domain.Permission.Dtos
         {
             Id = permission.Id;
             Name = permission.Name;
+            Key = permission.Key;
             CreatedAt = permission.CreatedAt;
             UpdatedAt = permission.UpdatedAt;
         }
