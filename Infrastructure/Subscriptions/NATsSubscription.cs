@@ -16,7 +16,7 @@ namespace DotNetService.Infrastructure.Subscriptions
         void Handle(T data);
     }
 
-    public interface IReplyAction<in T, R>
+    public interface IReplyAction<in T, out R>
     {
         R Reply(T data);
     }
