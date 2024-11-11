@@ -81,12 +81,12 @@ namespace DotNetService.Domain.Permission.Repositories
 
         public async Task<int> Count(PermissionQueryDto queryParams)
         {
-            IQueryable<Models.Permission> query = _context.Permissions;
+            IQueryable<Models.Permission> query = _context.Permissions.AsNoTracking();
 
             query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams);
 
-            return await query.CountAsync();
+            return await query.Select(x => x.Id).CountAsync();
         }
 
         public async Task<Models.Permission> FindOneById(Guid id = default)
@@ -94,17 +94,6 @@ namespace DotNetService.Domain.Permission.Repositories
             return await _context.Permissions
                 .Where(data => data.Id == id)
                 .SingleOrDefaultAsync();
-        }
-
-        public async Task<Models.Permission> FindByName(string name)
-        {
-            Models.Permission permission = await _context.Permissions.Where(permission => permission.Name == name).FirstOrDefaultAsync();
-            if (permission == null)
-            {
-                return null;
-            }
-
-            return permission;
         }
 
         public async Task<List<string>> FindPermissionByUserId(Guid userId)

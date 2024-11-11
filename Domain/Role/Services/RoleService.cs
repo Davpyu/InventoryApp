@@ -1,4 +1,3 @@
-using System.Net;
 using DotNetService.Domain.Role.Dtos;
 using DotNetService.Domain.Role.Repositories;
 using DotNetService.Infrastructure.Dtos;
