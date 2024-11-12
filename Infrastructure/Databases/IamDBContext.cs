@@ -16,15 +16,15 @@ namespace DotNetService.Infrastructure.Databases
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
-        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-        {
-            base.ConfigureConventions(configurationBuilder);
-            configurationBuilder.Properties<string>()
-            .HaveMaxLength(256);
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Set default max length column for string data type
+            modelBuilder.Model.GetEntityTypes()
+                .SelectMany(e => e.GetProperties())
+                .Where(p => p.ClrType == typeof(string) && p.GetMaxLength() == null)
+                .ToList()
+                .ForEach(p => p.SetMaxLength(256));
+
             GenerateUuid<Role>(modelBuilder, "Id");
             SoftDelete<Role>(modelBuilder);
             GenerateUuid<User>(modelBuilder, "Id");
@@ -38,6 +38,14 @@ namespace DotNetService.Infrastructure.Databases
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Role>()
+                .HasIndex(r => r.Key)
+                .IsUnique();
+
+            modelBuilder.Entity<Permission>()
+                .HasIndex(p => p.Key)
                 .IsUnique();
         }
 
