@@ -4,11 +4,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
 using DotNetService.Infrastructure.Exceptions;
+using UserModel = DotNetService.Models.User;
+using DotNetService.Models;
 
 namespace DotNetService.Domain.Auth.Util
 {
     public class AuthUtility
     {
+        public const string LOCAL_STORAGE_KEY = "LOCAL_STORAGE_AUTH_KEY_";
+
         public static string GenerateJwtToken(string secretKey, string userJson, DateTime expires = default)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -26,6 +30,14 @@ namespace DotNetService.Domain.Auth.Util
             return tokenHandler.WriteToken(token);
         }
 
+        public static string GenerateJWTClaimInfo(UserModel user, List<string> permissions = default) {
+            return JsonSerializer.Serialize(new UserAuthInfo {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+            });
+        }
+        
         public static ClaimsPrincipal ClaimPrincipalWithJson(dynamic user)
         {
             var userObject = (Dictionary<string, object>)JsonSerializer.Deserialize<Dictionary<string, object>>(user);
@@ -37,6 +49,15 @@ namespace DotNetService.Domain.Auth.Util
             var identity = new ClaimsIdentity(claims, "User");
 
             return new ClaimsPrincipal(identity);
+        }
+
+        public static UserAuthInfo GenerateUserAuthInfo(UserModel user, List<string> permissions = default) {
+            return new UserAuthInfo {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Permissions = permissions
+            };
         }
 
         public static SymmetricSecurityKey GenerateSymetricKey(string key)
@@ -62,6 +83,10 @@ namespace DotNetService.Domain.Auth.Util
             {
                 throw new UnauthenticatedException();
             }
+        }
+
+        public static string GenerateKeyLocalStorage(string id) {
+            return LOCAL_STORAGE_KEY + id;
         }
 
         private static bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken tokenToValidate, TokenValidationParameters @param)

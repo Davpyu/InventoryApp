@@ -1,10 +1,10 @@
 using DotNetService.Http.API.Version1.Auth;
 using BC = BCrypt.Net.BCrypt;
-using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
 using DotNetService.Domain.Auth.Repositories;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Domain.Permission.Repositories;
+using DotNetService.Infrastructure.Databases;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -13,6 +13,7 @@ namespace DotNetService.Domain.Auth.Services
         AuthQueryRepository authQueryRepository,
         PermissionQueryRepository permissionQueryRepository,
         IConfiguration config,
+        LocalStorageDatabase localStorage,
         IHttpContextAccessor httpContextAccessor
         )
     {
@@ -20,6 +21,7 @@ namespace DotNetService.Domain.Auth.Services
         private readonly AuthQueryRepository _authQueryRepository = authQueryRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly IConfiguration _config = config;
+        private readonly LocalStorageDatabase _localStorage = localStorage;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
@@ -36,24 +38,26 @@ namespace DotNetService.Domain.Auth.Services
             {
                 throw new UnauthenticatedException("Email or password is incorrect.");
             }
-            
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
             var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
 
-            user.Password = null;
             var permissions = await _permissionQueryRepository.FindPermissionByUserId(user.Id);
-            var userString = JsonConvert.SerializeObject(new {
-                user.Id,
-                user.Name,
-                user.Email,
-                permissions
-            });
+            
+            var userObject = AuthUtility.GenerateUserAuthInfo(user, permissions);
+
+            // store to local storage
+            var localStorageKey = AuthUtility.GenerateKeyLocalStorage(user.Id.ToString());
+            await _localStorage.Store(localStorageKey, userObject);
+
+            // encode user string
+            var userString = AuthUtility.GenerateJWTClaimInfo(user);
+            var token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt);
 
             return new()
             {
                 ExpiredAt = expiredAt,
-                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt)
+                Token = token
             };
         }
 
