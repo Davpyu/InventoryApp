@@ -82,7 +82,7 @@ namespace DotNetService.Domain.Auth.Services
 
         public async Task<Models.User> Account()
         {
-            _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
+            _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("Id")?.Value, out Guid userId);
             
             return await _authQueryRepository.FindOneById(userId);
         }
