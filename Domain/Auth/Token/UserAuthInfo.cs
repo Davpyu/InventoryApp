@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace DotNetService.Models
+namespace DotNetService.Domain.Auth.Token
 {
     public class UserAuthInfo
     {

@@ -14,15 +14,17 @@ namespace DotNetService.Domain.Auth.Services
         PermissionQueryRepository permissionQueryRepository,
         IConfiguration config,
         LocalStorageDatabase localStorage,
-        IHttpContextAccessor httpContextAccessor
+        IHttpContextAccessor httpContextAccessor,
+        AuthUtil authUtil
         )
     {
         private readonly AuthStoreRepository _authStoreRepository = authStoreRepository;
         private readonly AuthQueryRepository _authQueryRepository = authQueryRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly IConfiguration _config = config;
-        private readonly LocalStorageDatabase _localStorage = localStorage;
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly LocalStorageDatabase _localStorage = localStorage; private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+        private readonly AuthUtil _authUtil = authUtil;
 
         public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
         {
@@ -31,7 +33,7 @@ namespace DotNetService.Domain.Auth.Services
             {
                 throw new UnauthenticatedException("Email or password is incorrect.");
             }
-            
+
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
@@ -43,16 +45,16 @@ namespace DotNetService.Domain.Auth.Services
             var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
 
             var permissions = await _permissionQueryRepository.FindPermissionByUserId(user.Id);
-            
-            var userObject = AuthUtility.GenerateUserAuthInfo(user, permissions);
+
+            var userObject = AuthUtil.GenerateUserAuthInfo(user, permissions);
 
             // store to local storage
-            var localStorageKey = AuthUtility.GenerateKeyLocalStorage(user.Id.ToString());
+            var localStorageKey = _authUtil.GenerateKeyLocalStorage(user.Id.ToString());
             await _localStorage.Store(localStorageKey, userObject);
 
             // encode user string
-            var userString = AuthUtility.GenerateJWTClaimInfo(user);
-            var token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt);
+            var userString = AuthUtil.GenerateJWTClaimInfo(user);
+            var token = AuthUtil.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt);
 
             return new()
             {
@@ -83,7 +85,7 @@ namespace DotNetService.Domain.Auth.Services
         public async Task<Models.User> Account()
         {
             _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("Id")?.Value, out Guid userId);
-            
+
             return await _authQueryRepository.FindOneById(userId);
         }
     }
