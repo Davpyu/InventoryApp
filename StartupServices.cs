@@ -3,7 +3,6 @@ using DotNetService.Domain.Logging.Services;
 using DotNetService.Domain.Permission.Services;
 using DotNetService.Domain.Role.Services;
 using DotNetService.Domain.User.Services;
-using DotNetService.Infrastructure.Databases;
 
 namespace DotNetService
 {
@@ -11,8 +10,6 @@ namespace DotNetService
     {
         public void Services(IServiceCollection services)
         {
-            services.AddSingleton<LocalStorageDatabase>();
-
             services.AddScoped<AuthService>();
             services.AddScoped<UserService>();
             services.AddScoped<PermissionService>();
