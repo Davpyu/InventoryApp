@@ -15,6 +15,12 @@
 - NATs
 - Redis
 
+# VS Code Extensions
+
+- [C# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+- [Github Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+- [EditorConfig for VS Code](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+
 # Manual Quick Start API
 
 - Install .Net Entity Framework : https://learn.microsoft.com/en-us/ef/core/get-started/overview/install
