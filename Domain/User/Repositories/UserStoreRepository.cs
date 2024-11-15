@@ -1,3 +1,4 @@
+using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
@@ -5,10 +6,10 @@ using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcu
 namespace DotNetService.Domain.User.Repositories
 {
     public class UserStoreRepository(
-        Models.IamDBContext context
+        IamDBContext context
     )
     {
-        private readonly Models.IamDBContext _context = context;
+        private readonly IamDBContext _context = context;
 
         public async Task Create(Models.User data, List<Guid> roleIds)
         {

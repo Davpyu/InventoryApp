@@ -1,7 +1,8 @@
 ﻿﻿using System.Linq.Expressions;
+using DotNetService.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DotNetService.Models
+namespace DotNetService.Infrastructure.Databases
 {
     public partial class IamDBContext(DbContextOptions<IamDBContext> options) : DbContext(options)
     {
@@ -15,18 +16,15 @@ namespace DotNetService.Models
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
-        // protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-        // {
-        //     base.ConfigureConventions(configurationBuilder);
-        //     configurationBuilder.Properties<string>()
-        //     .HaveMaxLength(256);
-        // }
-
-        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
-        // .UseSqlServer(@"<CONNECTION STRING>", o => o.UseCompatibilityLevel(120));
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Set default max length column for string data type
+            modelBuilder.Model.GetEntityTypes()
+                .SelectMany(e => e.GetProperties())
+                .Where(p => p.ClrType == typeof(string) && p.GetMaxLength() == null)
+                .ToList()
+                .ForEach(p => p.SetMaxLength(256));
+
             GenerateUuid<Role>(modelBuilder, "Id");
             SoftDelete<Role>(modelBuilder);
             GenerateUuid<User>(modelBuilder, "Id");
@@ -40,6 +38,14 @@ namespace DotNetService.Models
 
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Role>()
+                .HasIndex(r => r.Key)
+                .IsUnique();
+
+            modelBuilder.Entity<Permission>()
+                .HasIndex(p => p.Key)
                 .IsUnique();
         }
 

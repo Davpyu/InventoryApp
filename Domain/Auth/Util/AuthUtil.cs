@@ -4,20 +4,25 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json;
 using DotNetService.Infrastructure.Exceptions;
+using UserModel = DotNetService.Models.User;
+using DotNetService.Domain.Auth.Token;
 
 namespace DotNetService.Domain.Auth.Util
 {
-    public class AuthUtility
+    public class AuthUtil(
+        IConfiguration config
+    )
     {
+        private readonly IConfiguration _config = config;
+
         public static string GenerateJwtToken(string secretKey, string userJson, DateTime expires = default)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = GenerateSymetricKey(secretKey);
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(
-                [
-                    new Claim("user", userJson)
+                Subject = new ClaimsIdentity([
+                    new Claim("user", userJson.ToString())
                 ]),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
@@ -25,6 +30,16 @@ namespace DotNetService.Domain.Auth.Util
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public static string GenerateJWTClaimInfo(UserModel user)
+        {
+            return JsonSerializer.Serialize(new UserAuthInfo
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+            });
         }
 
         public static ClaimsPrincipal ClaimPrincipalWithJson(dynamic user)
@@ -38,6 +53,17 @@ namespace DotNetService.Domain.Auth.Util
             var identity = new ClaimsIdentity(claims, "User");
 
             return new ClaimsPrincipal(identity);
+        }
+
+        public static UserAuthInfo GenerateUserAuthInfo(UserModel user, List<string> permissions = default)
+        {
+            return new UserAuthInfo
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Permissions = permissions
+            };
         }
 
         public static SymmetricSecurityKey GenerateSymetricKey(string key)
@@ -68,6 +94,12 @@ namespace DotNetService.Domain.Auth.Util
             {
                 throw new UnauthenticatedException();
             }
+        }
+
+        public string GenerateKeyLocalStorage(string id)
+        {
+            var localStorageKey = _config["LocalStorage:Key"];
+            return localStorageKey + id;
         }
 
         private static bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken tokenToValidate, TokenValidationParameters @param)

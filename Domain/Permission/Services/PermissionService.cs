@@ -49,15 +49,6 @@ namespace DotNetService.Domain.Permission.Services
             return await _permissionQueryRepository.FindOneById(id) ?? throw new DataNotFoundException("Permission not found");
         }
 
-        public async Task<List<Models.Permission>> GetList(string search, int page, int perPage)
-        {
-            return await _permissionQueryRepository.Get(search, page, perPage);
-        }
-        public async Task<int> Count(string search)
-        {
-            return await _permissionQueryRepository.CountAll(search);
-        }
-
         public async Task Update(Guid id, PermissionUpdateRequest dataUpdate)
         {
             var data = PermissionUpdateRequest.Assign(dataUpdate);

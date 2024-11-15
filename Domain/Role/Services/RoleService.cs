@@ -57,15 +57,6 @@ namespace DotNetService.Domain.Role.Services
             return await _roleQueryRepository.FindOneById(id);
         }
 
-        public async Task<List<Models.Role>> GetList(string search, int page, int perPage)
-        {
-            return await _roleQueryRepository.Get(search, page, perPage);
-        }
-        public async Task<int> Count(string search)
-        {
-            return await _roleQueryRepository.CountAll(search);
-        }
-
         public async Task Update(Guid id, RoleUpdateRequest dataUpdate)
         {
             var data = RoleUpdateRequest.Assign(dataUpdate);

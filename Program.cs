@@ -20,7 +20,7 @@ namespace DotNetService
                 .AddCommandLine(args)
                 .Build();
 
-            double sentryTraceSampleRate = double.Parse(config["Sentry:TracesSampleRate"] ?? "1");
+            double sentryTraceSampleRate = double.Parse(config["Sentry:TracesSampleRate"] ?? "1.0");
             //get dsn value
             string dsn = config["Sentry:Dsn"] ?? "";
             string env = config["App:Environment"] ?? "Development";
@@ -36,6 +36,7 @@ namespace DotNetService
                         o.AutoSessionTracking = true;
                         o.Debug = true;
                         o.StackTraceMode = StackTraceMode.Enhanced;
+                        o.ServerName = config["App:Name"];
 
                         o.AddExceptionFilter(new SentryExceptionFilter());
                         o.SetBeforeSend((sentryEvent) =>

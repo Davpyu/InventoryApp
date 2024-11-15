@@ -1,21 +1,17 @@
 using System.Linq.Expressions;
 using DotNetService.Http.API.Version1;
 using DotNetService.Http.API.Version1.Role;
+using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Role.Repositories
 {
-    public class RoleQueryRepository
-    {
-        private readonly Models.IamDBContext _context;
-
-        public RoleQueryRepository(
-            Models.IamDBContext context
+    public class RoleQueryRepository(
+        IamDBContext context
         )
-        {
-            _context = context;
-        }
+    {
+        private readonly IamDBContext _context = context;
 
         public async Task<List<Models.Role>> Pagination(RoleQueryRequest queryParams)
         {
@@ -23,6 +19,7 @@ namespace DotNetService.Domain.Role.Repositories
             var query = _context.Roles
                 .Include(data => data.RolePermissions)
                 .ThenInclude(data => data.Permission)
+                .AsNoTracking()
                 .AsQueryable();
 
             query = QuerySearch(query, queryParams);
@@ -34,7 +31,7 @@ namespace DotNetService.Domain.Role.Repositories
             return data;
         }
 
-        private IQueryable<Models.Role> QuerySearch(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QuerySearch(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
         {
             if (queryParams.Search != null)
             {
@@ -45,7 +42,7 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        private IQueryable<Models.Role> QueryFilter(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QueryFilter(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
         {
             if (queryParams.Name != null)
             {
@@ -55,7 +52,7 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        private IQueryable<Models.Role> QuerySort(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QuerySort(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 
@@ -80,17 +77,12 @@ namespace DotNetService.Domain.Role.Repositories
 
         public async Task<int> Count(RoleQueryRequest queryParams)
         {
-            IQueryable<Models.Role> query = _context.Roles;
+            IQueryable<Models.Role> query = _context.Roles.AsNoTracking();
 
             query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams);
 
-            return await query.CountAsync();
-        }
-
-        internal async Task<Models.Role> Find(Guid id = default)
-        {
-            return await _context.Roles.Where(role => role.Id == id).FirstOrDefaultAsync();
+            return await query.Select(x => x.Id).CountAsync();
         }
 
         public async Task<Models.Role> FindOneById(Guid id = default, bool isThrowException = false)
@@ -107,22 +99,6 @@ namespace DotNetService.Domain.Role.Repositories
             };
 
             return data;
-        }
-
-        public async Task<Models.Role> FindByName(string name)
-        {
-            Models.Role role = await _context.Roles.Where(role => role.Name == name).FirstOrDefaultAsync();
-            if (role == null)
-            {
-                return new Models.Role();
-            }
-
-            return role;
-        }
-
-        public async Task<bool> IsExistsByNameAndIds(string nameRole, Guid[] roleIds)
-        {
-            return await _context.Roles.Where(role => role.Name == nameRole).Where(role => roleIds.Contains(role.Id)).AnyAsync();
         }
 
         public async Task<bool> IsExistByKey(string key)

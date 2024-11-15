@@ -1,5 +1,6 @@
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
 using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
 
@@ -7,10 +8,10 @@ using DbDeleteConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcu
 namespace DotNetService.Domain.Permission.Repositories
 {
     public class PermissionStoreRepository(
-        Models.IamDBContext context
+        IamDBContext context
     )
     {
-        private readonly Models.IamDBContext _context = context;
+        private readonly IamDBContext _context = context;
 
         public async Task Create(Models.Permission permissionRepository)
         {
