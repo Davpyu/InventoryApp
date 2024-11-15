@@ -15,9 +15,10 @@ namespace DotNetService.Domain.Auth.Util
             var key = GenerateSymetricKey(secretKey);
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
-                Subject = new ClaimsIdentity(new[] {
-                    new Claim("user", userJson.ToString())
-                }),
+                Subject = new ClaimsIdentity(
+                [
+                    new Claim("user", userJson)
+                ]),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature),
             };
@@ -41,7 +42,12 @@ namespace DotNetService.Domain.Auth.Util
 
         public static SymmetricSecurityKey GenerateSymetricKey(string key)
         {
-            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+            if (keyBytes.Length < 32)
+            {
+                Array.Resize(ref keyBytes, 32);
+            }
+            return new SymmetricSecurityKey(keyBytes);
         }
 
         public static dynamic GetUserLogged(string token)
