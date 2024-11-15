@@ -22,14 +22,9 @@ using DotNetService.Infrastructure.ModelBinder;
 
 namespace DotNetService
 {
-    public partial class Startup
+    public partial class Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; } = configuration;
 
         public IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {
@@ -148,6 +143,8 @@ namespace DotNetService
             Services(services);
 
             Repositories(services);
+
+            Authentications(services);
 
             Integrations(services);
 

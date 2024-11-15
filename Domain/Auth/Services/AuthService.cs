@@ -1,10 +1,10 @@
 using BC = BCrypt.Net.BCrypt;
-using Newtonsoft.Json;
 using DotNetService.Domain.Auth.Util;
 using DotNetService.Domain.Auth.Repositories;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Domain.Auth.Dtos;
+using DotNetService.Infrastructure.Databases;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -13,14 +13,18 @@ namespace DotNetService.Domain.Auth.Services
         AuthQueryRepository authQueryRepository,
         PermissionQueryRepository permissionQueryRepository,
         IConfiguration config,
-        IHttpContextAccessor httpContextAccessor
+        LocalStorageDatabase localStorage,
+        IHttpContextAccessor httpContextAccessor,
+        AuthUtil authUtil
         )
     {
         private readonly AuthStoreRepository _authStoreRepository = authStoreRepository;
         private readonly AuthQueryRepository _authQueryRepository = authQueryRepository;
         private readonly PermissionQueryRepository _permissionQueryRepository = permissionQueryRepository;
         private readonly IConfiguration _config = config;
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly LocalStorageDatabase _localStorage = localStorage; private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+        private readonly AuthUtil _authUtil = authUtil;
 
         public async Task<AuthTokenResultDto> SignIn(AuthSignInDto authSignIn)
         {
@@ -40,20 +44,22 @@ namespace DotNetService.Domain.Auth.Services
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
             var expiredAt = DateTime.Now.AddMinutes(tokenLifetimeInMinutes);
 
-            user.Password = null;
             var permissions = await _permissionQueryRepository.FindPermissionByUserId(user.Id);
-            var userString = JsonConvert.SerializeObject(new
-            {
-                user.Id,
-                user.Name,
-                user.Email,
-                permissions
-            });
+
+            var userObject = AuthUtil.GenerateUserAuthInfo(user, permissions);
+
+            // store to local storage
+            var localStorageKey = _authUtil.GenerateKeyLocalStorage(user.Id.ToString());
+            await _localStorage.Store(localStorageKey, userObject);
+
+            // encode user string
+            var userString = AuthUtil.GenerateJWTClaimInfo(user);
+            var token = AuthUtil.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt);
 
             return new AuthTokenResultDto
             {
                 ExpiredAt = expiredAt,
-                Token = AuthUtility.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt),
+                Token = token
             };
         }
 
@@ -78,7 +84,7 @@ namespace DotNetService.Domain.Auth.Services
 
         public async Task<AccountResultDto> Account()
         {
-            _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("id")?.Value, out Guid userId);
+            _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("Id")?.Value, out Guid userId);
 
             var user = await _authQueryRepository.FindOneById(userId);
             if (user == null)
