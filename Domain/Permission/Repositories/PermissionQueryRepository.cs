@@ -111,7 +111,6 @@ namespace DotNetService.Domain.Permission.Repositories
             return permissions.Count == 0 ? [] : permissions;
         }
 
-
         public async Task<List<Models.Permission>> Get(string search, int page, int perPage)
         {
             int skip = (1 - page) * perPage;
@@ -135,6 +134,11 @@ namespace DotNetService.Domain.Permission.Repositories
             }
 
             return await permissionQuery.CountAsync();
+        }
+
+        public async Task<bool> IsExistByKey(string key)
+        {
+            return await _context.Permissions.Where(permission => permission.Key == key).AnyAsync();
         }
     }
 }

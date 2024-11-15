@@ -3,6 +3,7 @@ using DotNetService.Domain.User.Repositories;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Domain.User.Dtos;
 using DotNetService.Infrastructure.Dtos;
+using DotNetService.Domain.User.Messages;
 
 namespace DotNetService.Domain.User.Services
 {
@@ -29,7 +30,7 @@ namespace DotNetService.Domain.User.Services
 
             if (isEmailExist)
             {
-                throw new UnprocessableEntityException("Email already exist");
+                throw new UnprocessableEntityException(UserErrorMessage.ErrEmailAlreadyExist);
             }
 
             var data = UserCreateDto.Assign(dataCreate);
@@ -42,7 +43,7 @@ namespace DotNetService.Domain.User.Services
 
             if (user == null)
             {
-                throw new DataNotFoundException("User not found");
+                throw new DataNotFoundException(UserErrorMessage.ErrUserNotFound);
             }
 
             return user;
@@ -54,7 +55,7 @@ namespace DotNetService.Domain.User.Services
 
             if (isEmailExist)
             {
-                throw new UnprocessableEntityException("Email already exist");
+                throw new UnprocessableEntityException(UserErrorMessage.ErrEmailAlreadyExist);
             }
 
             var data = UserUpdateDto.Assign(dataUpdate);

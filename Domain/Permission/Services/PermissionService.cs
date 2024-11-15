@@ -2,6 +2,7 @@ using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Dtos;
 using DotNetService.Domain.Permission.Dtos;
+using DotNetService.Domain.Permission.Messages;
 
 namespace DotNetService.Domain.Permission.Services
 {
@@ -23,6 +24,13 @@ namespace DotNetService.Domain.Permission.Services
 
         public async Task Create(PermissionCreateDto dataCreate)
         {
+            var isPermissionExist = await _permissionQueryRepository.IsExistByKey(dataCreate.Key);
+
+            if (isPermissionExist)
+            {
+                throw new UnprocessableEntityException(PermissionErrorMessage.ErrPermissionAlreadyExist);
+            }
+
             var data = PermissionCreateDto.Assign(dataCreate);
 
             await _permissionStoreRepository.Create(data);
@@ -34,7 +42,7 @@ namespace DotNetService.Domain.Permission.Services
 
             if (permission == null)
             {
-                throw new DataNotFoundException("Permission not found");
+                throw new DataNotFoundException(PermissionErrorMessage.ErrPermissionNotFound);
             }
 
             return new PermissionResultDto(permission);

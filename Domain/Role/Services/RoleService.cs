@@ -1,4 +1,5 @@
 using DotNetService.Domain.Role.Dtos;
+using DotNetService.Domain.Role.Messages;
 using DotNetService.Domain.Role.Repositories;
 using DotNetService.Infrastructure.Dtos;
 using DotNetService.Infrastructure.Exceptions;
@@ -27,7 +28,7 @@ namespace DotNetService.Domain.Role.Services
 
             if (isRoleExist)
             {
-                throw new UnprocessableEntityException("Role key already exist");
+                throw new UnprocessableEntityException(RoleErrorMessage.ErrRoleAlreadyExist);
             }
 
             var data = RoleCreateDto.Assign(dataCreate);
@@ -40,7 +41,7 @@ namespace DotNetService.Domain.Role.Services
             var role = await _roleQueryRepository.FindOneById(id);
             if (role == null)
             {
-                throw new DataNotFoundException("Role not found");
+                throw new DataNotFoundException(RoleErrorMessage.ErrRoleNotFound);
             }
 
             return new RoleResultDto(role);

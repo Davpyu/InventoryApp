@@ -5,6 +5,8 @@ using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Domain.Auth.Dtos;
 using DotNetService.Infrastructure.Databases;
+using DotNetService.Domain.Auth.Messages;
+using DotNetService.Domain.User.Messages;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -31,14 +33,14 @@ namespace DotNetService.Domain.Auth.Services
             var user = await _authQueryRepository.FindOneByEmail(authSignIn.Email);
             if (user == null)
             {
-                throw new UnauthenticatedException("Email or password is incorrect.");
+                throw new UnauthenticatedException(AuthErrorMessage.ErrInvalidCredential);
             }
 
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
             {
-                throw new UnauthenticatedException("Email or password is incorrect.");
+                throw new UnauthenticatedException(AuthErrorMessage.ErrInvalidCredential);
             }
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
@@ -69,7 +71,7 @@ namespace DotNetService.Domain.Auth.Services
 
             if (isEmailExists)
             {
-                throw new UnprocessableEntityException("Email already registered");
+                throw new UnprocessableEntityException(UserErrorMessage.ErrEmailAlreadyExist);
             }
 
             Models.User data = new()
@@ -89,7 +91,7 @@ namespace DotNetService.Domain.Auth.Services
             var user = await _authQueryRepository.FindOneById(userId);
             if (user == null)
             {
-                throw new DataNotFoundException("User not found");
+                throw new DataNotFoundException(UserErrorMessage.ErrUserNotFound);
             }
 
             return new AccountResultDto(user);
