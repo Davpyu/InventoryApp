@@ -75,19 +75,19 @@ After clonning this boilerplate for project, don't forget to change this accordi
 │   ├── Permission
 │   │   ├── Dto
 │   │   ├── Repositories
-│   │   └── Service
+│   │   └── Services
 │   ├── Role
 │   │   ├── Dto
 │   │   ├── Repositories
-│   │   └── Service
+│   │   └── Services
 │   ├── RolePermission
 │   │   ├── Dto
 │   │   ├── Repositories
-│   │   └── Service
+│   │   └── Services
 │   └── User
 │       ├── Dto
 │       ├── Repositories
-│       └── Service
+│       └── Services
 ├── Http
 │   └── API
 │       └── Version1
