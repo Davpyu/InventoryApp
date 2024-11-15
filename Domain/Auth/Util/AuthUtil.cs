@@ -83,7 +83,7 @@ namespace DotNetService.Domain.Auth.Util
         {
             try
             {
-                var securityKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(secret));
+                var securityKey = GenerateSymetricKey(secret);
                 var handler = new JwtSecurityTokenHandler();
                 var validation = new TokenValidationParameters()
                 {

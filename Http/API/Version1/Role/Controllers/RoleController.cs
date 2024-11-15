@@ -5,6 +5,7 @@ using DotNetService.Infrastructure.Shareds;
 using DotNetService.Http.API.Version1.Role.Requests;
 using DotNetService.Infrastructure.Attributes;
 using DotNetService.Constants.Permission;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.Role
 {
@@ -16,6 +17,7 @@ namespace DotNetService.Http.API.Version1.Role
     {
         private readonly RoleService _roleService = roleService;
 
+        // [AllowAnonymous]
         [HttpGet()]
         [Permissions(PermissionConstant.ROLE_VIEW)]
         public async Task<ApiResponse> Index([FromQuery] RoleQueryRequest query)
