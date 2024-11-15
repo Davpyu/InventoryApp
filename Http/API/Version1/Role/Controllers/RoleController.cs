@@ -5,7 +5,6 @@ using DotNetService.Infrastructure.Shareds;
 using DotNetService.Http.API.Version1.Role.Requests;
 using DotNetService.Infrastructure.Attributes;
 using DotNetService.Constants.Permission;
-using Microsoft.AspNetCore.Authorization;
 
 namespace DotNetService.Http.API.Version1.Role
 {
