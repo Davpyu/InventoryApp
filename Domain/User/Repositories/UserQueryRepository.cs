@@ -107,6 +107,7 @@ namespace DotNetService.Domain.User.Repositories
                 .ThenInclude(data => data.Role)
                 .ThenInclude(data => data.RolePermissions)
                 .ThenInclude(data => data.Permission)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
         }
 
