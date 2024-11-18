@@ -12,7 +12,7 @@ namespace DotNetService.Infrastructure.Middlewares
         private readonly RequestDelegate _next;
         private readonly IConfiguration _config;
 
-        private readonly List<string> ignoreError = new() {
+        private readonly List<string> ignoreError = [
             typeof(ValidationException).Name,
             typeof(BusinessException).Name,
             typeof(BadHttpRequestException).Name,
@@ -21,7 +21,7 @@ namespace DotNetService.Infrastructure.Middlewares
             typeof(ServiceUnavailableException).Name,
             typeof(UnauthorizedAccessException).Name,
             typeof(NotAllowedException).Name,
-        };
+        ];
 
         public CircuitBreakerMiddleware(
             IConfiguration config,

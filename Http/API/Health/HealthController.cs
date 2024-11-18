@@ -1,8 +1,8 @@
-using DotNetService.Infrastructure.Shareds;
+using DotNetService.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DotNetService.Http
+namespace DotNetService.Http.API.Health
 {
     [Route("health")]
     [ApiController]
@@ -10,9 +10,9 @@ namespace DotNetService.Http
     public class HealthController
     {
         [HttpGet]
-        public ApiResponseData Get()
+        public ApiResponseData<object> Get()
         {
-            return new ApiResponseData(System.Net.HttpStatusCode.OK, new { message = "Service is running, and Healty" });
+            return new ApiResponseData<object>(System.Net.HttpStatusCode.OK, new { message = "Service is running, and Healty" });
         }
     }
 }

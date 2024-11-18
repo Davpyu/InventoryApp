@@ -1,9 +1,6 @@
 namespace DotNetService.Infrastructure.Exceptions
 {
-    public class BusinessException : Exception
+    public class BusinessException(string message) : Exception(message)
     {
-
-        public BusinessException(string message) : base(message) { }
-
     }
 }

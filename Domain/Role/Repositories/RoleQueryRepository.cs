@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
-using DotNetService.Http.API.Version1;
-using DotNetService.Http.API.Version1.Role;
+using DotNetService.Domain.Role.Dtos;
 using DotNetService.Infrastructure.Databases;
-using DotNetService.Infrastructure.Exceptions;
+using DotNetService.Infrastructure.Dtos;
+using DotNetService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Role.Repositories
@@ -13,7 +13,7 @@ namespace DotNetService.Domain.Role.Repositories
     {
         private readonly IamDBContext _context = context;
 
-        public async Task<List<Models.Role>> Pagination(RoleQueryRequest queryParams)
+        public async Task<PaginationResult<Models.Role>> Pagination(RoleQueryDto queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Roles
@@ -27,11 +27,16 @@ namespace DotNetService.Domain.Role.Repositories
             query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
+            var count = await Count(queryParams);
 
-            return data;
+            return new PaginationResult<Models.Role>
+            {
+                Data = data,
+                Count = count
+            };
         }
 
-        private static IQueryable<Models.Role> QuerySearch(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QuerySearch(IQueryable<Models.Role> query, RoleQueryDto queryParams)
         {
             if (queryParams.Search != null)
             {
@@ -42,7 +47,7 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        private static IQueryable<Models.Role> QueryFilter(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QueryFilter(IQueryable<Models.Role> query, RoleQueryDto queryParams)
         {
             if (queryParams.Name != null)
             {
@@ -52,7 +57,7 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        private static IQueryable<Models.Role> QuerySort(IQueryable<Models.Role> query, RoleQueryRequest queryParams)
+        private static IQueryable<Models.Role> QuerySort(IQueryable<Models.Role> query, RoleQueryDto queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 
@@ -68,14 +73,14 @@ namespace DotNetService.Domain.Role.Repositories
                 throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: " + string.Join(", ", sortFunctions.Keys));
             }
 
-            query = queryParams.Order == SortOrderEnum.Asc
+            query = queryParams.Order == SortOrder.Asc
                 ? query.OrderBy(value).AsQueryable()
                 : query.OrderByDescending(value).AsQueryable();
 
             return query;
         }
 
-        public async Task<int> Count(RoleQueryRequest queryParams)
+        public async Task<int> Count(RoleQueryDto queryParams)
         {
             IQueryable<Models.Role> query = _context.Roles.AsNoTracking();
 
@@ -85,20 +90,13 @@ namespace DotNetService.Domain.Role.Repositories
             return await query.Select(x => x.Id).CountAsync();
         }
 
-        public async Task<Models.Role> FindOneById(Guid id = default, bool isThrowException = false)
+        public async Task<Models.Role> FindOneById(Guid id = default)
         {
-            var data = await _context.Roles
+            return await _context.Roles
                 .Where(data => data.Id == id)
                 .Include(data => data.RolePermissions)
                 .ThenInclude(data => data.Permission)
                 .FirstOrDefaultAsync();
-
-            if (data == null && isThrowException)
-            {
-                throw new DataNotFoundException("Role with id " + id + " not found.");
-            };
-
-            return data;
         }
 
         public async Task<bool> IsExistByKey(string key)

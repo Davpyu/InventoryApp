@@ -1,7 +1,8 @@
 using System.Linq.Expressions;
-using DotNetService.Http.API.Version1;
-using DotNetService.Http.API.Version1.Permission;
+using DotNetService.Domain.Permission.Dtos;
 using DotNetService.Infrastructure.Databases;
+using DotNetService.Infrastructure.Dtos;
+using DotNetService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.Permission.Repositories
@@ -12,24 +13,29 @@ namespace DotNetService.Domain.Permission.Repositories
     {
         private readonly IamDBContext _context = context;
 
-        public async Task<List<Models.Permission>> Pagination(PermissionQueryRequest queryParams)
+        public async Task<PaginationResult<Models.Permission>> Pagination(PermissionQueryDto queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Permissions
                 .Include(data => data.RolePermissions)
-                .AsNoTracking()
-                .AsQueryable();
+                .AsQueryable()
+                .AsNoTracking();
 
             query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams);
             query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
+            var count = await Count(queryParams);
 
-            return data;
+            return new PaginationResult<Models.Permission>
+            {
+                Data = data,
+                Count = count,
+            };
         }
 
-        private static IQueryable<Models.Permission> QuerySearch(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
+        private static IQueryable<Models.Permission> QuerySearch(IQueryable<Models.Permission> query, PermissionQueryDto queryParams)
         {
             if (queryParams.Search != null)
             {
@@ -40,7 +46,7 @@ namespace DotNetService.Domain.Permission.Repositories
             return query;
         }
 
-        private static IQueryable<Models.Permission> QueryFilter(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
+        private static IQueryable<Models.Permission> QueryFilter(IQueryable<Models.Permission> query, PermissionQueryDto queryParams)
         {
             if (queryParams.Name != null)
             {
@@ -50,7 +56,7 @@ namespace DotNetService.Domain.Permission.Repositories
             return query;
         }
 
-        private static IQueryable<Models.Permission> QuerySort(IQueryable<Models.Permission> query, PermissionQueryRequest queryParams)
+        private static IQueryable<Models.Permission> QuerySort(IQueryable<Models.Permission> query, PermissionQueryDto queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 
@@ -66,14 +72,14 @@ namespace DotNetService.Domain.Permission.Repositories
                 throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: " + string.Join(", ", sortFunctions.Keys));
             }
 
-            query = queryParams.Order == SortOrderEnum.Asc
-                ? query.OrderBy(value).AsQueryable()
-                : query.OrderByDescending(value).AsQueryable();
+            query = queryParams.Order == SortOrder.Asc
+               ? query.OrderBy(value).AsQueryable()
+               : query.OrderByDescending(value).AsQueryable();
 
             return query;
         }
 
-        public async Task<int> Count(PermissionQueryRequest queryParams)
+        public async Task<int> Count(PermissionQueryDto queryParams)
         {
             IQueryable<Models.Permission> query = _context.Permissions.AsNoTracking();
 
@@ -98,9 +104,41 @@ namespace DotNetService.Domain.Permission.Repositories
                 join p in _context.Permissions on rp.PermissionId equals p.Id
                 where ur.UserId == userId
                 select p.Key
-            ).Distinct().ToListAsync();
+            )
+            .Distinct()
+            .ToListAsync();
 
             return permissions.Count == 0 ? [] : permissions;
+        }
+
+        public async Task<List<Models.Permission>> Get(string search, int page, int perPage)
+        {
+            int skip = (1 - page) * perPage;
+            List<Models.Permission> permissions;
+            IQueryable<Models.Permission> permissionQuery = _context.Permissions;
+            if (search != null)
+            {
+                permissionQuery = permissionQuery.Where(permission => permission.Name.Contains(search));
+            }
+            permissions = await permissionQuery.Skip(skip).Take(perPage).ToListAsync();
+
+            return permissions;
+        }
+
+        public async Task<int> CountAll(string search)
+        {
+            IQueryable<Models.Permission> permissionQuery = _context.Permissions;
+            if (search != null)
+            {
+                permissionQuery = permissionQuery.Where(permission => permission.Name.Contains(search));
+            }
+
+            return await permissionQuery.CountAsync();
+        }
+
+        public async Task<bool> IsExistByKey(string key)
+        {
+            return await _context.Permissions.Where(permission => permission.Key == key).AnyAsync();
         }
     }
 }

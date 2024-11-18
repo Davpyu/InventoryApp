@@ -1,12 +1,13 @@
 using DotNetService.Constants.Permission;
 
-namespace DotNetService.Domain.Permission.Util
+namespace DotNetService.Infrastructure.Helpers
 {
   public static class PermissionUtil
   {
     public static void ValidatePermission(string[] userPermissions, string[] requiredPermissions)
     {
-      if (Array.FindIndex(requiredPermissions, s => s.Equals(PermissionConstant.DEPRECATED, StringComparison.OrdinalIgnoreCase)) >= 0) {
+      if (Array.FindIndex(requiredPermissions, s => s.Equals(PermissionConstant.DEPRECATED, StringComparison.OrdinalIgnoreCase)) >= 0)
+      {
         throw new UnauthorizedAccessException();
       }
 

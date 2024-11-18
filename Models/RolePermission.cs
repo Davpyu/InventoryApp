@@ -2,16 +2,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotNetService.Models
 {
-    [Table("role_permission")]
     public class RolePermission : Base
     {
-        [Column("role_id")]
         public Guid RoleId { get; set; }
 
         [ForeignKey(nameof(RoleId))]
         public virtual Role Role { get; set; }
 
-        [Column("permission_id")]
         public Guid PermissionId { get; set; }
 
         [ForeignKey(nameof(PermissionId))]
