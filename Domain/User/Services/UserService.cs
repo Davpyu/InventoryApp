@@ -1,9 +1,9 @@
 using DotNetService.Http.API.Version1.User;
 using DotNetService.Domain.User.Repositories;
-using DotNetService.Http.API.Version1;
-using DotNetService.Infrastructure.Shareds;
-using System.Net;
 using DotNetService.Infrastructure.Exceptions;
+using DotNetService.Domain.User.Dtos;
+using DotNetService.Infrastructure.Dtos;
+using DotNetService.Domain.User.Messages;
 
 namespace DotNetService.Domain.User.Services
 {
@@ -15,51 +15,50 @@ namespace DotNetService.Domain.User.Services
         private readonly UserQueryRepository _userQueryRepository = userQueryRepository;
         private readonly UserStoreRepository _userStoreRepository = userStoreRepository;
 
-        public async Task<ApiResponse> Index(UserQueryRequest query = null)
+        public async Task<PaginationModel<UserResultDto>> Index(UserQueryDto query)
         {
-            var data = await _userQueryRepository.Pagination(query);
-            int count = await _userQueryRepository.Count(query);
-            decimal pageInCount = ((decimal)count) / query.PerPage;
-            PaginationModel paginate = new()
-            {
-                TotalPage = (int)Math.Ceiling(pageInCount),
-                Page = query.Page,
-                PerPage = query.PerPage,
-                Data = UserResponse.MapRepo(data),
-                Total = count
-            };
-
-            return new ApiResponsePagination(HttpStatusCode.OK, paginate);
+            var result = await _userQueryRepository.Pagination(query);
+            var formatedResult = UserResultDto.MapRepo(result.Data);
+            var paginate = PaginationModel<UserResultDto>.Parse(formatedResult, result.Count, query);
+            return paginate;
         }
 
-        public async Task Create(UserCreateRequest dataCreate)
+
+        public async Task Create(UserCreateDto dataCreate)
         {
             var isEmailExist = await _userQueryRepository.IsEmailExists(dataCreate.Email);
 
             if (isEmailExist)
             {
-                throw new UnprocessableEntityException("Email already exist");
+                throw new UnprocessableEntityException(UserErrorMessage.ErrEmailAlreadyExist);
             }
 
-            var data = UserCreateRequest.Assign(dataCreate);
+            var data = UserCreateDto.Assign(dataCreate);
             await _userStoreRepository.Create(data, dataCreate.RoleIds);
         }
 
         public async Task<Models.User> Detail(Guid id)
         {
-            return await _userQueryRepository.FindOneById(id, true);
+            var user = await _userQueryRepository.FindOneById(id);
+
+            if (user == null)
+            {
+                throw new DataNotFoundException(UserErrorMessage.ErrUserNotFound);
+            }
+
+            return user;
         }
 
-        public async Task Update(Guid id, UserUpdateRequest dataUpdate)
+        public async Task Update(Guid id, UserUpdateDto dataUpdate)
         {
             var isEmailExist = await _userQueryRepository.IsEmailExistsExceptId(dataUpdate.Email, id);
 
             if (isEmailExist)
             {
-                throw new UnprocessableEntityException("Email already exist");
+                throw new UnprocessableEntityException(UserErrorMessage.ErrEmailAlreadyExist);
             }
 
-            var data = UserUpdateRequest.Assign(dataUpdate);
+            var data = UserUpdateDto.Assign(dataUpdate);
             await _userStoreRepository.Update(id, data, dataUpdate.RoleIds);
         }
 

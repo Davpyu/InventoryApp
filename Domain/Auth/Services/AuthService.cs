@@ -1,10 +1,12 @@
-using DotNetService.Http.API.Version1.Auth;
 using BC = BCrypt.Net.BCrypt;
 using DotNetService.Domain.Auth.Util;
 using DotNetService.Domain.Auth.Repositories;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Domain.Permission.Repositories;
+using DotNetService.Domain.Auth.Dtos;
 using DotNetService.Infrastructure.Databases;
+using DotNetService.Domain.Auth.Messages;
+using DotNetService.Domain.User.Messages;
 
 namespace DotNetService.Domain.Auth.Services
 {
@@ -26,19 +28,19 @@ namespace DotNetService.Domain.Auth.Services
 
         private readonly AuthUtil _authUtil = authUtil;
 
-        public async Task<AuthInfo> SignIn(AuthSignInRequest authSignIn)
+        public async Task<AuthTokenResultDto> SignIn(AuthSignInDto authSignIn)
         {
             var user = await _authQueryRepository.FindOneByEmail(authSignIn.Email);
             if (user == null)
             {
-                throw new UnauthenticatedException("Email or password is incorrect.");
+                throw new UnauthenticatedException(AuthErrorMessage.ErrInvalidCredential);
             }
 
             bool isPasswordVerified = BC.Verify(authSignIn.Password, user.Password);
 
             if (!isPasswordVerified)
             {
-                throw new UnauthenticatedException("Email or password is incorrect.");
+                throw new UnauthenticatedException(AuthErrorMessage.ErrInvalidCredential);
             }
 
             var tokenLifetimeInMinutes = int.Parse(_config["JWTSetting:LifetimeInMinutes"] ?? "60");
@@ -56,20 +58,20 @@ namespace DotNetService.Domain.Auth.Services
             var userString = AuthUtil.GenerateJWTClaimInfo(user);
             var token = AuthUtil.GenerateJwtToken(_config["JWTSetting:Secret"], userString, expiredAt);
 
-            return new()
+            return new AuthTokenResultDto
             {
                 ExpiredAt = expiredAt,
                 Token = token
             };
         }
 
-        public async Task Register(AuthRegisterRequest authRegister)
+        public async Task Register(AuthRegisterDto authRegister)
         {
             var isEmailExists = await _authQueryRepository.IsEmailExist(authRegister.Email);
 
             if (isEmailExists)
             {
-                throw new UnprocessableEntityException("Email already registered");
+                throw new UnprocessableEntityException(UserErrorMessage.ErrEmailAlreadyExist);
             }
 
             Models.User data = new()
@@ -82,11 +84,17 @@ namespace DotNetService.Domain.Auth.Services
             await _authStoreRepository.Create(data);
         }
 
-        public async Task<Models.User> Account()
+        public async Task<AccountResultDto> Account()
         {
             _ = Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirst("Id")?.Value, out Guid userId);
 
-            return await _authQueryRepository.FindOneById(userId);
+            var user = await _authQueryRepository.FindOneById(userId);
+            if (user == null)
+            {
+                throw new DataNotFoundException(UserErrorMessage.ErrUserNotFound);
+            }
+
+            return new AccountResultDto(user);
         }
     }
 }

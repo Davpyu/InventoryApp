@@ -1,9 +1,6 @@
 namespace DotNetService.Infrastructure.Exceptions
 {
-    public class DataNotFoundException : Exception
+    public class DataNotFoundException(string message = "Data not found") : Exception(message)
     {
-
-        public DataNotFoundException(string message = "Data not found") : base(message) { }
-
     }
 }

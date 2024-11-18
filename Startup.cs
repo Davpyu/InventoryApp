@@ -18,6 +18,7 @@ using DotNetService.Infrastructure.BackgroundHosted;
 using System.Net;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Databases;
+using DotNetService.Infrastructure.ModelBinder;
 
 namespace DotNetService
 {
@@ -190,7 +191,7 @@ namespace DotNetService
             var poolSize = Configuration["ConnectionPoolSize:DefaultConnection1"] != null ? int.Parse(Configuration["ConnectionPoolSize:DefaultConnection1"]) : 50;
 
             services.AddDbContextPool<IamDBContext>(
-                options => options.UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? ""),
+                options => options.UseSqlServer(Configuration["ConnectionString:DefaultConnection1"] ?? "").UseSnakeCaseNamingConvention(),
                 poolSize
             );
 
@@ -205,6 +206,8 @@ namespace DotNetService
                 options =>
                 {
                     options.Filters.Add<ValidatorAttribute>();
+                    // Handling global [FromQuery] dto
+                    options.ModelBinderProviders.Insert(0, new SnakeCaseQueryModelBinderProvider());
                 }
             ).AddNewtonsoftJson(
                 options =>

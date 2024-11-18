@@ -2,14 +2,8 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DotNetService.Infrastructure.Exceptions
 {
-    public class ValidationException : Exception
+    public class ValidationException(string message, ModelStateDictionary modelState) : Exception(message)
     {
-        public ModelStateDictionary ModelState { get; set; }
-
-        public ValidationException(string message, ModelStateDictionary modelState) : base(message)
-        {
-            ModelState = modelState;
-        }
-
+        public ModelStateDictionary ModelState { get; set; } = modelState;
     }
 }

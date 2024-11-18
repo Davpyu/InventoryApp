@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using DotNetService.Domain.Auth.Util;
 using DotNetService.Infrastructure.Attributes;
-using DotNetService.Domain.Permission.Util;
-using DotNetService.Infrastructure.Databases;
+using DotNetService.Infrastructure.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using DotNetService.Domain.Auth.Token;
+using DotNetService.Infrastructure.Databases;
 
 namespace DotNetService.Infrastructure.Middlewares
 {
@@ -62,7 +62,7 @@ namespace DotNetService.Infrastructure.Middlewares
                 var userPermissions = userAuthInfo.Permissions;
 
                 // Validate that the user has the required permissions
-                PermissionUtil.ValidatePermission(userPermissions.ToArray(), requiredPermissions);
+                PermissionUtil.ValidatePermission([.. userPermissions], requiredPermissions);
             }
 
             await _next(context);

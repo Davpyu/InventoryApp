@@ -1,6 +1,5 @@
 
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -27,14 +26,14 @@ namespace DotNetService.Infrastructure.Shareds
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver
-                    {
-                        NamingStrategy = new SnakeCaseNamingStrategy()
-                    }
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy()
+                }
             };
 
             return JsonConvert.SerializeObject(json);
         }
-        
+
         public static T JsonDeserialize<T>(string json)
         {
             var responseJson = JsonConvert.DeserializeObject<T>(json);
@@ -46,31 +45,32 @@ namespace DotNetService.Infrastructure.Shareds
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver
-                    {
-                        NamingStrategy = new SnakeCaseNamingStrategy()
-                    }
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy()
+                }
             };
-            
+
             using var reader = new StreamReader(response.ReadAsStream());
             var responseBody = reader.ReadToEnd();
             var responseJson = JsonConvert.DeserializeObject<T>(responseBody.ToString());
-            
+
             return responseJson;
         }
-        
+
         public static void BackgroundProcessThreadAsync(Func<Task> func)
         {
             Thread thread = new(async () => { await func(); });
             thread.Start();
         }
-        
+
         public static void BackgroundProcessThreadSync(Func<bool> func)
         {
             Thread thread = new(() => { func(); });
             thread.Start();
         }
 
-        public static string MoveFileToTemp(IFormFile file, string folderPath){
+        public static string MoveFileToTemp(IFormFile file, string folderPath)
+        {
             string originalName = Path.GetFileName(file.FileName);
             var tempFilePath = "temp/" + folderPath + "/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" + originalName;
             using (FileStream fs = File.Create(tempFilePath))
@@ -86,7 +86,8 @@ namespace DotNetService.Infrastructure.Shareds
             return statusCode >= 200 && statusCode <= 299;
         }
 
-        public static string MoveFileToStorage(IFormFile file, string storagePath, string folderPath){
+        public static string MoveFileToStorage(IFormFile file, string storagePath, string folderPath)
+        {
             var originalName = Path.GetFileName(file.FileName);
             var filePath = folderPath + "/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" + originalName;
             var storageFilePath = storagePath + "/" + filePath;
@@ -98,24 +99,27 @@ namespace DotNetService.Infrastructure.Shareds
             return filePath;
         }
 
-        public static List<string> MoveFilesToTemp(IFormFile[] files, string filePath){
+        public static List<string> MoveFilesToTemp(IFormFile[] files, string filePath)
+        {
             var tempFilePaths = new List<string>();
 
-            foreach (var file in files) {
+            foreach (var file in files)
+            {
                 string originalName = Path.GetFileName(file.FileName);
                 var tempFilePath = "temp/" + filePath + "/" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" + originalName;
                 using (FileStream fs = File.Create(tempFilePath))
                 {
                     file.CopyTo(fs);
                 }
-                
+
                 tempFilePaths.Add(tempFilePath);
             }
 
             return tempFilePaths;
         }
 
-        public static string GetFileExtension(IFormFile file){
+        public static string GetFileExtension(IFormFile file)
+        {
             string originalName = Path.GetFileName(file.FileName);
             return originalName.Split('.').Last();
         }
@@ -132,24 +136,20 @@ namespace DotNetService.Infrastructure.Shareds
 
         public static T ParseByteToObject<T>(byte[] arrBytes)
         {
-            using (var memStream = new MemoryStream())
-            {
-                var binForm = new BinaryFormatter();
-                memStream.Write(arrBytes, 0, arrBytes.Length);
-                memStream.Seek(0, SeekOrigin.Begin);
-                var obj = binForm.Deserialize(memStream);
-                return (T)obj;
-            }
+            using var memStream = new MemoryStream();
+            var binForm = new BinaryFormatter();
+            memStream.Write(arrBytes, 0, arrBytes.Length);
+            memStream.Seek(0, SeekOrigin.Begin);
+            var obj = binForm.Deserialize(memStream);
+            return (T)obj;
         }
 
 
         public static int CountPage(int totalData, int take)
         {
-            var totalDataDec = Decimal.Parse(string.Concat(totalData));
-            var takeDec = Decimal.Parse(string.Concat(take));
+            var totalDataDec = decimal.Parse(string.Concat(totalData));
 
-
-            return (int) Math.Ceiling(totalDataDec / take);
+            return (int)Math.Ceiling(totalDataDec / take);
         }
     }
 }

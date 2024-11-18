@@ -1,4 +1,13 @@
-# Pre Requirement :
+# Table of Content
+
+- [Pre Requisite](#pre-requisite)
+- [Manual Quick Start API](#manual-quick-start-api)
+- [Seeding](#seeding)
+- [Database ERD](#database-erd)
+- [Important Note](#important-note)
+- [Directory Structure](#directory-structure)
+
+# Pre Requisite
 
 - .Net sdk 8.0
 - .Net Entity Framework
@@ -6,15 +15,23 @@
 - NATs
 - Redis
 
-# Manual Quick Start API:
+# VS Code Extensions
 
-- Run DB MSSQL 2019 : (by docker : `docker run --name mssqldock -e "ACCEPT_EULA=Y" -v sqldata:./mssqldata -e "MSSQL_SA_PASSWORD=Administrat@r123" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest`)
+- [C# Dev Kit](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+- [Github Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+- [EditorConfig for VS Code](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+
+# Manual Quick Start API
+
+- Install .Net Entity Framework : https://learn.microsoft.com/en-us/ef/core/get-started/overview/install
+- Database
+  - For x64 machine: Run DB MSSQL 2019 : `docker run --name mssqldock -e "ACCEPT_EULA=Y" -v sqldata:./mssqldata -e "MSSQL_SA_PASSWORD=Administrat@r123" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest`
+  - Fox arm machine (apple sillicon) : `docker run -e "ACCEPT_EULA=1" -e "MSSQL_SA_PASSWORD=Rahasia_123" -e "MSSQL_PID=Developer" -e "MSSQL_USER=SA" -p 1434:1434 -d --name=SQLServerEdge mcr.microsoft.com/azure-sql-edge`
 - Run Redis (by docker : `docker run --name redisdock -p6379:6379 -d redis`)
 - Run NATs (by docker : `docker run --name natsdock -p 4222:4222 -p 6222:6222 -p 8222:8222 -d nats`)
-- Install .Net Entity Framework : https://learn.microsoft.com/en-us/ef/core/get-started/overview/install
-- Copy file `appsettings.example.json` ubah ke `appsettings.json` kemudian setting konfigurasinya
+- Copy file `appsettings.example.json` ubah ke `appsettings.json` kemudian setting konfigurasinya `cp appsettings.example.json appsettings.json`
 - Run `dotnet ef database update` untuk migrate database
-- Run `dotnet run`
+- Run `dotnet run` dan `dotnet watch` untuk otomatis hot reload
 
 # Seeding
 
@@ -24,7 +41,7 @@
   - Example seeding All Data: `dotnet run command --command seed
 - Jika membuat seeder baru pastikan masukkan juga ke `/Commands/SeederCommand.cs` agar bisa melakukan seeding all table nantinya. Pastikan juga urutannya sesuai.
 
-# Database
+# Database ERD
 
 - ERD https://dbdocs.io/devops.dot/dotnet-service-boilerplate
 
@@ -36,7 +53,7 @@ After clonning this boilerplate for project, don't forget to change this accordi
 - `.csproj` Name
 - `.sln` Name
 
-# Directory structure :
+# Directory Structure
 
 ```
 ├── Commands
@@ -48,46 +65,35 @@ After clonning this boilerplate for project, don't forget to change this accordi
 │   └── Storage
 ├── Domain
 │   ├── Auth
-│   │   ├── Data
+│   │   ├── Dto
+│   │   ├── Repositories
 │   │   └── Services
 │   ├── Logging
-│   │   ├── Listeners
+│   │   ├── Dto
+│   │   ├── Repositories
 │   │   └── Services
 │   ├── Permission
+│   │   ├── Dto
 │   │   ├── Repositories
 │   │   └── Services
 │   ├── Role
+│   │   ├── Dto
 │   │   ├── Repositories
 │   │   └── Services
 │   ├── RolePermission
+│   │   ├── Dto
 │   │   ├── Repositories
 │   │   └── Services
-│   ├── User
-│   │   ├── Repositories
-│   │   └── Services
-│   └── UserRole
+│   └── User
+│       ├── Dto
 │       ├── Repositories
 │       └── Services
 ├── Http
 │   └── API
 │       └── Version1
-│           ├── Controllers
-│           │   ├── Auth
-│           │   └── IAM
-│           ├── Requests
-│           │   ├── Auth
-│           │   ├── Permission
-│           │   ├── Role
-│           │   ├── RolePermission
-│           │   ├── User
-│           │   └── UserRole
-│           └── Responses
+│           └── Controllers
 │               ├── Auth
-│               ├── Permission
-│               ├── Role
-│               ├── RolePermission
-│               ├── User
-│               └── UserRole
+│               └── IAM
 ├── Immutables
 ├── Infrastructure
 │   ├── BackgroundHosted

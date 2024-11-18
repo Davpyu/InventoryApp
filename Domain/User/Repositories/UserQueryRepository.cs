@@ -1,8 +1,9 @@
 using System.Linq.Expressions;
-using DotNetService.Http.API.Version1;
-using DotNetService.Http.API.Version1.User;
+using DotNetService.Domain.User.Dtos;
+using DotNetService.Infrastructure.Dtos;
 using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Exceptions;
+using DotNetService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetService.Domain.User.Repositories
@@ -13,7 +14,7 @@ namespace DotNetService.Domain.User.Repositories
     {
         private readonly IamDBContext _context = context;
 
-        public async Task<List<Models.User>> Pagination(UserQueryRequest queryParams)
+        public async Task<PaginationResult<Models.User>> Pagination(UserQueryDto queryParams)
         {
             int skip = (queryParams.Page - 1) * queryParams.PerPage;
             var query = _context.Users
@@ -27,11 +28,16 @@ namespace DotNetService.Domain.User.Repositories
             query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
+            var count = await Count(queryParams);
 
-            return data;
+            return new PaginationResult<Models.User>
+            {
+                Data = data,
+                Count = count,
+            };
         }
 
-        private static IQueryable<Models.User> QuerySearch(IQueryable<Models.User> query, UserQueryRequest queryParams)
+        private static IQueryable<Models.User> QuerySearch(IQueryable<Models.User> query, UserQueryDto queryParams)
         {
             if (queryParams.Search != null)
             {
@@ -44,7 +50,7 @@ namespace DotNetService.Domain.User.Repositories
             return query;
         }
 
-        private static IQueryable<Models.User> QueryFilter(IQueryable<Models.User> query, UserQueryRequest queryParams)
+        private static IQueryable<Models.User> QueryFilter(IQueryable<Models.User> query, UserQueryDto queryParams)
         {
             if (queryParams.Email != null)
             {
@@ -54,7 +60,7 @@ namespace DotNetService.Domain.User.Repositories
             return query;
         }
 
-        private static IQueryable<Models.User> QuerySort(IQueryable<Models.User> query, UserQueryRequest queryParams)
+        private static IQueryable<Models.User> QuerySort(IQueryable<Models.User> query, UserQueryDto queryParams)
         {
             queryParams.SortBy ??= "updated_at";
 
@@ -62,23 +68,24 @@ namespace DotNetService.Domain.User.Repositories
             {
                 { "name", data => data.Name },
                 { "email", data => data.Email },
-                { "updated_at", data => data.UpdatedAt },
-                { "created_at", data => data.CreatedAt },
+                { "updated_at", data => data.UpdatedAt! },
+                { "created_at", data => data.CreatedAt! },
             };
 
             if (!sortFunctions.TryGetValue(queryParams.SortBy, out Expression<Func<Models.User, object>> value))
             {
-                throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: " + string.Join(", ", sortFunctions.Keys));
+                throw new BadHttpRequestException($"Invalid sort column: {queryParams.SortBy}, available sort columns: {string.Join(", ", sortFunctions.Keys)}");
             }
 
-            query = queryParams.Order == SortOrderEnum.Asc
+            query = queryParams.Order == SortOrder.Asc
                 ? query.OrderBy(value).AsQueryable()
                 : query.OrderByDescending(value).AsQueryable();
 
             return query;
         }
 
-        public async Task<int> Count(UserQueryRequest queryParams)
+
+        public async Task<int> Count(UserQueryDto queryParams)
         {
             IQueryable<Models.User> query = _context.Users.AsNoTracking();
 
@@ -92,22 +99,16 @@ namespace DotNetService.Domain.User.Repositories
     public partial class UserQueryRepository
     {
 
-        public async Task<Models.User> FindOneById(Guid id = default, bool isThrowException = false)
+        public async Task<Models.User> FindOneById(Guid id = default)
         {
-            var data = await _context.Users
+            return await _context.Users
                 .Where(data => data.Id == id)
                 .Include(data => data.UserRoles)
                 .ThenInclude(data => data.Role)
                 .ThenInclude(data => data.RolePermissions)
                 .ThenInclude(data => data.Permission)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
-
-            if (data == null && isThrowException)
-            {
-                throw new DataNotFoundException("User with id " + id + " not found.");
-            };
-
-            return data;
         }
 
         public async Task<Models.User> FindOneByEmail(string email)
