@@ -68,7 +68,12 @@ namespace DotNetService.Domain.Auth.Util
 
         public static SymmetricSecurityKey GenerateSymetricKey(string key)
         {
-            return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+            if (keyBytes.Length < 32)
+            {
+                Array.Resize(ref keyBytes, 32);
+            }
+            return new SymmetricSecurityKey(keyBytes);
         }
 
         public static dynamic GetUserLogged(string token)
@@ -110,7 +115,7 @@ namespace DotNetService.Domain.Auth.Util
         {
             try
             {
-                var securityKey = new SymmetricSecurityKey(Encoding.Default.GetBytes(secret));
+                var securityKey = GenerateSymetricKey(secret);
                 var handler = new JwtSecurityTokenHandler();
                 var validation = new TokenValidationParameters()
                 {

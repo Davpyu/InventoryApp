@@ -1,5 +1,4 @@
 using DotNetService.Constants.Logger;
-using DotNetService.Infrastructure.Integrations.NATs;
 
 namespace DotNetService.Infrastructure.BackgroundHosted
 {

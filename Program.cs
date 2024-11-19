@@ -31,7 +31,6 @@ namespace DotNetService
                     {
                         o.Dsn = dsn;
                         o.TracesSampleRate = sentryTraceSampleRate;
-                        o.EnableTracing = true;
                         o.Environment = env;
                         o.AutoSessionTracking = true;
                         o.Debug = true;
