@@ -16,7 +16,6 @@ namespace DotNetService.Http.API.Version1.Role.Controllers
     {
         private readonly RoleService _roleService = roleService;
 
-        // [AllowAnonymous]
         [HttpGet()]
         [Permissions(PermissionConstant.ROLE_VIEW)]
         public async Task<ApiResponse> Index([FromQuery] RoleQueryDto query)
