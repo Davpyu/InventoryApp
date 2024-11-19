@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using DotNetService.Domain.User.Dtos;
 using DotNetService.Infrastructure.Dtos;
 using DotNetService.Infrastructure.Databases;
-using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 

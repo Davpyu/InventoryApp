@@ -1,4 +1,3 @@
-using DotNetService.Http.API.Version1.User;
 using DotNetService.Domain.User.Repositories;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Domain.User.Dtos;
