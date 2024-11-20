@@ -27,8 +27,12 @@
   <ItemGroup>
     <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
     <PackageReference Include="LocalStorage" Version="2.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <SonarQubeSetting Include="sonar.exclusions">
-      <Value>obj/**/*,bin/**/*,Migrations/*,Log/*,.gitlab/**/*,.vscode/*,Seeders/*</Value>
+      <Value>obj/**/*,bin/**/*,Migrations/*,Log/*,.gitlab/**/*,.vscode/*,Seeders/*, copilot-prompts/*, .editorconfig</Value>
     </SonarQubeSetting>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.300" />

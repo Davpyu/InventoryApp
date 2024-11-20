@@ -38,7 +38,7 @@
 - Run `dotnet run command --command seed` untuk migrate semua tabel dari database
 - Run `dotnet run command --command seed --args <module>Seeder` untuk migrate satu tabel/module dari database
   - Example seeding User: `dotnet run command --command seed --args UserSeeder`
-  - Example seeding All Data: `dotnet run command --command seed
+  - Example seeding All Data: `dotnet run command --command seed`
 - Jika membuat seeder baru pastikan masukkan juga ke `/Commands/SeederCommand.cs` agar bisa melakukan seeding all table nantinya. Pastikan juga urutannya sesuai.
 
 # Database ERD
