@@ -26,7 +26,7 @@ namespace DotNetService.Domain.Permission.Repositories
             query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
-            var count = await Count(queryParams);
+            var count = await Count(query);
 
             return new PaginationResult<Models.Permission>
             {
@@ -79,13 +79,8 @@ namespace DotNetService.Domain.Permission.Repositories
             return query;
         }
 
-        public async Task<int> Count(PermissionQueryDto queryParams)
+        public async Task<int> Count(IQueryable<Models.Permission> query)
         {
-            IQueryable<Models.Permission> query = _context.Permissions.AsNoTracking();
-
-            query = QuerySearch(query, queryParams);
-            query = QueryFilter(query, queryParams);
-
             return await query.Select(x => x.Id).CountAsync();
         }
 

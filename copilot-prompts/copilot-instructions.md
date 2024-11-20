@@ -41,7 +41,7 @@ This is a .NET 8.0 service project using:
 - Instead using `Get` for find data, prefer using `Find` for function name
 - For efficient query use `AnyAsync` for checking data exist or not
 
-### Pagination
+### Pagination Repository
 
 - For CRUD features should have pagination for data list with filter from `{Domain}QueryRepository`
 - Function name is Pagination, located in `{Domain}QueryRepository`
@@ -49,6 +49,7 @@ This is a .NET 8.0 service project using:
   - `QuerySearch();` for search
   - `QueryFilter();` for filter
   - `QuerySort();` for sort
+- Return data should be using `PaginationResult` class located in `Infrastructure/Shareds/PaginationResult.cs`
 
 ### Services
 
