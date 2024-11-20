@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using DotNetService.Domain.User.Dtos;
 using DotNetService.Infrastructure.Dtos;
 using DotNetService.Infrastructure.Databases;
-using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +27,7 @@ namespace DotNetService.Domain.User.Repositories
             query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
-            var count = await Count(queryParams);
+            var count = await Count(query);
 
             return new PaginationResult<Models.User>
             {
@@ -84,14 +83,8 @@ namespace DotNetService.Domain.User.Repositories
             return query;
         }
 
-
-        public async Task<int> Count(UserQueryDto queryParams)
+        public async Task<int> Count(IQueryable<Models.User> query)
         {
-            IQueryable<Models.User> query = _context.Users.AsNoTracking();
-
-            query = QuerySearch(query, queryParams);
-            query = QueryFilter(query, queryParams);
-
             return await query.Select(x => x.Id).CountAsync();
         }
     }

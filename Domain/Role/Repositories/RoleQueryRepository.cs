@@ -27,7 +27,7 @@ namespace DotNetService.Domain.Role.Repositories
             query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
-            var count = await Count(queryParams);
+            var count = await Count(query);
 
             return new PaginationResult<Models.Role>
             {
@@ -80,13 +80,8 @@ namespace DotNetService.Domain.Role.Repositories
             return query;
         }
 
-        public async Task<int> Count(RoleQueryDto queryParams)
+        public async Task<int> Count(IQueryable<Models.Role> query)
         {
-            IQueryable<Models.Role> query = _context.Roles.AsNoTracking();
-
-            query = QuerySearch(query, queryParams);
-            query = QueryFilter(query, queryParams);
-
             return await query.Select(x => x.Id).CountAsync();
         }
 
