@@ -43,7 +43,7 @@ namespace DotNetService
             if (!Directory.Exists("Storage")) Directory.CreateDirectory("Storage");
 
             var hostName = Dns.GetHostName();   
-                     
+
             AddLogging(services);
 
             AddStorageConfig(services);
@@ -280,19 +280,20 @@ namespace DotNetService
             });
         }
         
-        private void AddStorageConfig(IServiceCollection services)
+        private static void AddStorageConfig(IServiceCollection services)
         {
-            // TODO: Default Configuration AWS S3
-            // services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-            // services.AddAWSService<IAmazonS3>();
+            /* TODO: Default Configuration AWS S3
+             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+             services.AddAWSService<IAmazonS3>();
 
-            // TODO: Install Minio for using this line of code 
-            // if (bool.Parse(Configuration["Minio:IsEnable"] ?? "false")) {
-            //     services.AddMinio(configureClient => configureClient
-            //         .WithEndpoint(Configuration["Minio:Endpoint"])
-            //         .WithSSL(bool.Parse(Configuration["Minio:IsUseSSL"] ?? "false"))
-            //         .WithCredentials(Configuration["Minio:ClientId"], Configuration["Minio:ClientSecret"]));
-            // }
+             // TODO: Install Minio for using this line of code 
+             if (bool.Parse(Configuration["Minio:IsEnable"] ?? "false")) {
+                 services.AddMinio(configureClient => configureClient
+                     .WithEndpoint(Configuration["Minio:Endpoint"])
+                     .WithSSL(bool.Parse(Configuration["Minio:IsUseSSL"] ?? "false"))
+                     .WithCredentials(Configuration["Minio:ClientId"], Configuration["Minio:ClientSecret"]));
+             }
+            */ 
         }
     }
 }
