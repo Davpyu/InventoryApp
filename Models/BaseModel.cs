@@ -1,7 +1,7 @@
 namespace DotNetService.Models
 {
     [Serializable]
-    public class Base
+    public class BaseModel
     {
         public Guid Id { get; set; }
 

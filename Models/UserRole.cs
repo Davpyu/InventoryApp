@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotNetService.Models
 {
-    public class UserRole : Base
+    public class UserRole : BaseModel
     {
         public Guid UserId { get; set; }
 

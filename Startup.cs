@@ -158,6 +158,7 @@ namespace DotNetService
             {
                 var logger = sp.GetRequiredService<ILogger<ConnectionPoolCheckerService>>();
                 var connectionString = Configuration["ConnectionString:DefaultConnection1"];
+                Console.WriteLine(connectionString);
                 var interval = Configuration["ConnectionPoolCheckerInterval"] != null ? int.Parse(Configuration["ConnectionPoolCheckerInterval"]) : 60;
                 return new ConnectionPoolCheckerService(logger, connectionString, interval);
             });
@@ -265,7 +266,7 @@ namespace DotNetService
 
             app.UseHttpsRedirection();
 
-            app.UseCors();
+            app.UseCors("AllowOrigin");
 
             app.UseRouting();
 
