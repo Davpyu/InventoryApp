@@ -46,8 +46,6 @@ namespace DotNetService
 
             AddLogging(services);
 
-            AddStorageConfig(services);
-
             AddNats(services);
 
             Services(services);
@@ -278,22 +276,6 @@ namespace DotNetService
 
                 return opts;
             });
-        }
-        
-        private static void AddStorageConfig(IServiceCollection services)
-        {
-            /* TODO: Default Configuration AWS S3
-             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-             services.AddAWSService<IAmazonS3>();
-
-             // TODO: Install Minio for using this line of code 
-             if (bool.Parse(Configuration["Minio:IsEnable"] ?? "false")) {
-                 services.AddMinio(configureClient => configureClient
-                     .WithEndpoint(Configuration["Minio:Endpoint"])
-                     .WithSSL(bool.Parse(Configuration["Minio:IsUseSSL"] ?? "false"))
-                     .WithCredentials(Configuration["Minio:ClientId"], Configuration["Minio:ClientSecret"]));
-             }
-            */ 
         }
     }
 }
