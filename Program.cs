@@ -20,7 +20,7 @@ namespace DotNetService
                 .AddCommandLine(args)
                 .Build();
 
-            double sentryTraceSampleRate = double.Parse(config["Sentry:TracesSampleRate"] ?? "1.0");
+            double sentryTraceSampleRate = double.Parse(config["Sentry:TracesSampleRate"] ?? "0.1");
             //get dsn value
             string dsn = config["Sentry:Dsn"] ?? "";
             string env = config["App:Environment"] ?? "Development";

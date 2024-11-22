@@ -1,82 +1,53 @@
-Table "dbo"."__EFMigrationsHistory" {
-  "MigrationId" nvarchar(150) [pk, not null]
-  "ProductVersion" nvarchar(32) [not null]
+TableGroup IAM [color: #222] {
+  users
+  user_roles
+  roles
+  role_permissions
+  permissions
 }
 
-Table "dbo"."permissions" {
-  "created_at" datetime2
-  "deleted_at" datetime2
-  "id" uniqueidentifier(16) [pk, not null, default: `newid()`]
-  "key" nvarchar(256)
-  "name" nvarchar(256)
-  "updated_at" datetime2
-
-  Indexes {
-    id [type: nonclustered, name: "IX_permissions_id"]
-  }
+Table users {
+    id          int       [pk, increment]
+    name        varchar
+    email       varchar   [unique]
+    password    varchar
+    created_at  datetime
+    updated_at  datetime
+    deleted_at  datetime  [default: null]
 }
 
-Table "dbo"."role_permission" {
-  "created_at" datetime2
-  "deleted_at" datetime2
-  "id" uniqueidentifier(16) [pk, not null, default: `newid()`]
-  "permission_id" uniqueidentifier(16) [not null]
-  "role_id" uniqueidentifier(16) [not null]
-  "updated_at" datetime2
-
-  Indexes {
-    id [type: nonclustered, name: "IX_role_permission_id"]
-    permission_id [type: nonclustered, name: "IX_role_permission_permission_id"]
-    role_id [type: nonclustered, name: "IX_role_permission_role_id"]
-  }
+Table user_roles {
+    id          int       [pk, increment]
+    user_id     int       [ref: > users.id]
+    role_id     int       [ref: > roles.id]
+    created_at  datetime
+    updated_at  datetime
+    deleted_at  datetime  [default: null]
 }
 
-Table "dbo"."roles" {
-  "created_at" datetime2
-  "deleted_at" datetime2
-  "id" uniqueidentifier(16) [pk, not null, default: `newid()`]
-  "key" nvarchar(256)
-  "name" nvarchar(256)
-  "updated_at" datetime2
-
-  Indexes {
-    id [type: nonclustered, name: "IX_roles_id"]
-  }
+Table roles {
+    id          int       [pk, increment]
+    name        varchar
+    key         varchar   [unique]
+    created_at  datetime
+    updated_at  datetime
+    deleted_at  datetime  [default: null]
 }
 
-Table "dbo"."user_role" {
-  "created_at" datetime2
-  "deleted_at" datetime2
-  "id" uniqueidentifier(16) [pk, not null, default: `newid()`]
-  "role_id" uniqueidentifier(16) [not null]
-  "updated_at" datetime2
-  "user_id" uniqueidentifier(16) [not null]
-
-  Indexes {
-    id [type: nonclustered, name: "IX_user_role_id"]
-    role_id [type: nonclustered, name: "IX_user_role_role_id"]
-    user_id [type: nonclustered, name: "IX_user_role_user_id"]
-  }
+Table role_permissions {
+    id            int       [pk, increment]
+    role_id       int       [ref: > roles.id]
+    permission_id int       [ref: > permissions.id]
+    created_at  datetime
+    updated_at  datetime
+    deleted_at  datetime  [default: null]
 }
 
-Table "dbo"."users" {
-  "created_at" datetime2
-  "deleted_at" datetime2
-  "email" nvarchar(256) [unique]
-  "id" uniqueidentifier(16) [pk, not null, default: `newid()`]
-  "name" nvarchar(256)
-  "password" nvarchar(256)
-  "updated_at" datetime2
-
-  Indexes {
-    id [type: nonclustered, name: "IX_users_id"]
-  }
+Table permissions {
+    id          int       [pk, increment]
+    name        varchar
+    key         varchar   [unique]
+    created_at  datetime
+    updated_at  datetime
+    deleted_at  datetime  [default: null]
 }
-
-Ref "FK_role_permission_permissions_permission_id":"dbo"."permissions"."id" < "dbo"."role_permission"."permission_id" [delete: cascade]
-
-Ref "FK_role_permission_roles_role_id":"dbo"."roles"."id" < "dbo"."role_permission"."role_id" [delete: cascade]
-
-Ref "FK_user_role_roles_role_id":"dbo"."roles"."id" < "dbo"."user_role"."role_id" [delete: cascade]
-
-Ref "FK_user_role_users_user_id":"dbo"."users"."id" < "dbo"."user_role"."user_id" [delete: cascade]
