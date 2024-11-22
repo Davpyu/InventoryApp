@@ -40,105 +40,15 @@ namespace DotNetService
         [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
-            // Create folder Storage if not exist
-            if (!Directory.Exists("Storage"))
-            {
-                Directory.CreateDirectory("Storage");
-            }
+            if (!Directory.Exists("Storage")) Directory.CreateDirectory("Storage");
 
-            var hostName = Dns.GetHostName();
+            var hostName = Dns.GetHostName();   
+                     
+            AddLogging(services);
 
-            services.AddLogging(loggingBuilder =>
-            {
-                var appName = SanitizeFileName(Configuration["App:Name"]);
-                var hostName = SanitizeFileName(Dns.GetHostName());
-                var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            AddStorageConfig(services);
 
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-default.log",
-                    fileLoggerOpts =>
-                    {
-                        fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) =>
-                        {
-                            return msg.LogLevel == LogLevel.Information
-                                && !(
-                                    msg.LogName == LoggerConstant.NATS ||
-                                    msg.LogName == LoggerConstant.INTEGRATION ||
-                                    msg.LogName == LoggerConstant.ACTIVITY
-                                );
-                        };
-                    }
-                );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-integration.log",
-                    fileLoggerOpts =>
-                    {
-                        fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) =>
-                        {
-                            return msg.LogName == LoggerConstant.INTEGRATION;
-                        };
-                    }
-                );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-nats.log",
-                    fileLoggerOpts =>
-                    {
-                        fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) =>
-                        {
-                            return msg.LogName == LoggerConstant.NATS;
-                        };
-                    }
-                );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-activity.log",
-                    fileLoggerOpts =>
-                    {
-                        fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) =>
-                        {
-                            return msg.LogName == LoggerConstant.ACTIVITY;
-                        };
-                    }
-                );
-                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-error.log",
-                    fileLoggerOpts =>
-                    {
-                        fileLoggerOpts.Append = true;
-                        fileLoggerOpts.FilterLogEntry = (msg) =>
-                        {
-                            return msg.LogLevel == LogLevel.Error;
-                        };
-                    }
-                );
-            });
-
-            // TODO: Default Configuration AWS S3
-            // services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-            // services.AddAWSService<IAmazonS3>();
-
-            // TODO: Install Minio for using this line of code 
-            // if (bool.Parse(Configuration["Minio:IsEnable"] ?? "false")) {
-            //     services.AddMinio(configureClient => configureClient
-            //         .WithEndpoint(Configuration["Minio:Endpoint"])
-            //         .WithSSL(bool.Parse(Configuration["Minio:IsUseSSL"] ?? "false"))
-            //         .WithCredentials(Configuration["Minio:ClientId"], Configuration["Minio:ClientSecret"]));
-            // }
-
-            services.AddNats(1000, options =>
-            {
-
-                var opts = new NatsOpts
-                {
-                    Url = Configuration["Nats:Url"],
-                    AuthOpts = new NatsAuthOpts
-                    {
-                        Username = Configuration["Nats:Username"],
-                        Password = Configuration["Nats:Password"],
-                    },
-                    Name = Configuration["Nats:Server"]
-                };
-
-                return opts;
-            });
+            AddNats(services);
 
             Services(services);
 
@@ -158,15 +68,12 @@ namespace DotNetService
             {
                 var logger = sp.GetRequiredService<ILogger<ConnectionPoolCheckerService>>();
                 var connectionString = Configuration["ConnectionString:DefaultConnection1"];
-                Console.WriteLine(connectionString);
                 var interval = Configuration["ConnectionPoolCheckerInterval"] != null ? int.Parse(Configuration["ConnectionPoolCheckerInterval"]) : 60;
                 return new ConnectionPoolCheckerService(logger, connectionString, interval);
             });
             services.AddSingleton(ctx =>
             {
-                if (!int.TryParse(Configuration["Queue:Capacity"], out var queueCapacity))
-                    queueCapacity = 100;
-
+                if (!int.TryParse(Configuration["Queue:Capacity"], out var queueCapacity)) queueCapacity = 100;
                 return new BackgroundTaskQueue(queueCapacity);
             });
 
@@ -285,6 +192,107 @@ namespace DotNetService
         {
             var invalidChars = Path.GetInvalidFileNameChars();
             return string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        private void AddLogging (IServiceCollection services)
+        {
+            services.AddLogging(loggingBuilder =>
+            {
+                var appName = SanitizeFileName(Configuration["App:Name"]);
+                var hostName = SanitizeFileName(Dns.GetHostName());
+                var currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-default.log",
+                    fileLoggerOpts =>
+                    {
+                        fileLoggerOpts.Append = true;
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
+                            return msg.LogLevel == LogLevel.Information
+                                && !(
+                                    msg.LogName == LoggerConstant.NATS ||
+                                    msg.LogName == LoggerConstant.INTEGRATION ||
+                                    msg.LogName == LoggerConstant.ACTIVITY
+                                );
+                        };
+                    }
+                );
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-integration.log",
+                    fileLoggerOpts =>
+                    {
+                        fileLoggerOpts.Append = true;
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
+                            return msg.LogName == LoggerConstant.INTEGRATION;
+                        };
+                    }
+                );
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-nats.log",
+                    fileLoggerOpts =>
+                    {
+                        fileLoggerOpts.Append = true;
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
+                            return msg.LogName == LoggerConstant.NATS;
+                        };
+                    }
+                );
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-activity.log",
+                    fileLoggerOpts =>
+                    {
+                        fileLoggerOpts.Append = true;
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
+                            return msg.LogName == LoggerConstant.ACTIVITY;
+                        };
+                    }
+                );
+                loggingBuilder.AddFile($"Log/{appName}-{hostName}-{currentDate}-error.log",
+                    fileLoggerOpts =>
+                    {
+                        fileLoggerOpts.Append = true;
+                        fileLoggerOpts.FilterLogEntry = (msg) =>
+                        {
+                            return msg.LogLevel == LogLevel.Error;
+                        };
+                    }
+                );
+            });
+        }
+
+        private void AddNats(IServiceCollection services)
+        {
+            services.AddNats(1000, options =>
+            {
+
+                var opts = new NatsOpts
+                {
+                    Url = Configuration["Nats:Url"],
+                    AuthOpts = new NatsAuthOpts
+                    {
+                        Username = Configuration["Nats:Username"],
+                        Password = Configuration["Nats:Password"],
+                    },
+                    Name = Configuration["Nats:Server"]
+                };
+
+                return opts;
+            });
+        }
+        
+        private void AddStorageConfig(IServiceCollection services)
+        {
+            // TODO: Default Configuration AWS S3
+            // services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+            // services.AddAWSService<IAmazonS3>();
+
+            // TODO: Install Minio for using this line of code 
+            // if (bool.Parse(Configuration["Minio:IsEnable"] ?? "false")) {
+            //     services.AddMinio(configureClient => configureClient
+            //         .WithEndpoint(Configuration["Minio:Endpoint"])
+            //         .WithSSL(bool.Parse(Configuration["Minio:IsUseSSL"] ?? "false"))
+            //         .WithCredentials(Configuration["Minio:ClientId"], Configuration["Minio:ClientSecret"]));
+            // }
         }
     }
 }
