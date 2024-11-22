@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotNetService.Models
 {
-    public class RolePermission : Base
+    public class RolePermission : BaseModel
     {
         public Guid RoleId { get; set; }
 

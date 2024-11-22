@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotNetService.Models
 {
-    public class User : Base
+    public class User : BaseModel
     {
         public string Name { get; set; }
 

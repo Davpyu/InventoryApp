@@ -54,7 +54,7 @@ namespace DotNetService.Infrastructure.Databases
             var currentTime = DateTime.Now;
 
             var entries = ChangeTracker
-                .Entries<Base>()
+                .Entries<BaseModel>()
                 .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
             foreach (var entry in entries)
@@ -80,7 +80,7 @@ namespace DotNetService.Infrastructure.Databases
             var currentTime = DateTime.Now;
 
             var entries = ChangeTracker
-                .Entries<Base>()
+                .Entries<BaseModel>()
                 .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
 
             foreach (var entry in entries)

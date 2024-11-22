@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DotNetService.Models
 {
-    public class Role : Base
+    public class Role : BaseModel
     {
         public string Name { get; set; }
 
