@@ -1,5 +1,5 @@
 /*
-  ! Important: The permission constant should be sync with "/Seeders/Permission.json"
+  ! Important: The permission constant should be sync with "/SeedersData/Permission.json"
   ---------------------
 */
 namespace DotNetService.Constants.Permission
