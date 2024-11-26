@@ -10,7 +10,7 @@ namespace DotNetService.Infrastructure.Seeders
         public async Task Seed(IamDBContext dbContext, ILogger logger)
         {
             logger.LogInformation("Seeding Roles...");
-            var jsonPath = "Seeders/Role.json";
+            var jsonPath = "SeedersData/Role.json";
 
             using var stream = File.OpenRead(jsonPath);
             var roles = await JsonSerializer.DeserializeAsync<List<Role>>(stream, JsonSerializeSeeder.options);

@@ -20,7 +20,7 @@ namespace DotNetService.Infrastructure.Seeders
     public async Task Seed(IamDBContext dbContext, ILogger logger)
     {
       logger.LogInformation("Seeding User Roles...");
-      var jsonPath = "Seeders/UserRole.json";
+      var jsonPath = "SeedersData/UserRole.json";
 
       var jsonString = await File.ReadAllTextAsync(jsonPath);
       var userRoles = JsonSerializer.Deserialize<List<UserRoleJson>>(jsonString, JsonSerializeSeeder.options);

@@ -21,7 +21,7 @@ namespace DotNetService.Infrastructure.Seeders
     public async Task Seed(IamDBContext dbContext, ILogger logger)
     {
       logger.LogInformation("Seeding User Role Permissions...");
-      var jsonPath = "Seeders/RolePermission.json";
+      var jsonPath = "SeedersData/RolePermission.json";
 
       var jsonString = await File.ReadAllTextAsync(jsonPath);
       var datas = JsonSerializer.Deserialize<List<RolePermissionJson>>(jsonString, JsonSerializeSeeder.options);
