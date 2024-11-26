@@ -1,4 +1,3 @@
-
 /*
   ! Important: The permission constant should be sync with "/Seeders/Permission.json"
   ---------------------
@@ -11,22 +10,21 @@ namespace DotNetService.Constants.Permission
     public const string DEPRECATED = "deprecated";
 
     /* ----------------------------- User Management ---------------------------- */
-    public const string USER_VIEW = "view-user";
-    public const string USER_CREATE = "create-user";
-    public const string USER_UPDATE = "update-user";
-    public const string USER_DELETE = "delete-user";
+    public const string USER_VIEW = "user-view";
+    public const string USER_CREATE = "user-create";
+    public const string USER_UPDATE = "user-update";
+    public const string USER_DELETE = "user-delete";
 
     /* ----------------------------- Role Management ---------------------------- */
-    public const string ROLE_VIEW = "view-role";
-    public const string ROLE_CREATE = "create-role";
-    public const string ROLE_UPDATE = "update-role";
-    public const string ROLE_DELETE = "delete-role";
+    public const string ROLE_VIEW = "role-view";
+    public const string ROLE_CREATE = "role-create";
+    public const string ROLE_UPDATE = "role-update";
+    public const string ROLE_DELETE = "role-delete";
 
     /* -------------------------- Permission Management ------------------------- */
-    public const string PERMISSION_VIEW = "view-permission";
-    public const string PERMISSION_CREATE = "create-permission";
-    public const string PERMISSION_UPDATE = "update-permission";
-    public const string PERMISSION_DELETE = "delete-permission";
-
+    public const string PERMISSION_VIEW = "permission-view";
+    public const string PERMISSION_CREATE = "permission-create";
+    public const string PERMISSION_UPDATE = "permission-update";
+    public const string PERMISSION_DELETE = "permission-delete";
   }
 }
