@@ -10,7 +10,7 @@ namespace DotNetService.Infrastructure.Seeders
     public async Task Seed(IamDBContext dbContext, ILogger logger)
     {
       logger.LogInformation("Seeding Permissions...");
-      var jsonPath = "Seeders/Permission.json";
+      var jsonPath = "SeedersData/Permission.json";
 
       var jsonString = await File.ReadAllTextAsync(jsonPath);
 

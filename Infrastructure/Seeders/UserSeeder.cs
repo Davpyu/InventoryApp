@@ -11,7 +11,7 @@ namespace DotNetService.Infrastructure.Seeders
     public async Task Seed(IamDBContext dbContext, ILogger logger)
     {
       logger.LogInformation("Seeding Users...");
-      var jsonPath = "Seeders/User.json";
+      var jsonPath = "SeedersData/User.json";
 
       var jsonString = await File.ReadAllTextAsync(jsonPath);
 
