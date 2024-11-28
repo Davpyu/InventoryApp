@@ -20,6 +20,7 @@ using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.ModelBinder;
 using Quartz;
+using DotNetService.Infrastructure.Jobs;
 
 namespace DotNetService
 {
@@ -60,6 +61,8 @@ namespace DotNetService
             Commands(services);
 
             Listeners(services);
+
+            Jobs(services);
 
             // Queue Servicee
             services.AddHostedService<QueuedHostedService>();
@@ -158,6 +161,16 @@ namespace DotNetService
             services.AddQuartz(q =>
             {
                 // base Quartz scheduler, job and trigger configuration
+                var jobKey = new JobKey("NotificationHouseKeeping");
+                q.AddJob<NotificationHouseKeepingJob>(opts => opts.WithIdentity(jobKey));
+
+                q.AddTrigger(opts => opts
+                    .ForJob(jobKey)
+                    .WithIdentity("NotificationHouseKeepingTrigger")
+                    // Schedule every first day of the month at 00:00
+                    // .WithCronSchedule("0 0 0 1 * ?"))
+                    .WithCronSchedule("* * * * *"))
+                    ;
             });
 
             // ASP.NET Core hosting
