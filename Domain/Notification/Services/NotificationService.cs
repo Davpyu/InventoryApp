@@ -3,17 +3,22 @@ using DotNetService.Infrastructure.Dtos;
 using DotNetService.Domain.Notification.Repositories;
 using DotNetService.Domain.Notification.Dtos;
 using DotNetService.Domain.Notification.Messages;
+using DotNetService.Infrastructure.Shareds;
 
 namespace DotNetService.Domain.Notification.Services
 {
     public class NotificationService(
-        NotificationQueryRepository NotificationQueryRepository
+        NotificationQueryRepository NotificationQueryRepository,
+        IHttpContextAccessor httpContextAccessor
     )
     {
         private readonly NotificationQueryRepository _notificationQueryRepository = NotificationQueryRepository;
 
-        public async Task<PaginationModel<NotificationResultDto>> Index(NotificationQueryDto query, Guid userId)
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+        public async Task<PaginationModel<NotificationResultDto>> Index(NotificationQueryDto query)
         {
+            var userId = Utils.GetUserLoggedId(_httpContextAccessor);
             var result = await _notificationQueryRepository.Pagination(query, userId);
             var formattedResult = NotificationResultDto.MapRepo(result.Data);
             var paginate = PaginationModel<NotificationResultDto>.Parse(formattedResult, result.Count, query);
@@ -32,8 +37,21 @@ namespace DotNetService.Domain.Notification.Services
             return new NotificationResultDto(notification);
         }
 
-        public async Task<bool> HasUnreadNotificationByUserId(Guid userId)
+        public async Task ReadNotificationById(Guid id)
         {
+            var userId = Utils.GetUserLoggedId(_httpContextAccessor);
+            await _notificationQueryRepository.ReadNotificationById(id, userId);
+        }
+
+        public async Task ReadAllNotification()
+        {
+            var userId = Utils.GetUserLoggedId(_httpContextAccessor);
+            await _notificationQueryRepository.ReadAllNotificationByUserId(userId);
+        }
+
+        public async Task<bool> UserHasUnreadNotification()
+        {
+            var userId = Utils.GetUserLoggedId(_httpContextAccessor);
             return await _notificationQueryRepository.HasUnreadNotificationByUserId(userId);
         }
     }

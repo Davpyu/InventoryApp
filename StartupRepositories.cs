@@ -1,4 +1,5 @@
 using DotNetService.Domain.Auth.Repositories;
+using DotNetService.Domain.Notification.Repositories;
 using DotNetService.Domain.Permission.Repositories;
 using DotNetService.Domain.Role.Repositories;
 using DotNetService.Domain.User.Repositories;
@@ -17,6 +18,7 @@ namespace DotNetService
             services.AddScoped<RoleStoreRepository>();
             services.AddScoped<PermissionQueryRepository>();
             services.AddScoped<PermissionStoreRepository>();
+            services.AddScoped<NotificationQueryRepository>();
         }
     }
 }

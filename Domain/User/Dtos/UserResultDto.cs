@@ -19,13 +19,4 @@ namespace DotNetService.Domain.User.Dtos
             return data?.Select(data => new UserResultDto(data)).ToList();
         }
     }
-
-    public class UserResultLiteDto(Models.User user)
-    {
-        public Guid Id { get; set; } = user.Id;
-        public string Name { get; set; } = user.Name;
-        public string Email { get; set; } = user.Email;
-
-        public List<RoleItem> Roles { get; set; } = RoleItem.MapRepo(user.UserRoles?.Select(data => data.Role).ToList());
-    }
 }
