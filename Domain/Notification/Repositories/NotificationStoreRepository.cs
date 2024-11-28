@@ -14,7 +14,7 @@ namespace DotNetService.Domain.Notification.Repositories
         {
             try
             {
-                var notifications = await _context.Notifications.Where(n => n.Id == id && n.UserId == userId).ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
+                await _context.Notifications.Where(n => n.Id == id && n.UserId == userId).ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -26,7 +26,7 @@ namespace DotNetService.Domain.Notification.Repositories
         {
             try
             {
-                var notifications = await _context.Notifications.Where(n => n.UserId == userId && !n.IsRead).ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
+                await _context.Notifications.Where(n => n.UserId == userId && !n.IsRead).ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
             }
             catch (DbUpdateConcurrencyException)
             {
