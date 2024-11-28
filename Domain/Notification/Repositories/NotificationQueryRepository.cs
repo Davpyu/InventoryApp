@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using DotNetService.Domain.Notification.Dtos;
 using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.Dtos;
-using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +20,6 @@ namespace DotNetService.Domain.Notification.Repositories
                 .AsQueryable()
                 .AsNoTracking();
 
-            // query = QuerySearch(query, queryParams);
             query = QueryFilter(query, queryParams, userId);
             query = QuerySort(query, queryParams);
 
@@ -33,11 +31,6 @@ namespace DotNetService.Domain.Notification.Repositories
                 Data = data,
                 Count = count,
             };
-        }
-
-        private static IQueryable<Models.Notification> QuerySearch(IQueryable<Models.Notification> query, NotificationQueryDto queryParams)
-        {
-            return query;
         }
 
         private static IQueryable<Models.Notification> QueryFilter(IQueryable<Models.Notification> query, NotificationQueryDto queryParams, Guid userId)
