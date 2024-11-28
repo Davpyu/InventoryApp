@@ -16,6 +16,8 @@ namespace DotNetService.Infrastructure.Databases
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Set default max length column for string data type
@@ -47,6 +49,10 @@ namespace DotNetService.Infrastructure.Databases
             modelBuilder.Entity<Permission>()
                 .HasIndex(p => p.Key)
                 .IsUnique();
+
+            modelBuilder.Entity<Notification>()
+                .Property(n => n.IsRead)
+                .HasDefaultValue(false);
         }
 
         public override int SaveChanges()
