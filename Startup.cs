@@ -168,8 +168,8 @@ namespace DotNetService
                     .ForJob(jobKey)
                     .WithIdentity("NotificationHouseKeepingTrigger")
                     // Schedule every first day of the month at 00:00
-                    // .WithCronSchedule("0 0 0 1 * ?"))
-                    .WithCronSchedule("* * * * *"))
+                    .WithCronSchedule("0 0 0 1 * ?")
+                    )
                     ;
             });
 
