@@ -1,8 +1,3 @@
-using DotNetService.Domain.Auth.Repositories;
-using DotNetService.Domain.Notification.Repositories;
-using DotNetService.Domain.Permission.Repositories;
-using DotNetService.Domain.Role.Repositories;
-using DotNetService.Domain.User.Repositories;
 using DotNetService.Infrastructure.Jobs;
 
 namespace DotNetService

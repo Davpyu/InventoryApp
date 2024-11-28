@@ -20,7 +20,7 @@ namespace DotNetService.Domain.Notification.Repositories
                 .AsQueryable()
                 .AsNoTracking();
 
-            query = QueryFilter(query, queryParams, userId);
+            query = QueryFilter(query, userId);
             query = QuerySort(query, queryParams);
 
             var data = await query.Skip(skip).Take(queryParams.PerPage).ToListAsync();
@@ -33,7 +33,7 @@ namespace DotNetService.Domain.Notification.Repositories
             };
         }
 
-        private static IQueryable<Models.Notification> QueryFilter(IQueryable<Models.Notification> query, NotificationQueryDto queryParams, Guid userId)
+        private static IQueryable<Models.Notification> QueryFilter(IQueryable<Models.Notification> query, Guid userId)
         {
             query = query.Where(data => data.UserId == userId);
             return query;
@@ -76,7 +76,7 @@ namespace DotNetService.Domain.Notification.Repositories
         public async Task<bool> HasUnreadNotificationByUserId(Guid userId)
         {
             return await _context.Notifications
-                .Where(data => data.UserId == userId && data.IsRead == false)
+                .Where(data => data.UserId == userId && !data.IsRead)
                 .AnyAsync();
         }
     }
