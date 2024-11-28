@@ -28,14 +28,14 @@ namespace DotNetService.Http.API.Version1.Notification
             return new ApiResponseData<bool>(HttpStatusCode.OK, data);
         }
 
-        [HttpPut("read/{id}")]
+        [HttpPatch("read/{id}")]
         public async Task<ApiResponse> Read(Guid id)
         {
             await _notificationService.ReadNotificationById(id);
             return new ApiResponseData<Models.Notification>(HttpStatusCode.OK, null);
         }
 
-        [HttpPatch("mark-all-as-read")]
+        [HttpPatch("read-all")]
         public async Task<ApiResponse> ReadAll()
         {
             await _notificationService.ReadAllNotification();

@@ -9,10 +9,13 @@ namespace DotNetService.Domain.Notification.Services
 {
     public class NotificationService(
         NotificationQueryRepository NotificationQueryRepository,
+        NotificationStoreRepository notificationStoreRepository,
         IHttpContextAccessor httpContextAccessor
     )
     {
         private readonly NotificationQueryRepository _notificationQueryRepository = NotificationQueryRepository;
+
+        private readonly NotificationStoreRepository _notificationStoreRepository = notificationStoreRepository;
 
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
@@ -37,22 +40,22 @@ namespace DotNetService.Domain.Notification.Services
             return new NotificationResultDto(notification);
         }
 
+        public async Task<bool> UserHasUnreadNotification()
+        {
+            var userId = Utils.GetUserLoggedId(_httpContextAccessor);
+            return await _notificationQueryRepository.HasUnreadNotificationByUserId(userId);
+        }
+
         public async Task ReadNotificationById(Guid id)
         {
             var userId = Utils.GetUserLoggedId(_httpContextAccessor);
-            await _notificationQueryRepository.ReadNotificationById(id, userId);
+            await _notificationStoreRepository.ReadNotificationById(id, userId);
         }
 
         public async Task ReadAllNotification()
         {
             var userId = Utils.GetUserLoggedId(_httpContextAccessor);
-            await _notificationQueryRepository.ReadAllNotificationByUserId(userId);
-        }
-
-        public async Task<bool> UserHasUnreadNotification()
-        {
-            var userId = Utils.GetUserLoggedId(_httpContextAccessor);
-            return await _notificationQueryRepository.HasUnreadNotificationByUserId(userId);
+            await _notificationStoreRepository.ReadAllNotificationByUserId(userId);
         }
     }
 }

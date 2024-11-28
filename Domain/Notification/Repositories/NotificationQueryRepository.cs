@@ -86,35 +86,5 @@ namespace DotNetService.Domain.Notification.Repositories
                 .Where(data => data.UserId == userId && data.IsRead == false)
                 .AnyAsync();
         }
-
-        public async Task ReadNotificationById(Guid id, Guid userId)
-        {
-            try
-            {
-                var notification = new Models.Notification { Id = id, IsRead = true, UserId = userId };
-                _context.Notifications.Attach(notification);
-                _context.Notifications.Update(notification);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new UnprocessableEntityException("No notification was read.");
-            }
-        }
-
-        public async Task ReadAllNotificationByUserId(Guid userId)
-        {
-            try
-            {
-                var notifications = new Models.Notification { UserId = userId, IsRead = true };
-                _context.Notifications.AttachRange(notifications);
-                _context.Notifications.UpdateRange(notifications);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new UnprocessableEntityException("No notification was read.");
-            }
-        }
     }
 }

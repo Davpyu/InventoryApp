@@ -19,6 +19,7 @@ namespace DotNetService
             services.AddScoped<PermissionQueryRepository>();
             services.AddScoped<PermissionStoreRepository>();
             services.AddScoped<NotificationQueryRepository>();
+            services.AddScoped<NotificationStoreRepository>();
         }
     }
 }
