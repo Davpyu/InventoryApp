@@ -151,5 +151,15 @@ namespace DotNetService.Infrastructure.Shareds
 
             return (int)Math.Ceiling(totalDataDec / take);
         }
+
+        public static Guid GetUserLoggedId(IHttpContextAccessor httpContextAccessor)
+        {
+            var userIdClaim = httpContextAccessor.HttpContext.User.FindFirst("id")?.Value;
+            if (userIdClaim != null && Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return userId;
+            }
+            return Guid.Empty;
+        }
     }
 }

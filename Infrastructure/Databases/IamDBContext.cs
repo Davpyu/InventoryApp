@@ -16,6 +16,8 @@ namespace DotNetService.Infrastructure.Databases
 
         public DbSet<RolePermission> RolePermissions { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Set default max length column for string data type
@@ -23,7 +25,7 @@ namespace DotNetService.Infrastructure.Databases
                 .SelectMany(e => e.GetProperties())
                 .Where(p => p.ClrType == typeof(string) && p.GetMaxLength() == null)
                 .ToList()
-                .ForEach(p => p.SetMaxLength(256));
+                .ForEach(p => p.SetMaxLength(255));
 
             GenerateUuid<Role>(modelBuilder, "Id");
             SoftDelete<Role>(modelBuilder);
@@ -47,6 +49,10 @@ namespace DotNetService.Infrastructure.Databases
             modelBuilder.Entity<Permission>()
                 .HasIndex(p => p.Key)
                 .IsUnique();
+
+            modelBuilder.Entity<Notification>()
+                .Property(n => n.IsRead)
+                .HasDefaultValue(false);
         }
 
         public override int SaveChanges()

@@ -19,6 +19,8 @@ using System.Net;
 using DotNetService.Infrastructure.Exceptions;
 using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.ModelBinder;
+using Quartz;
+using DotNetService.Infrastructure.Jobs;
 
 namespace DotNetService
 {
@@ -42,7 +44,7 @@ namespace DotNetService
         {
             if (!Directory.Exists("Storage")) Directory.CreateDirectory("Storage");
 
-            var hostName = Dns.GetHostName();   
+            var hostName = Dns.GetHostName();
 
             AddLogging(services);
 
@@ -59,6 +61,8 @@ namespace DotNetService
             Commands(services);
 
             Listeners(services);
+
+            Jobs(services);
 
             // Queue Servicee
             services.AddHostedService<QueuedHostedService>();
@@ -152,6 +156,30 @@ namespace DotNetService
             {
                 services.AddDistributedMemoryCache();
             }
+
+            // Quartz Scheduler
+            services.AddQuartz(q =>
+            {
+                // base Quartz scheduler, job and trigger configuration
+                var jobKey = new JobKey("NotificationHouseKeeping");
+                q.AddJob<NotificationHouseKeepingJob>(opts => opts.WithIdentity(jobKey));
+
+                q.AddTrigger(opts => opts
+                    .ForJob(jobKey)
+                    .WithIdentity("NotificationHouseKeepingTrigger")
+                    // Schedule every first day of the month at 00:00
+                    .WithCronSchedule("0 0 0 1 * ?")
+                    )
+                    ;
+            });
+
+            // ASP.NET Core hosting
+            services.AddQuartzHostedService(options =>
+            {
+                // when shutting down we want jobs to complete gracefully
+                options.WaitForJobsToComplete = true;
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -192,7 +220,7 @@ namespace DotNetService
             return string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
         }
 
-        private void AddLogging (IServiceCollection services)
+        private void AddLogging(IServiceCollection services)
         {
             services.AddLogging(loggingBuilder =>
             {
