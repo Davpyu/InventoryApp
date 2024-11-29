@@ -25,7 +25,7 @@ namespace DotNetService.Infrastructure.Databases
                 .SelectMany(e => e.GetProperties())
                 .Where(p => p.ClrType == typeof(string) && p.GetMaxLength() == null)
                 .ToList()
-                .ForEach(p => p.SetMaxLength(256));
+                .ForEach(p => p.SetMaxLength(255));
 
             GenerateUuid<Role>(modelBuilder, "Id");
             SoftDelete<Role>(modelBuilder);
