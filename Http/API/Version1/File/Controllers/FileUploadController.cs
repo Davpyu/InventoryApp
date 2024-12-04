@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Microsoft.AspNetCore.Authorization;
 using DotNetService.Domain.File.Services;
 using DotNetService.Infrastructure.Helpers;
 using DotNetService.Domain.File.Dto;
