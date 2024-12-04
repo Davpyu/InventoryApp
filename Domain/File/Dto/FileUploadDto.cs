@@ -1,4 +1,3 @@
-using Amazon.S3.Model;
 using System.ComponentModel.DataAnnotations;
 
 namespace DotNetService.Domain.File.Dto
