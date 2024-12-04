@@ -22,7 +22,7 @@ namespace DotNetService.Infrastructure.Shareds
             switch (storage)
             {
                 case StorageConstant.AWS:
-                    awsS3Config = new()
+                    AmazonS3Config awsS3Config = new()
                     {
                         ServiceURL = _config["S3:endpoint"],
                         DisableHostPrefixInjection = true,
@@ -45,7 +45,6 @@ namespace DotNetService.Infrastructure.Shareds
         private readonly IConfiguration _config;
         private readonly ILogger _logger;
         readonly string storage;
-        readonly AmazonS3Config awsS3Config;
         readonly AmazonS3Client awsS3Client;
 
         public async Task<FileDto> UploadAsync(FileUploadDto fileUpload)
@@ -68,7 +67,6 @@ namespace DotNetService.Infrastructure.Shareds
                             Key = fileKey,
                             ContentType = fileUpload.File.ContentType,
                             InputStream = newMemoryStream,
-                            TagSet = fileUpload.TagSet,
                         };
 
                         await awsS3Client.PutObjectAsync(request);

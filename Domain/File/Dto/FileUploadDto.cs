@@ -8,6 +8,5 @@ namespace DotNetService.Domain.File.Dto
         [Required]
         public IFormFile File { get; set; }
         public string Path { get; set; }
-        public List<Tag> TagSet { get; set; }
     }
 }
