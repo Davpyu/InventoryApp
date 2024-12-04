@@ -20,7 +20,7 @@ namespace DotNetService.Http.API.Version1.File.Controllers
             return new ApiResponseData<FileDto>(HttpStatusCode.OK, data);
         }
 
-        [HttpGet("download")]
+        [HttpPost("download")]
         public ApiResponseData<FileDto> Download([FromBody] FileDowloadDto request)
         {
             var data = _fileService.Download(request);
