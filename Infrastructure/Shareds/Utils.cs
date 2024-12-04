@@ -118,10 +118,16 @@ namespace DotNetService.Infrastructure.Shareds
             return tempFilePaths;
         }
 
-        public static string GetFileExtension(IFormFile file)
+        public static string GetFileExtension(this IFormFile file)
         {
             string originalName = Path.GetFileName(file.FileName);
             return originalName.Split('.').Last();
+        }
+
+        public static string GenerateDestPath(this IFormFile fileObject)
+        {
+            var extension = GetFileExtension(fileObject);
+            return "/uploads/" + DateTime.Now.ToString("yyyyMMddHHmmss") + RandStr(10).ToLower() + "-" + "file-uploaded." + extension;
         }
 
         public static byte[] ParseObjectToByte(Object obj)
