@@ -67,13 +67,13 @@ namespace DotNetService.Infrastructure.Databases
             {
                 var entity = entry.Entity;
 
+                entity.UpdatedAt = currentTime;
                 if (entry.State == EntityState.Added)
                 {
                     entity.CreatedAt = currentTime;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
-                    entity.UpdatedAt = currentTime;
                     entry.Property(nameof(entity.CreatedAt)).IsModified = false;
                 }
             }
@@ -93,13 +93,13 @@ namespace DotNetService.Infrastructure.Databases
             {
                 var entity = entry.Entity;
 
+                entity.UpdatedAt = currentTime;
                 if (entry.State == EntityState.Added)
                 {
                     entity.CreatedAt = currentTime;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
-                    entity.UpdatedAt = currentTime;
                     entry.Property(nameof(entity.CreatedAt)).IsModified = false;
                 }
             }
