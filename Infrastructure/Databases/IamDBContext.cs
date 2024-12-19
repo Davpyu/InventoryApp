@@ -70,6 +70,7 @@ namespace DotNetService.Infrastructure.Databases
                 if (entry.State == EntityState.Added)
                 {
                     entity.CreatedAt = currentTime;
+                    entity.UpdatedAt = currentTime;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
@@ -96,6 +97,7 @@ namespace DotNetService.Infrastructure.Databases
                 if (entry.State == EntityState.Added)
                 {
                     entity.CreatedAt = currentTime;
+                    entity.UpdatedAt = currentTime;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
