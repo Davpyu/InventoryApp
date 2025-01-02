@@ -1,5 +1,6 @@
 using DotNetService.Domain.Auth.Services;
 using DotNetService.Domain.File.Services;
+using DotNetService.Domain.Inventory.Services;
 using DotNetService.Domain.Logging.Services;
 using DotNetService.Domain.Notification.Services;
 using DotNetService.Domain.Permission.Services;
@@ -23,6 +24,7 @@ namespace DotNetService
             services.AddScoped<FileService>();
 
             services.AddScoped<NotificationService>();
+            services.AddScoped<InventoryService>();
         }
     }
 }

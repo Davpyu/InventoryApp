@@ -50,5 +50,21 @@
     {
         "name": "Permission Delete",
         "key": "permission-delete"
+    },
+    {
+        "name": "Inventory View",
+        "key": "inventory-view"
+    },
+    {
+        "name": "Inventory Create",
+        "key": "inventory-create"
+    },
+    {
+        "name": "Inventory Update",
+        "key": "inventory-update"
+    },
+    {
+        "name": "Inventory Delete",
+        "key": "inventory-delete"
     }
 ]

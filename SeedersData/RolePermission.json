@@ -94,5 +94,21 @@
     {
         "roleKey": "admin",
         "permissionKey": "permission-delete"
+    },
+    {
+        "roleKey": "admin",
+        "permissionKey": "inventory-view"
+    },
+    {
+        "roleKey": "admin",
+        "permissionKey": "inventory-create"
+    },
+    {
+        "roleKey": "admin",
+        "permissionKey": "inventory-update"
+    },
+    {
+        "roleKey": "admin",
+        "permissionKey": "inventory-delete"
     }
 ]

@@ -163,7 +163,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                             var action = scope.ServiceProvider.GetRequiredService<TListenAndReply>();
 
                             var data = msg.Data;
-                            var reply = action.Reply(Utils.JsonDeserialize<IDictionary<string, object>>(data));
+                            var reply = action.ReplyAsync(Utils.JsonDeserialize<IDictionary<string, object>>(data));
 
                             var jsonReply = Utils.JsonSerialize(reply);
                             await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);
@@ -251,7 +251,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
             );
         }
 
-        public void InitListenAndReplyTaskAsync<TListenAndReply>(IServiceScopeFactory serviceScopeFactory, string subject) where TListenAndReply : IReplyAction<IDictionary<string, object>, Task<IDictionary<string, object>>>
+        public void InitListenAndReplyTaskAsync<TListenAndReply>(IServiceScopeFactory serviceScopeFactory, string subject) where TListenAndReply : IReplyAsyncAction<IDictionary<string, object>, IDictionary<string, object>>
         {
             _logger.LogInformation("Start Subscription With Reply Of {Subject} : ", subject);
             Task.Run(
@@ -267,7 +267,7 @@ namespace DotNetService.Infrastructure.Integrations.NATs
                             var action = scope.ServiceProvider.GetRequiredService<TListenAndReply>();
 
                             var data = msg.Data;
-                            var reply = await action.Reply(Utils.JsonDeserialize<IDictionary<string, object>>(data));
+                            var reply = await action.ReplyAsync(Utils.JsonDeserialize<IDictionary<string, object>>(data));
 
                             var jsonReply = Utils.JsonSerialize(reply);
                             await msg.ReplyAsync(jsonReply, null, msg.ReplyTo);

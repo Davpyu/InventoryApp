@@ -21,6 +21,7 @@ using DotNetService.Infrastructure.Databases;
 using DotNetService.Infrastructure.ModelBinder;
 using Quartz;
 using DotNetService.Infrastructure.Jobs;
+using Microsoft.OpenApi.Models;
 
 namespace DotNetService
 {
@@ -180,6 +181,52 @@ namespace DotNetService
                 options.WaitForJobsToComplete = true;
             });
 
+            services.AddEndpointsApiExplorer();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Order Web API",
+                    Description = ".NET Web API for Inventory App",
+                    TermsOfService = new Uri("https://example.com/terms"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "John Doe",
+                        Email = string.Empty,
+                        Url = new Uri("https://google.com/"),
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "Use under LICX",
+                        Url = new Uri("https://example.com/license"),
+                    }
+                });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -206,6 +253,13 @@ namespace DotNetService
             app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseResponseCaching();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(x =>
+            {
+                x.SwaggerEndpoint("/swagger/v1/swagger.json", ".NET Web API for Inventory App");
+            });
 
             app.UseEndpoints(x =>
             {

@@ -1,5 +1,6 @@
 
 using DotNetService.Constants.Event;
+using DotNetService.Domain.Inventory.Listeners;
 using DotNetService.Domain.Logging.Listeners;
 using DotNetService.Infrastructure.Integrations.NATs;
 
@@ -39,6 +40,9 @@ namespace DotNetService.Infrastructure.BackgroundHosted
                 )
             );
             /*==================== Other Module ====================*/
+            _natsIntegration.InitListenAndReplyTaskAsync<CheckInventoryListenAndReply>(serviceScopeFactory,
+                "inventory.check"
+            );
         }
     }
 }

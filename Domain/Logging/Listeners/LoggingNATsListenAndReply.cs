@@ -13,7 +13,7 @@ namespace DotNetService.Domain.Logging.Listeners
         public readonly ILogger _logger = loggerFactory.CreateLogger(LoggerConstant.NATS);
         public readonly LoggingService _loggingService = loggingService;
 
-        public IDictionary<string, object> Reply(IDictionary<string, object> data)
+        public IDictionary<string, object> ReplyAsync(IDictionary<string, object> data)
         {
             // EXAMPLE: Do operation for reply event
 

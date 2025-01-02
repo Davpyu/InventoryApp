@@ -6,9 +6,9 @@ namespace DotNetService.Infrastructure.Subscriptions
         Task HandleAsync(T data);
     }
 
-    public interface IReplyAsyncAction<T, R>
+    public interface IReplyAsyncAction<TDat, TRes>
     {
-        Task<R> ReplyAsync(T data);
+        Task<TRes> ReplyAsync(TDat data);
     }
 
     public interface ISubscriptionAction<in T>
@@ -18,6 +18,6 @@ namespace DotNetService.Infrastructure.Subscriptions
 
     public interface IReplyAction<in T, out R>
     {
-        R Reply(T data);
+        R ReplyAsync(T data);
     }
 }

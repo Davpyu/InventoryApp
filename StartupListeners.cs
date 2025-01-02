@@ -1,3 +1,4 @@
+using DotNetService.Domain.Inventory.Listeners;
 using DotNetService.Domain.Logging.Listeners;
 
 namespace DotNetService
@@ -8,6 +9,7 @@ namespace DotNetService
         {
             services.AddScoped<LoggingNATsListener>();
             services.AddScoped<LoggingNATsListenAndReply>();
+            services.AddScoped<CheckInventoryListenAndReply>();
         }
     }
 }
