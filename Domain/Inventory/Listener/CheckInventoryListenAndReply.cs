@@ -1,9 +1,16 @@
 using DotNetService.Constants.Logger;
 using DotNetService.Domain.Inventory.Repositories;
+using DotNetService.Infrastructure.Shareds;
 using DotNetService.Infrastructure.Subscriptions;
 
 namespace DotNetService.Domain.Inventory.Listeners
 {
+    public enum QuantityStatus
+    {
+        Approved,
+        Rejected
+    }
+
     public class CheckInventoryListenAndReply(
         ILoggerFactory loggerFactory,
         InventoryQueryRepository inventoryQueryRepository
@@ -15,8 +22,12 @@ namespace DotNetService.Domain.Inventory.Listeners
         public async Task<IDictionary<string, object>> ReplyAsync(IDictionary<string, object> data)
         {
             // EXAMPLE: Do operation for reply event
-            var inventoryId = data.Where(x => x.Key == "inventory_id").First().Value;
-            var quantity = data.Where(x => x.Key == "quantity").First().Value;
+            var jsonData = Utils.JsonSerialize(data);
+            _logger.LogInformation($"Receiving event with data {jsonData}");
+            var responseData = Utils.JsonDeserialize<Dictionary<string, object>>(jsonData);
+
+            var inventoryId = responseData.Where(x => x.Key == "inventory_id").First().Value;
+            var quantity = responseData.Where(x => x.Key == "quantity").First().Value;
 
             var inventory = await _inventoryQueryRepository.FindOneById(Guid.Parse(inventoryId.ToString()));
 
@@ -24,13 +35,16 @@ namespace DotNetService.Domain.Inventory.Listeners
 
             if (inventory.Quantity >= Convert.ToInt32(quantity))
             {
-                reply.Add("approval", "Approved");
+                reply.Add("status", QuantityStatus.Approved);
             }
 
             else
             {
-                reply.Add("approval", "Rejected");
+                reply.Add("status", QuantityStatus.Rejected);
             }
+
+            var jsonResult = Utils.JsonSerialize(reply);
+            _logger.LogInformation($"Sending reply with data {jsonResult}");
 
             return reply;
         }
