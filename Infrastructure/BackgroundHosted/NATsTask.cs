@@ -41,7 +41,11 @@ namespace DotNetService.Infrastructure.BackgroundHosted
             );
             /*==================== Other Module ====================*/
             _natsIntegration.InitListenAndReplyTaskAsync<CheckInventoryListenAndReply>(serviceScopeFactory,
-                "inventory.check.pending"
+                _natsIntegration.Subject(
+                    NATsEventModuleEnum.INVENTORY,
+                    NATsEventActionEnum.CHECK,
+                    NATsEventStatusEnum.REQUEST
+                )
             );
         }
     }
